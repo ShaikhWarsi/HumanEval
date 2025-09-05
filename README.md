@@ -14,3 +14,6 @@ This is the frontend for the HumanEval website, a platform designed to test and 
 ## Overview
 
 HumanEval provides a user-friendly interface to engage with various cognitive tests. Each test is designed to be intuitive and provides immediate feedback on your performance. The website aims to offer an engaging experience for users looking to challenge their mental abilities.
+
+## Screenshots 
+![Home Page](./Screenshot 2025-09-05 212558.png)
