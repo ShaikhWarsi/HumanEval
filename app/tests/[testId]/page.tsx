@@ -75,9 +75,8 @@ const tests = {
     description: "Test your reading speed and comprehension skills.",
     component: "ReadingComprehensionTest",
     about:
-      "This test measures both your reading speed (words per minute) and comprehension ability. You'll read a passage and then answer questions about it. The average adult reads at 200-250 WPM with 60-70% comprehension.",
-
-}
+      "This test measures both your reading speed (words per minute) and comprehension ability. You\'ll read a passage and then answer questions about it. The average adult reads at 200-250 WPM with 60-70% comprehension.",
+  },
 
 export default async function TestPage({ params }: { params: Promise<{ testId: string }> }) {
   const testId = (await params).testId
