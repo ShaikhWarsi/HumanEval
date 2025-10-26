@@ -2,6 +2,10 @@
 
 This is the frontend for the HumanEval website, a platform designed to test and improve various cognitive skills through a series of interactive games and challenges.
 
+## Created By
+
+- **Shaikh Mohammad Warsi**: [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/shaikh-mohammad-warsi-141532271/)
+
 ## Features
 
 - **Chimp Test**: A memory game where you recall the sequence of numbers.
