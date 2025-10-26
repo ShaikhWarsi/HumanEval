@@ -114,26 +114,7 @@ const tests = [
     isNew: true,
     category: "Language",
   },
-  {
-    id: "dual-task-split",
-    title: "Dual Task Split",
-    description: "Test cognitive multitasking and attention resource allocation.",
-    icon: "Split",
-    color: "text-pink-500",
-    bgColor: "bg-pink-500/10",
-    isNew: true,
-    category: "Attention",
-  },
-  {
-    id: "rhythm-pulse",
-    title: "Rhythm Pulse",
-    description: "Assess auditory processing and rhythmic synchronization abilities.",
-    icon: "Music",
-    color: "text-violet-500",
-    bgColor: "bg-violet-500/10",
-    isNew: true,
-    category: "Auditory",
-  },
+
 ];
 
 const categories = ["All", "Speed", "Memory", "Motor", "Language", "Intelligence", "Attention", "Auditory"];
