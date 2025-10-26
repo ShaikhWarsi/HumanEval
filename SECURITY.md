@@ -6,12 +6,7 @@ We take the security of our project seriously. If you discover a security vulner
 
 ### How to Report
 
-To report a security vulnerability, please send an email to [your-email@example.com] with the following information:
-
-- A clear and concise description of the vulnerability.
-- Steps to reproduce the vulnerability.
-- The potential impact of the vulnerability.
-- Any suggested mitigations or fixes (if applicable).
+You can go to https://humaneval.vercel.app/feedback and send your feedback/bug report
 
 ### Our Commitment
 
