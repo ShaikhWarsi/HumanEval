@@ -1,6 +1,7 @@
-# HumanEval Website
+# HumanEval
 
-This is the frontend for the HumanEval website, a platform designed to test and improve various cognitive skills through a series of interactive games and challenges.
+HumanEval is a comprehensive cognitive skills testing platform featuring interactive games and challenges designed to test and improve various mental abilities. From memory tests to reaction time assessments, the platform offers a diverse range of brain training exercises. Built with Next.js, TypeScript, and Tailwind CSS, it provides an engaging and responsive user experience for individuals looking to gauge and enhance their cognitive performance.
+
 
 ## Created By
 
