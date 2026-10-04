@@ -1,8 +1,7 @@
-'use client';
+"use client"
 
-import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import Link from "next/link"
+import type React from "react"
 import {
   Brain,
   Zap,
@@ -10,85 +9,123 @@ import {
   Eye,
   Keyboard,
   BookOpen,
-  Split,
-  Music,
   Grid3X3,
   Hash,
   MessageSquare,
-  User,
-  TrendingUp,
   Award,
-  Activity,
-} from "lucide-react";
+  ChevronRight,
+  type LucideIcon,
+} from "lucide-react"
+import { useScore } from "@/lib/score-context"
+import { BENCHMARKS } from "@/lib/benchmarks"
 
-interface TestCardProps {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  color: string;
-  bgColor: string;
-  isNew: boolean;
-  category: string;
-}
-
-const iconMap: { [key: string]: LucideIcon } = {
-  Brain,
+const iconMap: Record<string, LucideIcon> = {
   Zap,
+  Grid3X3,
   Target,
+  Hash,
+  MessageSquare,
+  Brain,
   Eye,
   Keyboard,
   BookOpen,
-  Split,
-  Music,
-  Grid3X3,
-  Hash,
-  MessageSquare,
-  User,
-  TrendingUp,
-  Award,
-  Activity,
-};
+}
 
-const TestCard: React.FC<TestCardProps> = ({ id, title, description, icon, color, bgColor, isNew, category }) => {
-  const IconComponent = iconMap[icon];
+interface TestCardProps {
+  id: string
+  title: string
+  description: string
+  icon: string
+  color: string
+  bgColor: string
+  category: string
+  isNew?: boolean
+}
 
-  if (!IconComponent) {
-    console.warn(`Icon component not found for: ${icon}`);
-    return null; // Or render a fallback icon
-  }
+export default function TestCard({
+  id,
+  title,
+  description,
+  icon,
+  color,
+  bgColor,
+  category,
+  isNew,
+}: TestCardProps) {
+  const IconComponent = iconMap[icon] || Brain
+  const { getBestScore } = useScore()
+  const best = getBestScore(id)
+  const meta = BENCHMARKS[id]
 
   return (
-    <Link key={id} href={`/tests/${id}`}>
-      <Card className="neural-card h-full cursor-pointer group border-0 rounded-2xl overflow-hidden">
-        <CardHeader className="text-center pb-3 sm:pb-4 relative">
-          <div className="relative mb-3 sm:mb-4">
-            <div
-              className={`${bgColor} w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:scale-110 transition-transform`}
-            >
-              <IconComponent className={`w-7 h-7 sm:w-8 sm:h-8 ${color}`} />
-            </div>
-            {isNew && (
-              <Badge className="absolute -top-2 -right-2 bg-gradient-to-r from-pink-500 to-violet-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
-                NEW
-              </Badge>
-            )}
-            <Badge variant="secondary" className="absolute -top-2 -left-2 text-xs font-medium">
-              {category}
-            </Badge>
-          </div>
-          <CardTitle className="text-lg sm:text-xl font-bold text-foreground group-hover:text-primary transition-colors font-mono">
-            {title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center">
-          <CardDescription className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
-            {description}
-          </CardDescription>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-};
+    <Link href={`/tests/${id}`} className="block h-full group">
+      <div className="cyber-card rounded-2xl p-6 h-full flex flex-col justify-between relative overflow-hidden transition-all duration-200 group-hover:-translate-y-1">
+        {/* Glow corner ambient */}
+        <div
+          className="absolute -top-12 -right-12 w-28 h-28 rounded-full blur-2xl opacity-10 group-hover:opacity-25 transition-opacity"
+          style={{ backgroundColor: meta?.color || "#00F0FF" }}
+        />
 
-export default TestCard;
+        <div>
+          {/* Top row badges */}
+          <div className="flex items-center justify-between mb-5">
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 border border-white/10"
+              style={{
+                backgroundColor: `${meta?.color || "#00F0FF"}15`,
+                color: meta?.color || "#00F0FF",
+              }}
+            >
+              <IconComponent className="w-6 h-6" />
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              {isNew && (
+                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20 font-semibold">
+                  New
+                </span>
+              )}
+              <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-md bg-secondary text-muted-foreground border border-border/40">
+                {category}
+              </span>
+            </div>
+          </div>
+
+          {/* Title & Desc */}
+          <h3 className="text-lg font-bold tracking-tight text-foreground group-hover:text-cyan-400 transition-colors mb-2">
+            {title}
+          </h3>
+          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+            {description}
+          </p>
+        </div>
+
+        {/* Footer Score or Prompt */}
+        <div className="pt-5 mt-5 border-t border-border/40 flex items-center justify-between">
+          {best ? (
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-muted-foreground font-mono">Best:</span>
+              <span className="font-mono font-bold text-sm text-foreground tabular">
+                {best.score}
+                <span className="text-xs text-muted-foreground ml-0.5">{best.unit}</span>
+              </span>
+              {best.percentile && (
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  Top {Math.round(100 - best.percentile)}%
+                </span>
+              )}
+            </div>
+          ) : (
+            <span className="text-xs text-muted-foreground group-hover:text-cyan-400 transition-colors font-medium flex items-center gap-1">
+              Start Test <ChevronRight className="w-3.5 h-3.5" />
+            </span>
+          )}
+
+          <div className="w-7 h-7 rounded-full bg-secondary/80 flex items-center justify-center text-muted-foreground group-hover:bg-cyan-500/20 group-hover:text-cyan-400 transition-colors">
+            <ChevronRight className="w-4 h-4" />
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}

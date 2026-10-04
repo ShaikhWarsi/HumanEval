@@ -4,6 +4,7 @@ import { Inter, Space_Grotesk } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ScoreProvider } from "@/lib/score-context"
+import Navbar from "@/components/navbar"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,10 +19,9 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  title: "Human Evaluation - Advanced Cognitive Assessment Platform",
+  title: "HumanEval | Cognitive Benchmark OS",
   description:
-    "Comprehensive cognitive evaluation suite featuring advanced brain tests, neural assessments, and performance analytics for measuring human cognitive capabilities.",
-  generator: "v0.app",
+    "Next-generation human performance diagnostics. High-frequency tests for reaction time, sequence memory, aim precision, digit span, and typing speed.",
 }
 
 export default function RootLayout({
@@ -30,19 +30,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <style>{`
-html {
-  font-family: ${inter.style.fontFamily};
-  --font-sans: ${inter.variable};
-  --font-mono: ${spaceGrotesk.variable};
-}
-        `}</style>
-      </head>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <ScoreProvider>{children}</ScoreProvider>
+    <html lang="en" suppressHydrationWarning className="dark">
+      <body className={`${inter.variable} ${spaceGrotesk.variable} antialiased font-sans bg-background text-foreground dot-grid min-h-screen flex flex-col`}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <ScoreProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+          </ScoreProvider>
         </ThemeProvider>
       </body>
     </html>

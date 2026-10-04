@@ -1,253 +1,192 @@
 "use client"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import type React from "react"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { useScore } from "@/lib/score-context"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { Trophy, Target, Clock, Brain, Zap, Award, Trash2 } from "lucide-react"
 import Link from "next/link"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-
-const testIcons: Record<string, React.ReactNode> = {
-  "reaction-time": <Zap className="w-5 h-5" />,
-  "sequence-memory": <Brain className="w-5 h-5" />,
-  "aim-trainer": <Target className="w-5 h-5" />,
-  "number-memory": <Brain className="w-5 h-5" />,
-  "verbal-memory": <Brain className="w-5 h-5" />,
-  "chimp-test": <Brain className="w-5 h-5" />,
-  "visual-memory": <Brain className="w-5 h-5" />,
-  typing: <Clock className="w-5 h-5" />,
-}
+import { useScore } from "@/lib/score-context"
+import { BENCHMARKS } from "@/lib/benchmarks"
+import Footer from "@/components/footer"
+import {
+  Trophy,
+  Award,
+  Trash2,
+  TrendingUp,
+  Brain,
+  Zap,
+  Target,
+  ArrowRight,
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts"
 
 export default function ProfilePage() {
   const { userStats, clearAllData, getTestHistory } = useScore()
 
-  const formatScore = (score: number, unit: string) => {
-    if (unit === "ms") return `${score}ms`
-    if (unit === "wpm") return `${score} WPM`
-    if (unit === "level") return `Level ${score}`
-    if (unit === "words") return `${score} words`
-    if (unit === "targets") return `${score} targets`
-    return `${score} ${unit}`
-  }
-
-  const getPerformanceData = (testId: string) => {
-    const history = getTestHistory(testId).slice(-10).reverse()
-    return history.map((score, index) => ({
-      attempt: index + 1,
-      score: score.score,
-      date: score.date.toLocaleDateString(),
-    }))
-  }
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="glass border-b p-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-            <Zap className="w-6 h-6" />
-            <span className="text-lg font-semibold">Human Eval</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-6xl mx-auto p-6 space-y-8">
+    <div className="min-h-screen flex flex-col">
+      <div className="max-w-6xl mx-auto w-full px-4 pt-8 pb-16 flex-1 space-y-8">
         {/* Profile Header */}
-        <div className="text-center space-y-4">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <Trophy className="w-10 h-10 text-primary" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-border/40">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <Brain className="w-8 h-8" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold font-mono tracking-tight text-foreground">
+                Neural Performance Profile
+              </h1>
+              <p className="text-xs text-muted-foreground font-mono">
+                Cognitive telemetry & lifetime achievement ledger
+              </p>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold">Your Profile</h1>
-          <p className="text-muted-foreground">Track your cognitive performance across all tests</p>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              if (confirm("Reset all test telemetry and saved scores?")) {
+                clearAllData()
+              }
+            }}
+            className="text-xs font-mono text-rose-400 border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-300"
+          >
+            <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Purge Local Data
+          </Button>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="glass-card">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-primary">{userStats.totalGamesPlayed}</CardTitle>
-              <CardDescription>Total Games Played</CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="glass-card">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-primary">
-                {Object.keys(userStats.bestScores).length}
-              </CardTitle>
-              <CardDescription>Tests Completed</CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="glass-card">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-bold text-primary">{userStats.achievements.length}</CardTitle>
-              <CardDescription>Achievements Unlocked</CardDescription>
-            </CardHeader>
-          </Card>
+        {/* Global Statistics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="cyber-card rounded-xl p-5">
+            <span className="text-xs font-mono text-muted-foreground block mb-1">CGI Rating</span>
+            <div className="text-3xl font-mono font-extrabold text-cyan-400 tabular">
+              {userStats.cgi}
+            </div>
+            <span className="text-[10px] font-mono text-muted-foreground mt-1 block">
+              Tier: {userStats.tier}
+            </span>
+          </div>
+
+          <div className="cyber-card rounded-xl p-5">
+            <span className="text-xs font-mono text-muted-foreground block mb-1">Total Sessions</span>
+            <div className="text-3xl font-mono font-extrabold text-foreground tabular">
+              {userStats.totalGamesPlayed}
+            </div>
+            <span className="text-[10px] font-mono text-muted-foreground mt-1 block">
+              Recorded runs
+            </span>
+          </div>
+
+          <div className="cyber-card rounded-xl p-5">
+            <span className="text-xs font-mono text-muted-foreground block mb-1">Calibrated Tests</span>
+            <div className="text-3xl font-mono font-extrabold text-emerald-400 tabular">
+              {Object.keys(userStats.bestScores).length} / 9
+            </div>
+            <span className="text-[10px] font-mono text-muted-foreground mt-1 block">
+              Active diagnostics
+            </span>
+          </div>
+
+          <div className="cyber-card rounded-xl p-5">
+            <span className="text-xs font-mono text-muted-foreground block mb-1">Unlocked Badges</span>
+            <div className="text-3xl font-mono font-extrabold text-violet-400 tabular">
+              {userStats.achievements.length}
+            </div>
+            <span className="text-[10px] font-mono text-muted-foreground mt-1 block">
+              Neuro-milestones
+            </span>
+          </div>
         </div>
 
-        {/* Achievements */}
-        {userStats.achievements.length > 0 && (
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Award className="w-5 h-5" />
-                Achievements
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {userStats.achievements.map((achievement) => (
-                  <Badge key={achievement} variant="secondary" className="bg-primary/10 text-primary">
-                    {achievement}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Achievements Section */}
+        <div className="cyber-card rounded-2xl p-6">
+          <h2 className="text-base font-bold font-mono text-foreground mb-4 flex items-center gap-2">
+            <Award className="w-4 h-4 text-cyan-400" /> Milestone Achievements
+          </h2>
 
-        {/* Best Scores */}
-        {Object.keys(userStats.bestScores).length > 0 && (
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="w-5 h-5" />
-                Best Scores
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(userStats.bestScores).map(([testId, score]) => (
-                  <div key={testId} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      {testIcons[testId]}
-                      <div>
-                        <p className="font-medium">{score.testName}</p>
-                        <p className="text-sm text-muted-foreground">{score.date.toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-primary">{formatScore(score.score, score.unit)}</p>
-                    </div>
+          <div className="flex flex-wrap gap-2.5">
+            {[
+              { id: "First Transmission", desc: "Completed your first benchmark trial" },
+              { id: "Neural Calibration", desc: "10 diagnostic trials completed" },
+              { id: "Hyper-Focused", desc: "50 total benchmark trials" },
+              { id: "Top 10% Neuro", desc: "Reached 90th percentile in any benchmark" },
+              { id: "Apex 99th Percentile", desc: "Achieved elite top 1% human performance" },
+            ].map((ach) => {
+              const unlocked = userStats.achievements.includes(ach.id)
+              return (
+                <div
+                  key={ach.id}
+                  className={`px-3.5 py-2 rounded-xl border text-xs font-mono transition-all ${
+                    unlocked
+                      ? "bg-cyan-500/10 border-cyan-500/30 text-cyan-400 shadow-sm"
+                      : "bg-secondary/40 border-border/30 text-muted-foreground/40"
+                  }`}
+                >
+                  <div className="font-bold flex items-center gap-1.5">
+                    {unlocked ? "★" : "○"} {ach.id}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                  <div className="text-[10px] text-muted-foreground/80 mt-0.5">{ach.desc}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
 
-        {/* Recent Activity */}
-        {userStats.recentScores.length > 0 && (
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="w-5 h-5" />
-                Recent Activity
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {userStats.recentScores.slice(0, 10).map((score, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      {testIcons[score.testId]}
-                      <div>
-                        <p className="font-medium">{score.testName}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {score.date.toLocaleDateString()} at {score.date.toLocaleTimeString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold">{formatScore(score.score, score.unit)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Test Performance Breakdown & Sparkline History */}
+        <div className="cyber-card rounded-2xl p-6">
+          <h2 className="text-base font-bold font-mono text-foreground mb-4 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-emerald-400" /> Test Performance History (Reaction Time)
+          </h2>
 
-        {/* Performance Charts */}
-        {Object.keys(userStats.bestScores).length > 0 && (
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle>Performance Trends</CardTitle>
-              <CardDescription>Your progress over the last 10 attempts for each test</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {Object.keys(userStats.bestScores).map((testId) => {
-                  const data = getPerformanceData(testId)
-                  if (data.length < 2) return null
-
-                  return (
-                    <div key={testId} className="space-y-2">
-                      <h4 className="font-medium">{userStats.bestScores[testId].testName}</h4>
-                      <div className="h-48">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={data}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="attempt" />
-                            <YAxis />
-                            <Tooltip />
-                            <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Empty State */}
-        {userStats.totalGamesPlayed === 0 && (
-          <Card className="glass-card text-center py-12">
-            <CardContent>
-              <Brain className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No games played yet</h3>
-              <p className="text-muted-foreground mb-6">Start playing some tests to see your stats here!</p>
-              <Link href="/">
-                <Button>Start Testing</Button>
-              </Link>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Clear Data */}
-        {userStats.totalGamesPlayed > 0 && (
-          <Card className="glass-card border-destructive/20">
-            <CardHeader>
-              <CardTitle className="text-destructive flex items-center gap-2">
-                <Trash2 className="w-5 h-5" />
-                Danger Zone
-              </CardTitle>
-              <CardDescription>Permanently delete all your data and scores</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  if (confirm("Are you sure you want to delete all your data? This cannot be undone.")) {
-                    clearAllData()
-                  }
-                }}
-              >
-                Clear All Data
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+          {getTestHistory("reaction-time").length > 1 ? (
+            <div className="h-64 w-full mt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={getTestHistory("reaction-time")
+                    .slice(-15)
+                    .reverse()
+                    .map((item, i) => ({
+                      attempt: `#${i + 1}`,
+                      score: item.score,
+                    }))}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                  <XAxis dataKey="attempt" stroke="#64748b" fontSize={11} fontFamily="monospace" />
+                  <YAxis stroke="#64748b" fontSize={11} fontFamily="monospace" domain={["auto", "auto"]} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#0d1117",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "8px",
+                      fontFamily: "monospace",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="score"
+                    stroke="#00F0FF"
+                    strokeWidth={2.5}
+                    dot={{ fill: "#00F0FF", r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <p className="text-xs font-mono text-muted-foreground py-6 text-center">
+              Complete more Reaction Time sessions to populate the historical telemetry graph.
+            </p>
+          )}
+        </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

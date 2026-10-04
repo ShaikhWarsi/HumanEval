@@ -1,388 +1,220 @@
 "use client"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useScore } from "@/lib/score-context"
-import { Eye, RotateCcw, CheckCircle, XCircle } from "lucide-react"
-import {
-  TwitterShareButton,
-  FacebookShareButton,
-  LinkedinShareButton,
-  TwitterIcon,
-  FacebookIcon,
-  LinkedinIcon,
-} from "react-share"
-import { useRouter } from "next/navigation"
 
-interface GridSquare {
-  id: number
-  isTarget: boolean
-  isSelected: boolean
-  wasTarget: boolean
-}
+import { useState, useRef, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { useScore } from "@/lib/score-context"
+import { sound } from "@/lib/audio"
+import BellCurve from "@/components/bell-curve"
+import { Eye, RotateCcw, Heart } from "lucide-react"
+
+type GameState = "instructions" | "showing" | "selecting" | "result"
 
 export default function VisualMemoryTest() {
-  const [gameState, setGameState] = useState<
-    "instructions" | "showing" | "memorizing" | "selecting" | "result" | "gameOver"
-  >("instructions")
+  const [gameState, setGameState] = useState<GameState>("instructions")
   const [level, setLevel] = useState(1)
-  const [grid, setGrid] = useState<GridSquare[]>([])
-  const [gridSize, setGridSize] = useState(3)
-  const [showTime, setShowTime] = useState(1000)
-  const [selectedSquares, setSelectedSquares] = useState<number[]>([])
-  const { addScore } = useScore()
-  const [retriesLeft, setRetriesLeft] = useState(3)
+  const [lives, setLives] = useState(3)
+  const [gridDim, setGridDim] = useState(3)
+  const [targets, setTargets] = useState<Set<number>>(new Set())
+  const [selected, setSelected] = useState<Set<number>>(new Set())
+  const [wrongSelections, setWrongSelections] = useState<Set<number>>(new Set())
+  const [percentile, setPercentile] = useState(50)
 
-  const getGridSize = (level: number) => {
-    if (level <= 3) return 3
-    if (level <= 6) return 4
-    if (level <= 10) return 5
-    if (level <= 15) return 6
+  const { addScore } = useScore()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const getDimension = (lvl: number) => {
+    if (lvl <= 2) return 3
+    if (lvl <= 5) return 4
+    if (lvl <= 9) return 5
+    if (lvl <= 14) return 6
     return 7
   }
 
-  const getTargetCount = (level: number) => {
-    return Math.min(level + 2, Math.floor(getGridSize(level) * getGridSize(level) * 0.4))
+  const getTargetCount = (lvl: number, dim: number) => {
+    return Math.min(Math.floor(dim * dim * 0.45), lvl + 2)
   }
 
-  const getShowTime = (level: number) => {
-    return Math.max(600, 1200 - level * 50)
-  }
+  const startLevel = (lvl: number) => {
+    const dim = getDimension(lvl)
+    setGridDim(dim)
+    setSelected(new Set())
+    setWrongSelections(new Set())
 
-  const generateGrid = (level: number) => {
-    const size = getGridSize(level)
-    const targetCount = getTargetCount(level)
-    const totalSquares = size * size
+    const count = getTargetCount(lvl, dim)
+    const totalCells = dim * dim
+    const newTargets = new Set<number>()
 
-    const newGrid: GridSquare[] = []
-
-    // Initialize all squares
-    for (let i = 0; i < totalSquares; i++) {
-      newGrid.push({
-        id: i,
-        isTarget: false,
-        isSelected: false,
-        wasTarget: false,
-      })
+    while (newTargets.size < count) {
+      newTargets.add(Math.floor(Math.random() * totalCells))
     }
 
-    // Randomly select target squares
-    const targetIndices = new Set<number>()
-    while (targetIndices.size < targetCount) {
-      const randomIndex = Math.floor(Math.random() * totalSquares)
-      targetIndices.add(randomIndex)
-    }
-
-    targetIndices.forEach((index) => {
-      newGrid[index].isTarget = true
-      newGrid[index].wasTarget = true
-    })
-
-    return newGrid
-  }
-
-  const startLevel = () => {
-    const size = getGridSize(level)
-    const showDuration = getShowTime(level)
-
-    setGridSize(size)
-    setShowTime(showDuration)
-    setSelectedSquares([])
-
-    const newGrid = generateGrid(level)
-    setGrid(newGrid)
+    setTargets(newTargets)
     setGameState("showing")
 
-    // Show targets for specified duration
-    setTimeout(() => {
-      setGrid((prev) => prev.map((square) => ({ ...square, isTarget: false })))
+    // Show targets for 1.2s
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(() => {
       setGameState("selecting")
-    }, showDuration)
+    }, 1200)
   }
 
-  const handleSquareClick = (squareId: number) => {
-    if (gameState !== "selecting") return
-
-    setGrid((prev) =>
-      prev.map((square) => (square.id === squareId ? { ...square, isSelected: !square.isSelected } : square)),
-    )
-
-    setSelectedSquares((prev) => (prev.includes(squareId) ? prev.filter((id) => id !== squareId) : [...prev, squareId]))
+  const startGame = () => {
+    setLevel(1)
+    setLives(3)
+    startLevel(1)
   }
 
-  const submitSelection = () => {
-    const targetSquares = grid.filter((square) => square.wasTarget).map((square) => square.id)
-    const isCorrect =
-      selectedSquares.length === targetSquares.length && selectedSquares.every((id) => targetSquares.includes(id))
+  const handleCellClick = (index: number) => {
+    if (gameState !== "selecting" || selected.has(index) || wrongSelections.has(index)) return
 
-    if (isCorrect) {
-      setGameState("result")
-      setTimeout(() => {
-        setLevel((prev) => prev + 1)
-        startLevel()
-      }, 1500)
+    if (targets.has(index)) {
+      // Correct tile!
+      sound.playClick()
+      const newSelected = new Set(selected)
+      newSelected.add(index)
+      setSelected(newSelected)
+
+      if (newSelected.size === targets.size) {
+        // Level cleared!
+        sound.playSuccess()
+        const nextLevel = level + 1
+        setLevel(nextLevel)
+        setTimeout(() => startLevel(nextLevel), 700)
+      }
     } else {
-      if (retriesLeft > 0) {
-        setRetriesLeft(retriesLeft - 1)
-        // Reset the grid and show the pattern again for retry
-        setGrid((prev) => prev.map((square) => ({ ...square, isSelected: false })))
-        setSelectedSquares([])
-        setGameState("showing")
-        setTimeout(() => {
-          setGrid((prev) => prev.map((square) => ({ ...square, isTarget: false })))
-          setGameState("selecting")
-        }, showTime)
-      } else {
-        // Save score
-        addScore({
+      // Wrong tile!
+      sound.playError()
+      const newWrong = new Set(wrongSelections)
+      newWrong.add(index)
+      setWrongSelections(newWrong)
+
+      const newLives = lives - 1
+      setLives(newLives)
+
+      if (newLives <= 0) {
+        // Game Over!
+        const finalScore = level - 1
+        const saved = addScore({
           testId: "visual-memory",
           testName: "Visual Memory",
-          score: level,
-          unit: "level",
-          date: new Date(),
-          details: {
-            gridSize: gridSize,
-            targetCount: getTargetCount(level),
-            selectedCount: selectedSquares.length,
-            correctTargets: targetSquares.length,
-          },
+          score: Math.max(0, finalScore),
+          unit: "lvl",
+          details: { maxLevel: level, gridDimension: gridDim },
         })
-
-        setGameState("gameOver")
+        setPercentile(saved.percentile)
+        setGameState("result")
       }
     }
   }
 
-  const restart = () => {
-    setLevel(1)
-    setGrid([])
-    setSelectedSquares([])
-    setRetriesLeft(3) // Reset retries
-    setGameState("instructions")
-  }
-
-  const getSquareClass = (square: GridSquare) => {
-    let baseClass = "w-full h-full border-2 border-muted-foreground/30 cursor-pointer transition-all duration-200 "
-
-    if (gameState === "showing" && square.isTarget) {
-      baseClass += "bg-primary border-primary shadow-lg "
-    } else if (gameState === "selecting" && square.isSelected) {
-      baseClass += "bg-primary/70 border-primary "
-    } else if (gameState === "gameOver") {
-      if (square.wasTarget && square.isSelected) {
-        baseClass += "bg-green-500 border-green-500 " // Correct
-      } else if (square.wasTarget && !square.isSelected) {
-        baseClass += "bg-red-500 border-red-500 " // Missed target
-      } else if (!square.wasTarget && square.isSelected) {
-        baseClass += "bg-orange-500 border-orange-500 " // Wrong selection
-      } else {
-        baseClass += "bg-muted hover:bg-muted/80 "
-      }
-    } else {
-      baseClass += "bg-muted hover:bg-muted/80 "
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
     }
-
-    return baseClass
-  }
+  }, [])
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto">
-        <Card className="glass-card">
-          <CardHeader className="text-center">
-            <Eye className="w-12 h-12 text-primary mx-auto mb-4" />
-            <CardTitle className="text-2xl">Visual Memory Test</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="text-center space-y-4">
-              <p className="text-lg text-muted-foreground">Memorize the pattern of highlighted squares</p>
-              <div className="bg-muted/50 p-4 rounded-lg space-y-2">
-                <h3 className="font-semibold">How it works:</h3>
-                <ul className="text-sm text-muted-foreground space-y-1 text-left">
-                  <li>• Squares will light up briefly</li>
-                  <li>• Memorize which squares were highlighted</li>
-                  <li>• Click on the squares you remember</li>
-                  <li>• Each level adds more squares to remember</li>
-                  <li>• Make a mistake and the test ends</li>
-                </ul>
-              </div>
-            </div>
-            <Button onClick={startLevel} size="lg" className="w-full">
-              Start Level 1
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 sm:p-12 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto mb-6">
+          <Eye className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-bold font-mono tracking-tight text-foreground mb-3">
+          Visual Memory Test
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+          Memorize the pattern of illuminated tiles. Once hidden, reconstruct the coordinates.
+          The matrix dynamically expands as your retention scales. You have 3 lives.
+        </p>
+
+        <Button
+          onClick={startGame}
+          size="lg"
+          className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-cyan-500/20"
+        >
+          Initialize Matrix
+        </Button>
       </div>
     )
   }
 
   if (gameState === "result") {
     return (
-      <div className="max-w-2xl mx-auto">
-        <Card className="glass-card">
-          <CardContent className="text-center py-12">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-green-500 mb-2">Correct!</h2>
-            <p className="text-muted-foreground">Moving to level {level + 1}...</p>
-          </CardContent>
-        </Card>
+      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 text-center animate-in fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto mb-4">
+          <Eye className="w-8 h-8" />
+        </div>
+        <h2 className="text-xs font-mono uppercase text-muted-foreground tracking-wider mb-1">
+          Spatial Visual Capacity
+        </h2>
+        <div className="text-5xl font-mono font-black text-foreground mb-2 tabular">
+          Level {level - 1}
+        </div>
+
+        <BellCurve testId="visual-memory" score={level - 1} unit="lvl" percentile={percentile} />
+
+        <div className="flex gap-3 justify-center mt-6">
+          <Button
+            onClick={startGame}
+            className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-6 py-2.5 rounded-xl transition-all"
+          >
+            <RotateCcw className="w-4 h-4 mr-2" /> Try Again
+          </Button>
+        </div>
       </div>
     )
   }
 
-  if (gameState === "gameOver") {
-    return (
-      <div className="max-w-2xl mx-auto">
-        <Card className="glass-card">
-          <CardHeader className="text-center">
-            <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <CardTitle className="text-2xl">Game Over</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="text-center space-y-4">
-              <div className="text-4xl font-bold text-primary">Level {level}</div>
-              <p className="text-muted-foreground">You reached level {level}</p>
-
-              <div className="bg-muted/50 p-4 rounded-lg space-y-2">
-                <h3 className="font-semibold">Final Challenge:</h3>
-                <div className="text-sm text-muted-foreground space-y-1">
-                  <div>
-                    Grid Size: {gridSize}×{gridSize}
-                  </div>
-                  <div>Targets to Remember: {getTargetCount(level)}</div>
-                  <div>Show Time: {showTime}ms</div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-semibold">Performance:</h4>
-                <div className="text-sm text-muted-foreground">
-                  {level >= 10 && "Excellent visual memory!"}
-                  {level >= 7 && level < 10 && "Great performance!"}
-                  {level >= 5 && level < 7 && "Good visual memory"}
-                  {level < 5 && "Keep practicing to improve"}
-                </div>
-              </div>
-            </div>
-
-            {/* Show the final grid with correct answers */}
-            <div className="space-y-4">
-              <h4 className="font-semibold text-center">Solution:</h4>
-              <div
-                className="grid gap-2 mx-auto max-w-md"
-                style={{
-                  gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
-                  aspectRatio: "1",
-                }}
-              >
-                {grid.map((square) => (
-                  <div key={square.id} className={getSquareClass(square)} style={{ aspectRatio: "1" }} />
-                ))}
-              </div>
-              <div className="text-xs text-muted-foreground text-center space-y-1">
-                <div className="flex justify-center gap-4">
-                  <span className="flex items-center gap-1">
-                    <div className="w-3 h-3 bg-green-500 rounded"></div>
-                    Correct
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <div className="w-3 h-3 bg-red-500 rounded"></div>
-                    Missed
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <div className="w-3 h-3 bg-orange-500 rounded"></div>
-                    Wrong
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <Button onClick={restart} className="w-full">
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Try Again
-            </Button>
-            <Button onClick={() => router.push("/")} variant="outline" className="w-full mt-2">
-              Back to Menu
-            </Button>
-            <div className="mt-8 flex justify-center gap-4">
-              <TwitterShareButton
-                url={"https://humval2.vercel.app/tests/visual-memory-test"}
-                title={`I reached level ${level} in the Visual Memory Test on HumanEval! Can you beat my score?`}
-              >
-                <TwitterIcon size={32} round />
-              </TwitterShareButton>
-              <FacebookShareButton
-                url={"https://humval2.vercel.app/tests/visual-memory-test"}
-                quote={`I reached level ${level} in the Visual Memory Test on HumanEval! Can you beat my score?`}
-              >
-                <FacebookIcon size={32} round />
-              </FacebookShareButton>
-              <LinkedinShareButton
-                url={"https://humval2.vercel.app/tests/visual-memory-test"}
-                title={`Visual Memory Test Score on HumanEval`}
-                summary={`I reached level ${level} in the Visual Memory Test on HumanEval! Can you beat my score?`}
-                source={"HumanEval"}
-              >
-                <LinkedinIcon size={32} round />
-              </LinkedinShareButton>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
+  const totalCells = gridDim * gridDim
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <Card className="glass-card">
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">
-            Level {level}
-            {gameState === "showing" && " - Memorize"}
-            {gameState === "selecting" && " - Select"}
-          </CardTitle>
-          {gameState === "showing" && <p className="text-muted-foreground">Watch the highlighted squares</p>}
-          {gameState === "selecting" && (
-            <p className="text-muted-foreground">
-              Click the squares that were highlighted ({selectedSquares.length} selected)
-            </p>
-          )}
+    <div className="max-w-md mx-auto">
+      {/* Telemetry bar */}
+      <div className="flex items-center justify-between mb-4 px-2 text-xs font-mono">
+        <div>
+          <span className="text-muted-foreground">Level: </span>
+          <span className="font-bold text-cyan-400 tabular">{level}</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-rose-400">
+          {[...Array(3)].map((_, i) => (
+            <Heart
+              key={i}
+              className={`w-4 h-4 ${i < lives ? "fill-rose-500 text-rose-500" : "text-muted-foreground/30"}`}
+            />
+          ))}
+        </div>
+      </div>
 
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div
-            className="grid gap-2 mx-auto"
-            style={{
-              gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
-              maxWidth: "400px",
-              aspectRatio: "1",
-            }}
-          >
-            {grid.map((square) => (
-              <div
-                key={square.id}
-                className={getSquareClass(square)}
-                onClick={() => handleSquareClick(square.id)}
-                style={{ aspectRatio: "1" }}
-              />
-            ))}
-          </div>
+      {/* Dynamic Grid */}
+      <div
+        className="grid gap-2.5 p-4 rounded-2xl bg-card/60 border border-border/50 max-w-[380px] mx-auto"
+        style={{
+          gridTemplateColumns: `repeat(${gridDim}, minmax(0, 1fr))`,
+        }}
+      >
+        {[...Array(totalCells)].map((_, index) => {
+          const isTarget = targets.has(index)
+          const isCorrectSelected = selected.has(index)
+          const isWrongSelected = wrongSelections.has(index)
 
-          {gameState === "selecting" && (
-            <div className="text-center">
-              <Button onClick={submitSelection} disabled={selectedSquares.length === 0} size="lg">
-                Submit ({selectedSquares.length} selected)
-              </Button>
-            </div>
-          )}
+          const isLit = (gameState === "showing" && isTarget) || isCorrectSelected
 
-          {gameState === "memorizing" && (
-            <div className="text-center">
-              <div className="text-muted-foreground">Get ready...</div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          return (
+            <button
+              key={index}
+              disabled={gameState === "showing"}
+              onClick={() => handleCellClick(index)}
+              className={`aspect-square rounded-xl border transition-all duration-200 select-none ${
+                isLit
+                  ? "bg-cyan-400 border-cyan-200 shadow-lg shadow-cyan-500/40 scale-[0.98]"
+                  : isWrongSelected
+                  ? "bg-rose-500 border-rose-300 shadow-lg shadow-rose-500/30"
+                  : "bg-secondary/60 border-border/60 hover:border-cyan-500/30 hover:bg-secondary/90 active:scale-95"
+              }`}
+            />
+          )
+        })}
+      </div>
     </div>
   )
 }

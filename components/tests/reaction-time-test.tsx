@@ -2,200 +2,248 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { useRouter } from "next/navigation"
+import { useScore } from "@/lib/score-context"
+import { sound } from "@/lib/audio"
+import BellCurve from "@/components/bell-curve"
+import { Zap, RotateCcw, AlertTriangle, ArrowRight } from "lucide-react"
 
-type GameState = "instructions" | "ready" | "waiting" | "click" | "result" | "too-early"
+type GameState = "instructions" | "ready" | "waiting" | "click" | "result" | "too-early" | "completed"
+
+const TOTAL_ROUNDS = 5
 
 export default function ReactionTimeTest() {
   const [gameState, setGameState] = useState<GameState>("instructions")
-  const [reactionTime, setReactionTime] = useState<number>(0)
+  const [currentRound, setCurrentRound] = useState(1)
   const [attempts, setAttempts] = useState<number[]>([])
+  const [lastTime, setLastTime] = useState<number>(0)
   const [startTime, setStartTime] = useState<number>(0)
-  const timeoutRef = useRef<NodeJS.Timeout>()
-  const router = useRouter()
+  const [finalScore, setFinalScore] = useState<number | null>(null)
+  const [percentile, setPercentile] = useState<number>(50)
 
-  const startTest = () => {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const { addScore } = useScore()
+
+  const startBattery = () => {
+    setAttempts([])
+    setCurrentRound(1)
+    setFinalScore(null)
     setGameState("ready")
   }
 
   const beginWaiting = () => {
     setGameState("waiting")
-
-    // Random delay between 1-5 seconds
-    const delay = Math.random() * 4000 + 1000
+    // Randomized delay between 1.5s and 4.5s
+    const delay = Math.random() * 3000 + 1500
 
     timeoutRef.current = setTimeout(() => {
       setGameState("click")
       setStartTime(Date.now())
+      sound.playSuccess()
     }, delay)
   }
 
   const handleClick = () => {
-    if (gameState === "waiting") {
-      // Clicked too early
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
+    if (gameState === "ready") {
+      beginWaiting()
+    } else if (gameState === "waiting") {
+      // Too early!
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      sound.playError()
       setGameState("too-early")
     } else if (gameState === "click") {
-      // Valid click - measure reaction time
-      const endTime = Date.now()
-      const reaction = endTime - startTime
-      setReactionTime(reaction)
-      setAttempts((prev) => [...prev, reaction])
-      setGameState("result")
-    } else if (gameState === "ready") {
-      beginWaiting()
+      // Valid reaction click
+      const elapsed = Date.now() - startTime
+      sound.playClick()
+      setLastTime(elapsed)
+      const newAttempts = [...attempts, elapsed]
+      setAttempts(newAttempts)
+
+      if (newAttempts.length >= TOTAL_ROUNDS) {
+        // Battery complete - calculate median/average
+        const avg = Math.round(newAttempts.reduce((a, b) => a + b, 0) / newAttempts.length)
+        setFinalScore(avg)
+        const saved = addScore({
+          testId: "reaction-time",
+          testName: "Reaction Time",
+          score: avg,
+          unit: "ms",
+          details: { attempts: newAttempts },
+        })
+        setPercentile(saved.percentile)
+        setGameState("completed")
+      } else {
+        setGameState("result")
+      }
     }
   }
 
-  const resetTest = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
-    setGameState("instructions")
-    setReactionTime(0)
-  }
-
-  const tryAgain = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
+  const nextRound = () => {
+    setCurrentRound((prev) => prev + 1)
     setGameState("ready")
   }
 
-  const getAverageTime = () => {
-    if (attempts.length === 0) return 0
-    return Math.round(attempts.reduce((a, b) => a + b, 0) / attempts.length)
-  }
-
-  const getBackgroundColor = () => {
-    switch (gameState) {
-      case "waiting":
-        return "bg-red-500"
-      case "click":
-        return "bg-green-500"
-      case "too-early":
-        return "bg-red-500"
-      default:
-        return "bg-blue-500"
-    }
-  }
-
-  const getTextColor = () => {
-    return "text-white"
+  const tryAgainRound = () => {
+    setGameState("ready")
   }
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
     }
   }, [])
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-full sm:max-w-2xl mx-auto">
-        <Card className="bg-white/95 backdrop-blur">
-          <CardContent className="p-8 text-center">
-            <div className="text-6xl mb-6">⚡</div>
-            <h2 className="text-xl sm:text-2xl font-bold mb-4 text-gray-800">Reaction Time Test</h2>
-            <p className="text-base sm:text-lg text-gray-600 mb-6 leading-relaxed">
-              When the red box turns green, click as quickly as you can.
-            </p>
-            <p className="text-base sm:text-lg text-gray-600 mb-8 leading-relaxed">Click anywhere to keep going.</p>
-            <Button
-              onClick={startTest}
-              size="lg"
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 sm:px-8 py-3 text-base sm:text-lg"
-            >
-              Start Test
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 sm:p-12 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto mb-6">
+          <Zap className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-bold font-mono tracking-tight text-foreground mb-3">
+          Reaction Time Benchmark
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+          When the red area turns <span className="text-emerald-400 font-semibold">GREEN</span>, click as fast as humanly possible. 
+          You will complete 5 trials to record your true mean synaptic latency.
+        </p>
+
+        <Button
+          onClick={startBattery}
+          size="lg"
+          className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-cyan-500/20"
+        >
+          Begin Benchmark
+        </Button>
       </div>
     )
   }
 
+  if (gameState === "completed" && finalScore !== null) {
+    return (
+      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 text-center animate-in fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4">
+          <Zap className="w-8 h-8" />
+        </div>
+        <h2 className="text-sm font-mono uppercase text-muted-foreground tracking-wider mb-1">
+          Mean Latency ({TOTAL_ROUNDS} Rounds)
+        </h2>
+        <div className="text-5xl font-mono font-extrabold text-foreground mb-2 tabular">
+          {finalScore}
+          <span className="text-2xl text-cyan-400 ml-1">ms</span>
+        </div>
+
+        {/* Normal distribution curve */}
+        <BellCurve testId="reaction-time" score={finalScore} unit="ms" percentile={percentile} />
+
+        <div className="grid grid-cols-5 gap-2 my-6">
+          {attempts.map((att, i) => (
+            <div key={i} className="p-2.5 rounded-lg bg-card/60 border border-border/50 text-center">
+              <span className="text-[10px] text-muted-foreground font-mono block">R{i + 1}</span>
+              <span className="text-xs font-mono font-bold text-foreground tabular">{att}ms</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-3 justify-center mt-6">
+          <Button
+            onClick={startBattery}
+            className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-6 py-2.5 rounded-xl transition-all"
+          >
+            <RotateCcw className="w-4 h-4 mr-2" /> Retest Battery
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // Interactive Click Arena
   return (
-    <div className="max-w-full sm:max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-3xl mx-auto">
+      {/* Round counter bar */}
+      <div className="flex items-center justify-between mb-3 text-xs font-mono text-muted-foreground px-1">
+        <span>Round {currentRound} of {TOTAL_ROUNDS}</span>
+        <span>{attempts.length > 0 ? `Current Mean: ${Math.round(attempts.reduce((a, b) => a + b, 0) / attempts.length)}ms` : "Waiting for trial 1"}</span>
+      </div>
+
       <div
-        className={`${getBackgroundColor()} ${getTextColor()} rounded-lg p-8 sm:p-16 text-center cursor-pointer transition-colors duration-200 min-h-[400px] flex flex-col items-center justify-center`}
         onClick={handleClick}
+        className={`w-full min-h-[380px] sm:min-h-[440px] rounded-2xl flex flex-col items-center justify-center text-center p-8 cursor-pointer select-none transition-colors border ${
+          gameState === "ready"
+            ? "bg-card/70 border-border/60 hover:border-cyan-500/40 text-foreground"
+            : gameState === "waiting"
+            ? "bg-rose-950/70 border-rose-500/60 text-rose-200"
+            : gameState === "click"
+            ? "bg-emerald-600 border-emerald-400 text-white shadow-2xl shadow-emerald-500/30"
+            : gameState === "too-early"
+            ? "bg-amber-950/80 border-amber-500/60 text-amber-200"
+            : "bg-cyan-950/70 border-cyan-500/50 text-cyan-200"
+        }`}
       >
         {gameState === "ready" && (
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Click to start</h2>
-            <p className="text-lg sm:text-xl opacity-90">Get ready...</p>
+          <div className="space-y-3">
+            <div className="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto">
+              <Zap className="w-6 h-6 animate-pulse" />
+            </div>
+            <h3 className="text-2xl font-mono font-bold tracking-tight">Click to Arm</h3>
+            <p className="text-xs text-muted-foreground font-mono">
+              Click anywhere inside this arena to prime the trigger.
+            </p>
           </div>
         )}
 
         {gameState === "waiting" && (
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Wait for green</h2>
-            <p className="text-lg sm:text-xl opacity-90">Don't click yet...</p>
+          <div className="space-y-3">
+            <h3 className="text-3xl font-mono font-extrabold tracking-tight">WAIT FOR GREEN</h3>
+            <p className="text-xs text-rose-300/80 font-mono">Do not trigger early...</p>
           </div>
         )}
 
         {gameState === "click" && (
-          <div>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Click!</h2>
-            <p className="text-lg sm:text-xl opacity-90">Click as fast as you can!</p>
+          <div className="space-y-2">
+            <h3 className="text-5xl font-mono font-black tracking-tight drop-shadow-md">CLICK NOW!</h3>
+            <p className="text-xs text-white/90 font-mono">MAXIMUM VELOCITY</p>
           </div>
         )}
 
         {gameState === "too-early" && (
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Too early!</h2>
-            <p className="text-lg sm:text-xl opacity-90 mb-6">You clicked before it turned green.</p>
-            <Button onClick={tryAgain} className="bg-white text-red-500 hover:bg-gray-100 font-semibold px-4 sm:px-6 py-2 text-base sm:text-lg">
-              Try Again
+          <div className="space-y-4">
+            <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto" />
+            <div>
+              <h3 className="text-2xl font-mono font-bold text-amber-300">Too Early!</h3>
+              <p className="text-xs text-amber-300/80 font-mono mt-1">You reacted before the signal turned green.</p>
+            </div>
+            <Button
+              onClick={(e) => {
+                e.stopPropagation()
+                tryAgainRound()
+              }}
+              variant="outline"
+              className="bg-amber-500/20 border-amber-400 text-amber-300 hover:bg-amber-500/30 font-mono text-xs"
+            >
+              Retry Round {currentRound}
             </Button>
           </div>
         )}
 
         {gameState === "result" && (
-          <div>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">{reactionTime}ms</h2>
-            <p className="text-lg sm:text-xl opacity-90 mb-6">
-              {attempts.length > 1 && `Average: ${getAverageTime()}ms (${attempts.length} attempts)`}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button onClick={tryAgain} className="bg-white text-blue-500 hover:bg-gray-100 font-semibold px-4 sm:px-6 py-2 text-base sm:text-lg">
-                Try Again
-              </Button>
-              <Button
-                onClick={() => router.push("/")}
-                variant="outline"
-                className="bg-transparent border-white text-white hover:bg-white hover:text-blue-500 font-semibold px-4 sm:px-6 py-2 text-base sm:text-lg"
-              >
-                Back to Menu
-              </Button>
+          <div className="space-y-4">
+            <div className="text-5xl font-mono font-black text-cyan-300 tabular">
+              {lastTime} <span className="text-2xl">ms</span>
             </div>
+            <p className="text-xs font-mono text-cyan-300/80">
+              Round {currentRound} Recorded.
+            </p>
+            <Button
+              onClick={(e) => {
+                e.stopPropagation()
+                nextRound()
+              }}
+              className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-6 py-2 rounded-xl text-xs"
+            >
+              Continue to Round {currentRound + 1} <ArrowRight className="w-3.5 h-3.5 ml-1" />
+            </Button>
           </div>
         )}
       </div>
-
-      {attempts.length > 0 && (
-        <Card className="mt-4 sm:mt-8 bg-white/95 backdrop-blur">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-bold mb-4 text-gray-800">Your Results</h3>
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div>
-                <div className="text-xl sm:text-2xl font-bold text-blue-600">{reactionTime}ms</div>
-                <div className="text-sm sm:text-base text-gray-600">Last Result</div>
-              </div>
-              <div>
-                <div className="text-xl sm:text-2xl font-bold text-blue-600">{getAverageTime()}ms</div>
-                <div className="text-sm sm:text-base text-gray-600">Average ({attempts.length} attempts)</div>
-              </div>
-            </div>
-            <div className="mt-4 text-xs sm:text-sm text-gray-500">Recent attempts: {attempts.slice(-5).join("ms, ")}ms</div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   )
 }

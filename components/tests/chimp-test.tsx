@@ -2,268 +2,234 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import {
-  TwitterShareButton,
-  FacebookShareButton,
-  LinkedinShareButton,
-  TwitterIcon,
-  FacebookIcon,
-  LinkedinIcon,
-} from "react-share"
-import { useRouter } from "next/navigation"
+import { useScore } from "@/lib/score-context"
+import { sound } from "@/lib/audio"
+import BellCurve from "@/components/bell-curve"
+import { Brain, RotateCcw, AlertCircle } from "lucide-react"
 
-type GameState = "instructions" | "showing" | "playing" | "result"
+type GameState = "instructions" | "playing" | "result"
 
-interface Square {
+interface Tile {
   id: number
-  number: number
+  num: number
   row: number
   col: number
-  clicked: boolean
+  cleared: boolean
 }
+
+const GRID_ROWS = 6
+const GRID_COLS = 8
+const INITIAL_COUNT = 4
 
 export default function ChimpTest() {
   const [gameState, setGameState] = useState<GameState>("instructions")
-  const [squares, setSquares] = useState<Square[]>([])
-  const [currentLevel, setCurrentLevel] = useState(1)
-  const [nextNumber, setNextNumber] = useState(1)
-  const [finalLevel, setFinalLevel] = useState(0)
-  const [retriesLeft, setRetriesLeft] = useState(3)
-  const [showNumbers, setShowNumbers] = useState(true)
-  const router = useRouter()
+  const [level, setLevel] = useState(1)
+  const [strikes, setStrikes] = useState(0)
+  const [tiles, setTiles] = useState<Tile[]>([])
+  const [nextExpected, setNextExpected] = useState(1)
+  const [masked, setMasked] = useState(false)
+  const [percentile, setPercentile] = useState(50)
 
-  const GRID_SIZE = 8 // 8x8 grid
-  const INITIAL_NUMBERS = 4 // Start with numbers 1-4
+  const { addScore } = useScore()
 
-  const generateSquares = (level: number) => {
-    const numSquares = INITIAL_NUMBERS + level - 1
-    const positions = new Set<string>()
-    const newSquares: Square[] = []
+  const generateLevelTiles = (lvl: number) => {
+    const count = INITIAL_COUNT + lvl - 1
+    const totalCells = GRID_ROWS * GRID_COLS
+    const chosenIndices = new Set<number>()
 
-    // Generate unique random positions
-    while (positions.size < numSquares) {
-      const row = Math.floor(Math.random() * GRID_SIZE)
-      const col = Math.floor(Math.random() * GRID_SIZE)
-      const key = `${row}-${col}`
-
-      if (!positions.has(key)) {
-        positions.add(key)
-        newSquares.push({
-          id: newSquares.length,
-          number: newSquares.length + 1,
-          row,
-          col,
-          clicked: false,
-        })
-      }
+    while (chosenIndices.size < count) {
+      chosenIndices.add(Math.floor(Math.random() * totalCells))
     }
 
-    return newSquares
+    const indicesArray = Array.from(chosenIndices)
+    const newTiles: Tile[] = indicesArray.map((idx, i) => {
+      const row = Math.floor(idx / GRID_COLS)
+      const col = idx % GRID_COLS
+      return {
+        id: i,
+        num: i + 1,
+        row,
+        col,
+        cleared: false,
+      }
+    })
+
+    return newTiles
+  }
+
+  const startLevel = (lvl: number) => {
+    const newTiles = generateLevelTiles(lvl)
+    setTiles(newTiles)
+    setNextExpected(1)
+    setMasked(false)
   }
 
   const startGame = () => {
-    setCurrentLevel(1)
-    setFinalLevel(0)
-    setRetriesLeft(3) // Reset retries
+    setLevel(1)
+    setStrikes(0)
+    setGameState("playing")
     startLevel(1)
   }
 
-  const startLevel = (level: number) => {
-    const newSquares = generateSquares(level)
-    setSquares(newSquares)
-    setNextNumber(1)
-    setShowNumbers(true)
-    setGameState("showing")
+  const handleTileClick = (tile: Tile) => {
+    if (gameState !== "playing" || tile.cleared) return
 
-    // Show numbers briefly, then hide them
-    setTimeout(() => {
-      setGameState("playing")
-    }, 2000)
-  }
-
-  const handleSquareClick = (square: Square) => {
-    if (gameState !== "showing" && gameState !== "playing") return
-    if (square.clicked) return
-
-    if (square.number === nextNumber) {
+    if (tile.num === nextExpected) {
       // Correct click
-      const updatedSquares = squares.map((s) => (s.id === square.id ? { ...s, clicked: true } : s))
-      setSquares(updatedSquares)
-
-      // Hide numbers after first click
-      if (nextNumber === 1) {
-        setShowNumbers(false)
-        setGameState("playing")
+      sound.playClick()
+      // First click masks all tiles
+      if (nextExpected === 1) {
+        setMasked(true)
       }
 
-      const newNextNumber = nextNumber + 1
-      setNextNumber(newNextNumber)
+      const updated = tiles.map((t) => (t.id === tile.id ? { ...t, cleared: true } : t))
+      setTiles(updated)
 
-      // Check if level is complete
-      if (newNextNumber > squares.length) {
-        // Level complete! Move to next level
-        const nextLevel = currentLevel + 1
-        setCurrentLevel(nextLevel)
+      const nextNum = nextExpected + 1
+      setNextExpected(nextNum)
 
-        setTimeout(() => {
-          startLevel(nextLevel)
-        }, 1000)
+      // Level cleared?
+      if (nextNum > tiles.length) {
+        sound.playSuccess()
+        const nextLevel = level + 1
+        setLevel(nextLevel)
+        setTimeout(() => startLevel(nextLevel), 600)
       }
     } else {
-      // Wrong click - check retries
-      if (retriesLeft > 0) {
-        setRetriesLeft(retriesLeft - 1)
-        // Optionally, reset the current level or just let the user continue with fewer retries
-        // For now, we'll just decrement retries and let them continue
-      } else {
-        setFinalLevel(currentLevel)
+      // Strike!
+      sound.playError()
+      const newStrikes = strikes + 1
+      setStrikes(newStrikes)
+
+      if (newStrikes >= 3) {
+        // Game Over
+        const finalScore = INITIAL_COUNT + level - 2
+        const saved = addScore({
+          testId: "chimp-test",
+          testName: "Chimp Test",
+          score: Math.max(0, finalScore),
+          unit: "pts",
+          details: { maxTilesCompleted: finalScore, levelReached: level },
+        })
+        setPercentile(saved.percentile)
         setGameState("result")
+      } else {
+        // Retry current level with fresh tiles
+        setTimeout(() => startLevel(level), 800)
       }
     }
-  }
-
-  const resetGame = () => {
-    setGameState("instructions")
-    setSquares([])
-    setCurrentLevel(1)
-    setNextNumber(1)
-    setFinalLevel(0)
-    setRetriesLeft(3) // Reset retries
-    setShowNumbers(true)
-  }
-
-  const getSquareAtPosition = (row: number, col: number) => {
-    return squares.find((s) => s.row === row && s.col === col)
   }
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto">
-        <Card className="bg-white/95 backdrop-blur">
-          <CardContent className="p-8 text-center">
-            <div className="text-6xl mb-6">🔲</div>
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">Are You Smarter Than a Chimpanzee?</h2>
-            <p className="text-gray-600 mb-6 leading-relaxed">Click the squares in order according to their numbers.</p>
-            <p className="text-gray-600 mb-8 leading-relaxed">The test will get progressively harder.</p>
-            <Button
-              onClick={startGame}
-              size="lg"
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-8 py-3 text-lg"
-            >
-              Start Test
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 sm:p-12 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center mx-auto mb-6">
+          <Brain className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-bold font-mono tracking-tight text-foreground mb-3">
+          Chimp Test (Ayumu Protocol)
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+          Click the numbers in ascending order (1, 2, 3...). 
+          <span className="text-pink-400 font-semibold block mt-1">
+            As soon as you click 1, all other numbers are masked into blank tiles!
+          </span>
+          Chimpanzees routinely outscore 95% of human adults on this test. 3 strikes and you are out.
+        </p>
+
+        <Button
+          onClick={startGame}
+          size="lg"
+          className="bg-pink-500 hover:bg-pink-400 text-white font-mono font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-pink-500/20"
+        >
+          Begin Ayumu Trial
+        </Button>
       </div>
     )
   }
 
   if (gameState === "result") {
+    const finalScore = Math.max(0, INITIAL_COUNT + level - 2)
     return (
-      <div className="max-w-2xl mx-auto">
-        <Card className="bg-white/95 backdrop-blur">
-          <CardContent className="p-8 text-center">
-            <div className="text-6xl mb-6">🔲</div>
-            <h2 className="text-3xl font-bold mb-4 text-gray-800">Level {finalLevel}</h2>
-            <p className="text-gray-600 mb-4 leading-relaxed">
-              You made it to level {finalLevel} with {INITIAL_NUMBERS + finalLevel - 1} numbers.
-            </p>
-            <p className="text-gray-600 mb-8 leading-relaxed">
-              The average person gets to level 5. Chimpanzees consistently outperform humans on this task!
-            </p>
-            <div className="flex gap-4 justify-center">
-              <Button
-                onClick={startGame}
-                size="lg"
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3"
-              >
-                Try Again
-              </Button>
-              <Button
-                onClick={() => router.push("/")}
-                variant="outline"
-                size="lg"
-                className="font-semibold px-6 py-3 bg-transparent"
-              >
-                Back to Menu
-              </Button>
-            </div>
-            <div className="mt-8 flex justify-center gap-4">
-              <TwitterShareButton
-                url={"https://humval2.vercel.app/tests/chimp-test"}
-                title={`I made it to level ${finalLevel} in the Chimp Test on HumanEval! Can you beat my score?`}
-              >
-                <TwitterIcon size={32} round />
-              </TwitterShareButton>
-              <FacebookShareButton
-                url={"https://humval2.vercel.app/tests/chimp-test"}
-                quote={`I made it to level ${finalLevel} in the Chimp Test on HumanEval! Can you beat my score?`}
-              > 
-                <FacebookIcon size={32} round />
-              </FacebookShareButton>
-              <LinkedinShareButton
-                url={"https://humval2.vercel.app/tests/chimp-test"}
-                title={`Chimp Test Score on HumanEval`}
-                summary={`I made it to level ${finalLevel} in the Chimp Test on HumanEval! Can you beat my score?`}
-                source={"HumanEval"}
-              >
-                <LinkedinIcon size={32} round />
-              </LinkedinShareButton>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 text-center animate-in fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center mx-auto mb-4">
+          <Brain className="w-8 h-8" />
+        </div>
+        <h2 className="text-xs font-mono uppercase text-muted-foreground tracking-wider mb-1">
+          Working Memory Span
+        </h2>
+        <div className="text-5xl font-mono font-black text-foreground mb-2 tabular">
+          {finalScore} <span className="text-2xl text-pink-400">numbers</span>
+        </div>
+
+        <p className="text-xs text-muted-foreground font-mono mb-4">
+          {finalScore >= 9
+            ? "Ayumu Chimpanzee parity achieved! Elite iconic visual memory."
+            : "Average human score is 7 to 9. Ayumu (Chimp) retains 9 digits in 0.5s."}
+        </p>
+
+        <BellCurve testId="chimp-test" score={finalScore} unit="pts" percentile={percentile} />
+
+        <div className="flex gap-3 justify-center mt-6">
+          <Button
+            onClick={startGame}
+            className="bg-pink-500 hover:bg-pink-400 text-white font-mono font-bold px-6 py-2.5 rounded-xl transition-all"
+          >
+            <RotateCcw className="w-4 h-4 mr-2" /> Try Again
+          </Button>
+        </div>
       </div>
     )
   }
 
+  // Create grid matrix
+  const gridCells = []
+  for (let r = 0; r < GRID_ROWS; r++) {
+    for (let c = 0; c < GRID_COLS; c++) {
+      const tile = tiles.find((t) => t.row === r && t.col === c)
+      gridCells.push({ r, c, tile })
+    }
+  }
+
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-white mb-2">Level {currentLevel}</h2>
-        <p className="text-blue-100">
-          {gameState === "showing" ? "Memorize the positions..." : `Click number ${nextNumber}`}
-        </p>
-        <p className="text-blue-100 text-sm mt-1">{INITIAL_NUMBERS + currentLevel - 1} numbers total</p>
-        {retriesLeft > 0 && (
-          <p className="text-red-300 text-sm mt-1">Retries left: {retriesLeft}</p>
-        )}
+      {/* Telemetry header */}
+      <div className="flex items-center justify-between mb-4 px-2 text-xs font-mono">
+        <div>
+          <span className="text-muted-foreground">Numbers: </span>
+          <span className="font-bold text-pink-400 tabular">{INITIAL_COUNT + level - 1}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="text-muted-foreground mr-1">Strikes:</span>
+          {[0, 1, 2].map((s) => (
+            <span
+              key={s}
+              className={`w-2.5 h-2.5 rounded-full inline-block ${
+                s < strikes ? "bg-rose-500 shadow-sm shadow-rose-500/50" : "bg-muted"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
-      <Card className="bg-white/95 backdrop-blur">
-        <CardContent className="p-8">
-          <div className="grid grid-cols-4 sm:grid-cols-8 gap-2 max-w-full sm:max-w-md mx-auto">
-            {Array.from({ length: GRID_SIZE * GRID_SIZE }, (_, index) => {
-              const row = Math.floor(index / GRID_SIZE)
-              const col = index % GRID_SIZE
-              const square = getSquareAtPosition(row, col)
+      {/* Grid Canvas */}
+      <div className="grid grid-cols-8 gap-2 p-4 rounded-2xl bg-card/60 border border-border/50">
+        {gridCells.map(({ r, c, tile }) => {
+          if (!tile || tile.cleared) {
+            return <div key={`${r}-${c}`} className="aspect-square rounded-xl" />
+          }
 
-              return (
-                <div
-                  key={index}
-                  className={`
-                    aspect-square rounded border-2 flex items-center justify-center text-lg font-bold cursor-pointer transition-all duration-200
-                    ${
-                      square
-                        ? square.clicked
-                          ? "bg-gray-300 border-gray-400 text-gray-500"
-                          : "bg-white border-blue-300 text-blue-600 hover:bg-blue-50 shadow-sm"
-                        : "bg-gray-50 border-gray-200"
-                    }
-                    ${gameState === "showing" && square ? "scale-100 opacity-100" : "scale-0 opacity-0"}
-                    ${gameState === "playing" && square && showNumbers ? "scale-100 opacity-100" : "scale-0 opacity-0"}
-                    ${gameState === "playing" && square && !showNumbers && !square.clicked ? "scale-100 opacity-100" : "scale-0 opacity-0"}
-                  `}
-                  onClick={() => square && handleSquareClick(square)}
-                >
-                  {(gameState === "showing" || (gameState === "playing" && showNumbers)) && square && square.number}
-                </div>
-              )
-            })}
-          </div>
-        </CardContent>
-      </Card>
+          return (
+            <button
+              key={`${r}-${c}`}
+              onClick={() => handleTileClick(tile)}
+              className="aspect-square rounded-xl border border-pink-500/40 bg-pink-500/10 hover:bg-pink-500/20 active:scale-90 flex items-center justify-center font-mono font-extrabold text-lg sm:text-xl text-foreground transition-all select-none shadow-sm shadow-pink-500/20"
+            >
+              {masked ? "" : tile.num}
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
-

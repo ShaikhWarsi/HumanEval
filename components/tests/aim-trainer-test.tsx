@@ -2,231 +2,230 @@
 
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { useRouter } from "next/navigation"
+import { useScore } from "@/lib/score-context"
+import { sound } from "@/lib/audio"
+import BellCurve from "@/components/bell-curve"
+import { Target, RotateCcw, Crosshair } from "lucide-react"
 
 type GameState = "instructions" | "playing" | "result"
 
-interface Target {
-  id: number
+interface TargetPosition {
   x: number
   y: number
 }
 
+const TOTAL_TARGETS = 30
+const TARGET_SIZE = 58
+
 export default function AimTrainerTest() {
   const [gameState, setGameState] = useState<GameState>("instructions")
-  const [currentTarget, setCurrentTarget] = useState<Target | null>(null)
+  const [currentTarget, setCurrentTarget] = useState<TargetPosition | null>(null)
   const [targetsHit, setTargetsHit] = useState(0)
+  const [totalClicks, setTotalClicks] = useState(0)
+  const [misses, setMisses] = useState(0)
   const [startTime, setStartTime] = useState(0)
   const [targetTimes, setTargetTimes] = useState<number[]>([])
   const [lastTargetTime, setLastTargetTime] = useState(0)
-  const [totalTime, setTotalTime] = useState(0)
-  const gameAreaRef = useRef<HTMLDivElement>(null)
-  const router = useRouter()
+  const [finalAvgTime, setFinalAvgTime] = useState(0)
+  const [finalAccuracy, setFinalAccuracy] = useState(100)
+  const [percentile, setPercentile] = useState(50)
 
-  const TOTAL_TARGETS = 30
-  const TARGET_SIZE = 60
+  const arenaRef = useRef<HTMLDivElement>(null)
+  const { addScore } = useScore()
 
-  const generateRandomTarget = (): Target => {
-    if (!gameAreaRef.current) return { id: Date.now(), x: 50, y: 50 }
-
-    const rect = gameAreaRef.current.getBoundingClientRect()
-    const margin = TARGET_SIZE / 2
-
-    const x = Math.random() * (rect.width - TARGET_SIZE) + margin
-    const y = Math.random() * (rect.height - TARGET_SIZE) + margin
-
-    return {
-      id: Date.now(),
-      x,
-      y,
-    }
+  const spawnRandomTarget = (): TargetPosition => {
+    if (!arenaRef.current) return { x: 50, y: 50 }
+    const rect = arenaRef.current.getBoundingClientRect()
+    const margin = TARGET_SIZE / 2 + 10
+    const x = Math.floor(Math.random() * (rect.width - margin * 2)) + margin
+    const y = Math.floor(Math.random() * (rect.height - margin * 2)) + margin
+    return { x, y }
   }
 
   const startGame = () => {
     setGameState("playing")
     setTargetsHit(0)
+    setTotalClicks(0)
+    setMisses(0)
     setTargetTimes([])
-    setStartTime(Date.now())
-    setLastTargetTime(Date.now())
-    setCurrentTarget(generateRandomTarget())
+    const now = Date.now()
+    setStartTime(now)
+    setLastTargetTime(now)
+    // Delay slightly to let arena render
+    setTimeout(() => {
+      setCurrentTarget(spawnRandomTarget())
+    }, 50)
   }
 
-  const handleTargetClick = () => {
-    if (gameState !== "playing" || !currentTarget) return
+  const handleTargetClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (gameState !== "playing") return
 
+    sound.playTargetHit()
     const now = Date.now()
-    const timeSinceLastTarget = now - lastTargetTime
-    setTargetTimes((prev) => [...prev, timeSinceLastTarget])
+    const delta = now - lastTargetTime
+    setTargetTimes((prev) => [...prev, delta])
     setLastTargetTime(now)
 
-    const newTargetsHit = targetsHit + 1
-    setTargetsHit(newTargetsHit)
+    const newHitCount = targetsHit + 1
+    const newTotalClicks = totalClicks + 1
+    setTargetsHit(newHitCount)
+    setTotalClicks(newTotalClicks)
 
-    if (newTargetsHit >= TOTAL_TARGETS) {
+    if (newHitCount >= TOTAL_TARGETS) {
       // Game complete
-      setTotalTime(now - startTime)
+      const allTimes = [...targetTimes, delta]
+      const avg = Math.round(allTimes.reduce((a, b) => a + b, 0) / allTimes.length)
+      const acc = Math.round((newHitCount / newTotalClicks) * 100)
+
+      setFinalAvgTime(avg)
+      setFinalAccuracy(acc)
+
+      const saved = addScore({
+        testId: "aim-trainer",
+        testName: "Aim Trainer",
+        score: avg,
+        unit: "ms",
+        details: { accuracy: acc, targetsHit: newHitCount, totalClicks: newTotalClicks, misses },
+      })
+      setPercentile(saved.percentile)
       setGameState("result")
       setCurrentTarget(null)
     } else {
-      // Generate next target
-      setCurrentTarget(generateRandomTarget())
+      setCurrentTarget(spawnRandomTarget())
     }
   }
 
-  const handleMissClick = () => {
-    // Optional: Could track misses here
-  }
-
-  const resetGame = () => {
-    setGameState("instructions")
-    setCurrentTarget(null)
-    setTargetsHit(0)
-    setTargetTimes([])
-    setTotalTime(0)
-  }
-
-  const getAverageTime = () => {
-    if (targetTimes.length === 0) return 0
-    return Math.round(targetTimes.reduce((a, b) => a + b, 0) / targetTimes.length)
-  }
-
-  const getAccuracy = () => {
-    // For now, assume 100% accuracy since we only count successful hits
-    // In a more advanced version, you could track misses
-    return 100
+  const handleArenaMiss = () => {
+    if (gameState !== "playing") return
+    sound.playClick()
+    setTotalClicks((prev) => prev + 1)
+    setMisses((prev) => prev + 1)
   }
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Card className="bg-white/95 backdrop-blur">
-          <CardContent className="p-6 sm:p-8 text-center">
-            <div className="text-6xl mb-6">🎯</div>
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">Aim Trainer</h2>
-            <p className="text-gray-600 mb-6 leading-relaxed text-base sm:text-lg">Hit 30 targets as quickly as you can.</p>
-            <p className="text-gray-600 mb-8 leading-relaxed text-base sm:text-lg">Click the target above to begin.</p>
-            <Button
-              onClick={startGame}
-              size="lg"
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-8 py-3 text-lg"
-            >
-              Start Test
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 sm:p-12 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-6">
+          <Target className="w-8 h-8" />
+        </div>
+        <h2 className="text-2xl font-bold font-mono tracking-tight text-foreground mb-3">
+          Aim Precision Benchmark
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+          Eliminate 30 randomized targets as quickly as possible.
+          Accuracy is strictly evaluated: missed clicks penalize your precision score.
+        </p>
+
+        <Button
+          onClick={startGame}
+          size="lg"
+          className="bg-rose-500 hover:bg-rose-400 text-white font-mono font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-rose-500/20"
+        >
+          Initialize Arena
+        </Button>
       </div>
     )
   }
 
   if (gameState === "result") {
     return (
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Card className="bg-white/95 backdrop-blur">
-          <CardContent className="p-6 sm:p-8 text-center">
-            <div className="text-6xl mb-6">🎯</div>
-            <h2 className="text-3xl font-bold mb-4 text-gray-800">Results</h2>
+      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 text-center animate-in fade-in">
+        <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-4">
+          <Crosshair className="w-8 h-8" />
+        </div>
+        <h2 className="text-xs font-mono uppercase text-muted-foreground tracking-wider mb-1">
+          Average Target Acquisition Time
+        </h2>
+        <div className="text-5xl font-mono font-black text-foreground mb-2 tabular">
+          {finalAvgTime} <span className="text-2xl text-rose-400">ms</span>
+        </div>
 
-            <div className="grid grid-cols-2 gap-6 mb-8 text-base sm:text-lg">
-              <div>
-                <div className="text-3xl font-bold text-blue-600">{getAverageTime()}ms</div>
-                <div className="text-sm text-gray-600">Average Time</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-blue-600">{(totalTime / 1000).toFixed(1)}s</div>
-                <div className="text-sm text-gray-600">Total Time</div>
-              </div>
-            </div>
+        <div className="flex justify-center gap-6 my-4 text-sm font-mono">
+          <div className="px-4 py-2 rounded-xl bg-card/60 border border-border/50">
+            <span className="text-muted-foreground text-xs block">Accuracy</span>
+            <span className="text-lg font-bold text-emerald-400">{finalAccuracy}%</span>
+          </div>
+          <div className="px-4 py-2 rounded-xl bg-card/60 border border-border/50">
+            <span className="text-muted-foreground text-xs block">Targets</span>
+            <span className="text-lg font-bold text-foreground">30 / 30</span>
+          </div>
+          <div className="px-4 py-2 rounded-xl bg-card/60 border border-border/50">
+            <span className="text-muted-foreground text-xs block">Misses</span>
+            <span className="text-lg font-bold text-rose-400">{misses}</span>
+          </div>
+        </div>
 
-            <p className="text-gray-600 mb-8 leading-relaxed">
-              You hit {TOTAL_TARGETS} targets with an average time of {getAverageTime()}ms per target.
-            </p>
+        <BellCurve testId="aim-trainer" score={finalAvgTime} unit="ms" percentile={percentile} />
 
-            <div className="flex gap-4 justify-center">
-              <Button
-                onClick={startGame}
-                size="lg"
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3"
-              >
-                Try Again
-              </Button>
-              <Button
-                onClick={() => router.push("/")}
-                variant="outline"
-                size="lg"
-                className="font-semibold px-6 py-3 bg-transparent"
-              >
-                Back to Menu
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex gap-3 justify-center mt-6">
+          <Button
+            onClick={startGame}
+            className="bg-rose-500 hover:bg-rose-400 text-white font-mono font-bold px-6 py-2.5 rounded-xl transition-all"
+          >
+            <RotateCcw className="w-4 h-4 mr-2" /> Try Again
+          </Button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-white mb-2">
-          Targets: {targetsHit} / {TOTAL_TARGETS}
-        </h2>
-        <p className="text-blue-100 text-base sm:text-lg">Click the targets as quickly as you can!</p>
+    <div className="max-w-4xl mx-auto">
+      {/* Live Telemetry Bar */}
+      <div className="flex items-center justify-between mb-4 px-2 text-xs font-mono">
+        <div className="flex items-center gap-4">
+          <div>
+            <span className="text-muted-foreground">Target: </span>
+            <span className="font-bold text-foreground tabular">{targetsHit}</span>
+            <span className="text-muted-foreground"> / {TOTAL_TARGETS}</span>
+          </div>
+          <div>
+            <span className="text-muted-foreground">Accuracy: </span>
+            <span className="font-bold text-emerald-400 tabular">
+              {totalClicks > 0 ? Math.round((targetsHit / totalClicks) * 100) : 100}%
+            </span>
+          </div>
+        </div>
+        <div>
+          <span className="text-muted-foreground">Avg: </span>
+          <span className="font-bold text-rose-400 tabular">
+            {targetTimes.length > 0
+              ? `${Math.round(targetTimes.reduce((a, b) => a + b, 0) / targetTimes.length)}ms`
+              : "0ms"}
+          </span>
+        </div>
       </div>
 
-      <Card className="bg-white/95 backdrop-blur">
-        <CardContent className="p-0">
-          <div
-            ref={gameAreaRef}
-            className="relative w-full h-[70vh] max-h-[500px] min-h-[300px] bg-gray-50 cursor-crosshair overflow-hidden rounded-lg"
-            onClick={handleMissClick}
+      {/* Crosshair Arena */}
+      <div
+        ref={arenaRef}
+        onClick={handleArenaMiss}
+        className="relative w-full h-[460px] rounded-2xl bg-black/40 border border-border/60 overflow-hidden cursor-cross select-none shadow-inner"
+      >
+        {currentTarget && (
+          <button
+            onClick={handleTargetClick}
+            style={{
+              left: currentTarget.x,
+              top: currentTarget.y,
+              width: TARGET_SIZE,
+              height: TARGET_SIZE,
+              transform: "translate(-50%, -50%)",
+            }}
+            className="absolute rounded-full flex items-center justify-center p-0 border-0 outline-none transition-transform active:scale-90"
           >
-            {currentTarget && (
-              <div
-                className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-                style={{
-                  left: currentTarget.x,
-                  top: currentTarget.y,
-                  width: TARGET_SIZE,
-                  height: TARGET_SIZE,
-                }}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleTargetClick()
-                }}
-              >
-                {/* Target design - concentric circles */}
-                <div className="relative w-full h-full">
-                  <div className="absolute inset-0 bg-red-500 rounded-full"></div>
-                  <div className="absolute inset-2 bg-white rounded-full"></div>
-                  <div className="absolute inset-4 bg-red-500 rounded-full"></div>
-                  <div className="absolute inset-6 bg-white rounded-full"></div>
-                  <div className="absolute inset-8 bg-red-500 rounded-full"></div>
+            {/* Bullseye rings */}
+            <div className="w-full h-full rounded-full bg-rose-500 flex items-center justify-center shadow-lg shadow-rose-500/50 animate-in zoom-in-50 duration-75">
+              <div className="w-3/4 h-3/4 rounded-full bg-white flex items-center justify-center">
+                <div className="w-1/2 h-1/2 rounded-full bg-rose-600 flex items-center justify-center">
+                  <div className="w-2 h-2 rounded-full bg-white" />
                 </div>
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="mt-6 bg-white/95 backdrop-blur">
-        <CardContent className="p-4">
-          <div className="grid grid-cols-3 gap-4 text-center text-sm sm:text-base">
-            <div>
-              <div className="text-lg font-bold text-blue-600">{targetsHit}</div>
-              <div className="text-gray-600">Targets Hit</div>
             </div>
-            <div>
-              <div className="text-lg font-bold text-blue-600">{targetTimes.length > 0 ? getAverageTime() : 0}ms</div>
-              <div className="text-gray-600">Avg Time</div>
-            </div>
-            <div>
-              <div className="text-lg font-bold text-blue-600">{((Date.now() - startTime) / 1000).toFixed(1)}s</div>
-              <div className="text-gray-600">Elapsed</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </button>
+        )}
+      </div>
     </div>
   )
 }

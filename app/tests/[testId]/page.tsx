@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import ReactionTimeTest from "@/components/tests/reaction-time-test"
 import SequenceMemoryTest from "@/components/tests/sequence-memory-test"
 import AimTrainerTest from "@/components/tests/aim-trainer-test"
@@ -10,82 +9,103 @@ import ChimpTest from "@/components/tests/chimp-test"
 import ReadingComprehensionTest from "@/components/tests/reading-comprehension-test"
 import VisualMemoryTest from "@/components/tests/visual-memory-test"
 import TypingTest from "@/components/tests/typing-test"
+import Footer from "@/components/footer"
+import { BENCHMARKS } from "@/lib/benchmarks"
+import { ArrowLeft, Brain, Sparkles, Activity, Info } from "lucide-react"
 
-
-import { Volume2 } from "lucide-react"
-
-const tests = {
+const testDetails: Record<
+  string,
+  {
+    title: string
+    description: string
+    component: string
+    about: string
+    scientificBasis: string
+  }
+> = {
   "reaction-time": {
-    title: "Reaction Time Test",
-    description: "Test your visual reflexes.",
+    title: "Reaction Time",
+    description: "Measure your synaptic visual-to-motor reaction latency.",
     component: "ReactionTimeTest",
     about:
-      "This is a simple tool to measure your reaction time. The average (median) reaction time is 273 milliseconds, according to the data collected so far. In addition to measuring your reaction time, this test is affected by the latency of your computer and monitor. Using a fast computer and low latency / high framerate monitor will improve your score.",
+      "This protocol measures visual reaction latency. The human median sits around 270 milliseconds. Latency is influenced by monitor refresh rate, input polling latency, and biological neural transmission speed.",
+    scientificBasis: "Simple reaction time tasks evaluate efferent nerve signal conduction and visual cortical processing.",
   },
   "sequence-memory": {
-    title: "Sequence Memory Test",
-    description: "Memorize the pattern.",
+    title: "Sequence Memory",
+    description: "Memorize and reproduce progressively expanding spatial button sequences.",
     component: "SequenceMemoryTest",
     about:
-      "Memorize the sequence of buttons that light up, then press them in order. Every time you finish the pattern, it gets longer. Make a mistake, and the test is over.",
+      "A classic Simon span protocol. The sequence builds by one additional step per completed level. Replicate the illuminated sequence with zero errors.",
+    scientificBasis: "Tests visuospatial working memory and temporal order retention in the prefrontal cortex.",
   },
   "aim-trainer": {
     title: "Aim Trainer",
-    description: "Hit 30 targets as quickly as you can. Click the target above to begin.",
+    description: "Eliminate 30 randomized targets as quickly and accurately as possible.",
     component: "AimTrainerTest",
     about:
-      "Click the targets as quickly and accurately as you can. This tests reflexes and hand-eye coordination. Once you've clicked 30 targets, your score and average time per target will be displayed.",
+      "Targets appear across the spatial arena. Click all 30 targets with maximum velocity and minimal misses. Live tracking calculates average latency per target and true accuracy.",
+    scientificBasis: "Measures ballistic motor control, rapid saccadic eye movements, and hand-eye neuromuscular coordination.",
   },
   "number-memory": {
-    title: "Number Memory Test",
-    description: "Remember the longest number you can.",
+    title: "Number Memory",
+    description: "Remember progressively longer sequences of numerical digits.",
     component: "NumberMemoryTest",
-    about: "The average person can remember 7 numbers at once. Can you do more?",
+    about:
+      "The average adult working memory holds 7 ± 2 digits (Miller's Law). After each successful level, an additional digit is appended.",
+    scientificBasis: "Assesses phonological loop capacity within working memory without spatial assistance.",
   },
   "verbal-memory": {
-    title: "Verbal Memory Test",
-    description: "Keep as many words in short term memory as possible.",
+    title: "Verbal Memory",
+    description: "Differentiate between previously seen words and novel words in real time.",
     component: "VerbalMemoryTest",
     about:
-      "You will be shown words, one at a time. If you've seen the word during this test, click SEEN. Otherwise, click NEW.",
+      "Words flash sequentially. If you've seen the word in this session, click SEEN. If it's novel, click NEW. You have 3 lives.",
+    scientificBasis: "Tests recognition memory and episodic retrieval versus familiarity heuristics in the hippocampus.",
   },
   "chimp-test": {
-    title: "Are You Smarter Than a Chimpanzee?",
-    description: "Click the squares in order according to their numbers. The test will get progressively harder.",
+    title: "Chimp Test (Ayumu Protocol)",
+    description: "Click squares in ascending numerical order after they are instantly masked.",
     component: "ChimpTest",
     about:
-      "This is a test of working memory, made famous by a study that found that chimpanzees consistently outperform humans on this task. In the study, the chimps consistently outperformed humans, and some chimps were able to remember 9 digits over 90% of the time.",
+      "Based on Kyoto University's famous Ayumu chimpanzee studies. Chimpanzees consistently outperform human working memory by instantly remembering 9 masked digits in under 0.5s.",
+    scientificBasis: "Evaluates instantaneous iconic and photographic spatial working memory.",
   },
   "visual-memory": {
-    title: "Visual Memory Test",
-    description: "Remember an increasingly large board of squares.",
+    title: "Visual Memory",
+    description: "Recall and select flashed matrix coordinates on an expanding grid.",
     component: "VisualMemoryTest",
     about:
-      "Every level, a number of tiles will flash white. Memorize them, and pick them again after the tiles are reset! Levels get progressively more difficult, to challenge your skills.",
+      "A matrix of tiles flashes. Memorize the active spatial coordinates and recreate the pattern once tiles reset. Matrix dimensions scale as you progress.",
+    scientificBasis: "Measures visuospatial sketchpad capacity in parietal-occipital pathways.",
   },
   typing: {
     title: "Typing Test",
-    description: "How many words per minute can you type?",
+    description: "Evaluate your net typing velocity (WPM), accuracy, and cadence.",
     component: "TypingTest",
     about:
-      "This is a simple test of typing speed, measuring words per minute, or WPM. The standard measure of WPM is (number of characters / 5) / (time taken). By that measurement, 'quick brown fox' is 15 characters, including spaces.",
+      "Type the provided passage with precision. Standard WPM is calculated as (net characters / 5) per minute. Live accuracy tracks error frequency.",
+    scientificBasis: "Measures procedural muscle memory, cognitive anticipation, and fine motor execution.",
   },
   "reading-comprehension": {
-    title: "Reading Comprehension Test",
-    description: "Test your reading speed and comprehension skills.",
+    title: "Reading Comprehension",
+    description: "Test reading velocity alongside active information synthesis and retention.",
     component: "ReadingComprehensionTest",
     about:
-      "This test measures both your reading speed (words per minute) and comprehension ability. You\'ll read a passage and then answer questions about it. The average adult reads at 200-250 WPM with 60-70% comprehension.",
+      "Read the passage at your natural pace, then answer detailed comprehension questions. Effective WPM combines reading speed with accuracy.",
+    scientificBasis: "Evaluates working memory integration during high-speed linguistic parsing.",
   },
-};
+}
 
 export default async function TestPage({ params }: { params: Promise<{ testId: string }> }) {
   const testId = (await params).testId
-  const test = tests[testId as keyof typeof tests]
+  const test = testDetails[testId]
 
   if (!test) {
     notFound()
   }
+
+  const benchmarkMeta = BENCHMARKS[testId]
 
   const renderTestComponent = () => {
     switch (test.component) {
@@ -107,90 +127,79 @@ export default async function TestPage({ params }: { params: Promise<{ testId: s
         return <VisualMemoryTest />
       case "TypingTest":
         return <TypingTest />
-
       default:
-        return (
-          <Card className="bg-white/95 backdrop-blur p-8">
-            <CardContent className="text-center">
-              <p className="text-lg text-gray-700 mb-8">{test.description}</p>
-              <div className="text-gray-500">This test is coming soon...</div>
-            </CardContent>
-          </Card>
-        )
+        return <div>Test unavailable</div>
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600">
-      {/* Navigation Header */}
-      <header className="flex items-center justify-between p-4 text-white">
-        <Link href="/" className="flex items-center gap-2 hover:text-blue-200 transition-colors">
-          <div className="text-2xl">🧠</div>
-          <span className="text-lg font-semibold">HUMAN EVAL</span>
-        </Link>
-        <Link href="/dashboard" className="text-white hover:text-blue-200 transition-colors">
-          DASHBOARD
-        </Link>
-      </header>
+    <div className="min-h-screen flex flex-col">
+      <div className="max-w-6xl mx-auto w-full px-4 pt-6 pb-16 flex-1">
+        {/* Navigation Breadcrumb */}
+        <div className="flex items-center justify-between mb-8">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-cyan-400 transition-colors py-1 px-2.5 rounded-lg border border-border/40 bg-card/40"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>ALL BENCHMARKS</span>
+          </Link>
 
-      {/* Test Content */}
-      <div className="py-16 px-4">
+          {benchmarkMeta && (
+            <div className="flex items-center gap-2 text-xs font-mono">
+              <span className="text-muted-foreground">Human Avg:</span>
+              <span className="font-bold text-foreground">
+                {benchmarkMeta.median} {benchmarkMeta.unit}
+              </span>
+              <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                {benchmarkMeta.category}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Test Header */}
         <div className="text-center mb-8">
-          <div className="text-6xl mb-6 text-white">🧠</div>
-          <h1 className="text-4xl font-bold text-white mb-4">{test.title}</h1>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-mono">
+            {test.title}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">
+            {test.description}
+          </p>
         </div>
 
-        {renderTestComponent()}
-      </div>
+        {/* Active Test Arena */}
+        <div className="mb-14">{renderTestComponent()}</div>
 
-      {/* Statistics and About sections */}
-      <div className="max-w-6xl mx-auto px-4 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="bg-white/95 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="text-xl font-bold text-gray-800">Statistics</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-center justify-center text-gray-500">
-                <div className="text-center">
-                  <div className="text-4xl mb-4">📊</div>
-                  <p>Statistics will be displayed here after completing tests</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Scientific Context & Methodology Card */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+          <div className="cyber-card rounded-2xl p-6">
+            <div className="flex items-center gap-2 mb-3 text-cyan-400">
+              <Info className="w-4 h-4" />
+              <h3 className="text-sm font-bold font-mono tracking-wider uppercase text-foreground">
+                Benchmark Protocol
+              </h3>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {test.about}
+            </p>
+          </div>
 
-          <Card className="bg-white/95 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="text-xl font-bold text-gray-800">About the test</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 leading-relaxed">{test.about}</p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="text-center py-8 px-4 text-blue-100 text-sm">
-        <div className="flex justify-center items-center gap-4 mb-4">
-          <Volume2 className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
-        </div>
-        <div className="space-y-1">
-          <p>Copyright 2007-2025 Human Eval</p>
-          <div className="flex justify-center gap-4">
-            <Link href="/contact" className="hover:text-white transition-colors">
-              contact@humanbenchmark.com
-            </Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/licensing" className="hover:text-white transition-colors">
-              Licensing
-            </Link>
+          <div className="cyber-card rounded-2xl p-6">
+            <div className="flex items-center gap-2 mb-3 text-emerald-400">
+              <Activity className="w-4 h-4" />
+              <h3 className="text-sm font-bold font-mono tracking-wider uppercase text-foreground">
+                Cognitive Neuro-Telemetry
+              </h3>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {test.scientificBasis}
+            </p>
           </div>
         </div>
-      </footer>
+      </div>
+
+      <Footer />
     </div>
   )
 }
