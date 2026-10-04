@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Sparkles,
   BarChart3,
+  Cpu,
 } from "lucide-react"
 
 const tests = [
@@ -152,8 +153,19 @@ export default function HomePage() {
               className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold text-sm px-8 py-3 rounded-xl transition-all shadow-lg shadow-cyan-500/20"
               asChild
             >
+              <Link href="/facility">
+                <Cpu className="w-4 h-4 mr-2" /> Training Facility OS 2.0
+              </Link>
+            </Button>
+
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-border/60 text-foreground hover:bg-secondary font-mono text-sm px-8 py-3 rounded-xl"
+              asChild
+            >
               <Link href="#benchmarks">
-                <Activity className="w-4 h-4 mr-2" /> Start Calibrations
+                <Activity className="w-4 h-4 mr-2 text-cyan-400" /> Diagnostic Battery
               </Link>
             </Button>
 

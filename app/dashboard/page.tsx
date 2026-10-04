@@ -44,6 +44,15 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3">
             <Button
               asChild
+              variant="outline"
+              className="border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-mono font-bold text-xs rounded-xl"
+            >
+              <Link href="/facility">
+                <Brain className="w-3.5 h-3.5 mr-1.5" /> Training Facility OS 2.0
+              </Link>
+            </Button>
+            <Button
+              asChild
               className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold text-xs rounded-xl"
             >
               <Link href="/tests/reaction-time">
