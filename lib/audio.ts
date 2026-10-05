@@ -164,6 +164,36 @@ class SoundEngine {
   public playKeyType() {
     this.playTone(400 + Math.random() * 80, "triangle", 25, 0.04)
   }
+
+  // Session / trial lifecycle SFX
+  public playStart() {
+    this.playTone(520, "triangle", 120, 0.18)
+  }
+
+  public playCorrect() {
+    this.playSuccess()
+  }
+
+  public playIncorrect() {
+    this.playError()
+  }
+
+  public playAlert() {
+    this.playTone(880, "sawtooth", 90, 0.22)
+  }
+
+  public playTimeout() {
+    this.playTone(180, "sawtooth", 200, 0.15)
+  }
+
+  public playLevelUp() {
+    this.playSuccess()
+  }
+
+  public playComplete() {
+    this.playTone(523.25, "sine", 120, 0.18)
+    setTimeout(() => this.playTone(659.25, "sine", 180, 0.2), 120)
+  }
 }
 
 export const sound = new SoundEngine()

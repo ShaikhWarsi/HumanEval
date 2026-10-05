@@ -37,7 +37,7 @@ export default function ReactionTimeTest() {
 
     timeoutRef.current = setTimeout(() => {
       setGameState("click")
-      setStartTime(Date.now())
+      setStartTime(performance.now())
       sound.playSuccess()
     }, delay)
   }
@@ -52,38 +52,52 @@ export default function ReactionTimeTest() {
       setGameState("too-early")
     } else if (gameState === "click") {
       // Valid reaction click
-      const elapsed = Date.now() - startTime
+      const rawElapsed = performance.now() - startTime
+      // Filter out physiologically impossible anticipations (< 120ms) as false starts
+      if (rawElapsed < 120) {
+        sound.playError()
+        setGameState("too-early")
+        return
+      }
+
+      const elapsed = Math.round(rawElapsed)
       sound.playClick()
       setLastTime(elapsed)
       const newAttempts = [...attempts, elapsed]
       setAttempts(newAttempts)
 
       if (newAttempts.length >= TOTAL_ROUNDS) {
-        // Battery complete - calculate median/average
-        const avg = Math.round(newAttempts.reduce((a, b) => a + b, 0) / newAttempts.length)
-        setFinalScore(avg)
+        // Battery complete - calculate robust median score to reject motor outliers
+        const sorted = [...newAttempts].sort((a, b) => a - b)
+        const mid = Math.floor(sorted.length / 2)
+        const robustScore = sorted.length % 2 !== 0 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2)
+        setFinalScore(robustScore)
         const saved = addScore({
           testId: "reaction-time",
           testName: "Reaction Time",
-          score: avg,
+          score: robustScore,
           unit: "ms",
-          details: { attempts: newAttempts },
+          details: { attempts: newAttempts, median: robustScore },
         })
         setPercentile(saved.percentile)
         setGameState("completed")
       } else {
         setGameState("result")
       }
+    } else if (gameState === "result") {
+      nextRound()
+    } else if (gameState === "too-early") {
+      tryAgainRound()
     }
   }
 
   const nextRound = () => {
     setCurrentRound((prev) => prev + 1)
-    setGameState("ready")
+    beginWaiting()
   }
 
   const tryAgainRound = () => {
-    setGameState("ready")
+    beginWaiting()
   }
 
   useEffect(() => {
@@ -94,22 +108,21 @@ export default function ReactionTimeTest() {
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 sm:p-12 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto mb-6">
-          <Zap className="w-8 h-8" />
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
+        <div className="w-16 h-16 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+          <Zap className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-2xl font-bold font-mono tracking-tight text-foreground mb-3">
+        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
           Reaction Time Benchmark
         </h2>
-        <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
-          When the red area turns <span className="text-emerald-400 font-semibold">GREEN</span>, click as fast as humanly possible. 
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+          When the red area turns <span className="text-emerald-500 font-black">GREEN</span>, click as fast as humanly possible. 
           You will complete 5 trials to record your true mean synaptic latency.
         </p>
 
         <Button
           onClick={startBattery}
           size="lg"
-          className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-cyan-500/20"
         >
           Begin Benchmark
         </Button>
@@ -119,16 +132,16 @@ export default function ReactionTimeTest() {
 
   if (gameState === "completed" && finalScore !== null) {
     return (
-      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 text-center animate-in fade-in">
-        <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4">
-          <Zap className="w-8 h-8" />
+      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-mono">
+        <div className="w-16 h-16 border-2 border-black dark:border-white bg-emerald-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A]">
+          <Zap className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-sm font-mono uppercase text-muted-foreground tracking-wider mb-1">
+        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">
           Mean Latency ({TOTAL_ROUNDS} Rounds)
         </h2>
-        <div className="text-5xl font-mono font-extrabold text-foreground mb-2 tabular">
+        <div className="text-6xl font-black text-foreground mb-2 tabular">
           {finalScore}
-          <span className="text-2xl text-cyan-400 ml-1">ms</span>
+          <span className="text-2xl text-amber-500 dark:text-cyan-400 ml-1">ms</span>
         </div>
 
         {/* Normal distribution curve */}
@@ -136,9 +149,9 @@ export default function ReactionTimeTest() {
 
         <div className="grid grid-cols-5 gap-2 my-6">
           {attempts.map((att, i) => (
-            <div key={i} className="p-2.5 rounded-lg bg-card/60 border border-border/50 text-center">
-              <span className="text-[10px] text-muted-foreground font-mono block">R{i + 1}</span>
-              <span className="text-xs font-mono font-bold text-foreground tabular">{att}ms</span>
+            <div key={i} className="p-2.5 border-2 border-black dark:border-white bg-card text-center shadow-[1.5px_1.5px_0px_0px_#0A0A0A] dark:shadow-[1.5px_1.5px_0px_0px_#FFFFFF]">
+              <span className="text-[10px] text-muted-foreground font-bold block">R{i + 1}</span>
+              <span className="text-xs font-black text-foreground tabular">{att}ms</span>
             </div>
           ))}
         </div>
@@ -146,7 +159,6 @@ export default function ReactionTimeTest() {
         <div className="flex gap-3 justify-center mt-6">
           <Button
             onClick={startBattery}
-            className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-6 py-2.5 rounded-xl transition-all"
           >
             <RotateCcw className="w-4 h-4 mr-2" /> Retest Battery
           </Button>
@@ -157,34 +169,34 @@ export default function ReactionTimeTest() {
 
   // Interactive Click Arena
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto font-mono">
       {/* Round counter bar */}
-      <div className="flex items-center justify-between mb-3 text-xs font-mono text-muted-foreground px-1">
+      <div className="flex items-center justify-between mb-3 text-xs uppercase font-bold text-muted-foreground px-1">
         <span>Round {currentRound} of {TOTAL_ROUNDS}</span>
         <span>{attempts.length > 0 ? `Current Mean: ${Math.round(attempts.reduce((a, b) => a + b, 0) / attempts.length)}ms` : "Waiting for trial 1"}</span>
       </div>
 
       <div
         onClick={handleClick}
-        className={`w-full min-h-[380px] sm:min-h-[440px] rounded-2xl flex flex-col items-center justify-center text-center p-8 cursor-pointer select-none transition-colors border ${
+        className={`w-full min-h-[380px] sm:min-h-[440px] border-2 border-black dark:border-white flex flex-col items-center justify-center text-center p-8 cursor-pointer select-none transition-all shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF] ${
           gameState === "ready"
-            ? "bg-card/70 border-border/60 hover:border-cyan-500/40 text-foreground"
+            ? "bg-card text-foreground hover:translate-x-[-1px] hover:translate-y-[-1px]"
             : gameState === "waiting"
-            ? "bg-rose-950/70 border-rose-500/60 text-rose-200"
+            ? "bg-rose-500 text-white"
             : gameState === "click"
-            ? "bg-emerald-600 border-emerald-400 text-white shadow-2xl shadow-emerald-500/30"
+            ? "bg-emerald-400 text-black shadow-[6px_6px_0px_0px_#0A0A0A]"
             : gameState === "too-early"
-            ? "bg-amber-950/80 border-amber-500/60 text-amber-200"
-            : "bg-cyan-950/70 border-cyan-500/50 text-cyan-200"
+            ? "bg-amber-400 text-black"
+            : "bg-card text-foreground"
         }`}
       >
         {gameState === "ready" && (
-          <div className="space-y-3">
-            <div className="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto">
-              <Zap className="w-6 h-6 animate-pulse" />
+          <div className="space-y-4">
+            <div className="w-14 h-14 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black flex items-center justify-center mx-auto shadow-[2px_2px_0px_0px_#0A0A0A]">
+              <Zap className="w-7 h-7 stroke-[2.5]" />
             </div>
-            <h3 className="text-2xl font-mono font-bold tracking-tight">Click to Arm</h3>
-            <p className="text-xs text-muted-foreground font-mono">
+            <h3 className="text-3xl font-black uppercase tracking-tight">Click to Arm</h3>
+            <p className="text-xs uppercase font-bold text-muted-foreground">
               Click anywhere inside this arena to prime the trigger.
             </p>
           </div>
@@ -192,24 +204,24 @@ export default function ReactionTimeTest() {
 
         {gameState === "waiting" && (
           <div className="space-y-3">
-            <h3 className="text-3xl font-mono font-extrabold tracking-tight">WAIT FOR GREEN</h3>
-            <p className="text-xs text-rose-300/80 font-mono">Do not trigger early...</p>
+            <h3 className="text-4xl sm:text-5xl font-black uppercase tracking-tight">WAIT FOR GREEN</h3>
+            <p className="text-xs uppercase font-black tracking-widest opacity-90">DO NOT TRIGGER EARLY...</p>
           </div>
         )}
 
         {gameState === "click" && (
           <div className="space-y-2">
-            <h3 className="text-5xl font-mono font-black tracking-tight drop-shadow-md">CLICK NOW!</h3>
-            <p className="text-xs text-white/90 font-mono">MAXIMUM VELOCITY</p>
+            <h3 className="text-6xl sm:text-7xl font-black uppercase tracking-tight">CLICK NOW!</h3>
+            <p className="text-xs uppercase font-black tracking-widest">MAXIMUM VELOCITY</p>
           </div>
         )}
 
         {gameState === "too-early" && (
           <div className="space-y-4">
-            <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto" />
+            <AlertTriangle className="w-14 h-14 stroke-[2.5] mx-auto text-black" />
             <div>
-              <h3 className="text-2xl font-mono font-bold text-amber-300">Too Early!</h3>
-              <p className="text-xs text-amber-300/80 font-mono mt-1">You reacted before the signal turned green.</p>
+              <h3 className="text-3xl font-black uppercase">TOO EARLY!</h3>
+              <p className="text-xs uppercase font-bold mt-1">You reacted before the signal turned green.</p>
             </div>
             <Button
               onClick={(e) => {
@@ -217,7 +229,7 @@ export default function ReactionTimeTest() {
                 tryAgainRound()
               }}
               variant="outline"
-              className="bg-amber-500/20 border-amber-400 text-amber-300 hover:bg-amber-500/30 font-mono text-xs"
+              size="sm"
             >
               Retry Round {currentRound}
             </Button>
@@ -226,20 +238,20 @@ export default function ReactionTimeTest() {
 
         {gameState === "result" && (
           <div className="space-y-4">
-            <div className="text-5xl font-mono font-black text-cyan-300 tabular">
-              {lastTime} <span className="text-2xl">ms</span>
+            <div className="text-6xl sm:text-7xl font-black text-foreground tabular">
+              {lastTime} <span className="text-2xl text-amber-500 dark:text-cyan-400">ms</span>
             </div>
-            <p className="text-xs font-mono text-cyan-300/80">
-              Round {currentRound} Recorded.
+            <p className="text-xs uppercase font-bold text-muted-foreground">
+              Round {currentRound} Recorded • Click anywhere to continue
             </p>
             <Button
               onClick={(e) => {
                 e.stopPropagation()
                 nextRound()
               }}
-              className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-6 py-2 rounded-xl text-xs"
+              size="sm"
             >
-              Continue to Round {currentRound + 1} <ArrowRight className="w-3.5 h-3.5 ml-1" />
+              Continue to Round {currentRound + 1} <ArrowRight className="w-3.5 h-3.5 ml-1 stroke-[3]" />
             </Button>
           </div>
         )}

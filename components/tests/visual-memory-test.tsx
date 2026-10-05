@@ -1,3 +1,4 @@
+// components/tests/visual-memory-test.tsx
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -5,9 +6,9 @@ import { Button } from "@/components/ui/button"
 import { useScore } from "@/lib/score-context"
 import { sound } from "@/lib/audio"
 import BellCurve from "@/components/bell-curve"
-import { Eye, RotateCcw, Heart } from "lucide-react"
+import { Eye, RotateCcw } from "lucide-react"
 
-type GameState = "instructions" | "showing" | "selecting" | "result"
+type GameState = "instructions" | "showing" | "selecting" | "failed-reveal" | "result"
 
 export default function VisualMemoryTest() {
   const [gameState, setGameState] = useState<GameState>("instructions")
@@ -91,18 +92,26 @@ export default function VisualMemoryTest() {
       const newLives = lives - 1
       setLives(newLives)
 
+      // Reveal correct layout momentarily
+      setGameState("failed-reveal")
+
       if (newLives <= 0) {
         // Game Over!
-        const finalScore = level - 1
-        const saved = addScore({
-          testId: "visual-memory",
-          testName: "Visual Memory",
-          score: Math.max(0, finalScore),
-          unit: "lvl",
-          details: { maxLevel: level, gridDimension: gridDim },
-        })
-        setPercentile(saved.percentile)
-        setGameState("result")
+        setTimeout(() => {
+          const finalScore = level - 1
+          const saved = addScore({
+            testId: "visual-memory",
+            testName: "Visual Memory",
+            score: finalScore,
+            unit: "lvl",
+            details: { finalLevel: level, gridDimension: gridDim },
+          })
+          setPercentile(saved.percentile)
+          setGameState("result")
+        }, 1100)
+      } else {
+        // Retry current level after momentary reveal
+        setTimeout(() => startLevel(level), 1100)
       }
     }
   }
@@ -113,26 +122,27 @@ export default function VisualMemoryTest() {
     }
   }, [])
 
+  const totalCells = gridDim * gridDim
+
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 sm:p-12 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto mb-6">
-          <Eye className="w-8 h-8" />
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
+        <div className="w-16 h-16 border-2 border-black dark:border-white bg-cyan-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+          <Eye className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-2xl font-bold font-mono tracking-tight text-foreground mb-3">
-          Visual Memory Test
+        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
+          Visual Spatial Memory
         </h2>
-        <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
-          Memorize the pattern of illuminated tiles. Once hidden, reconstruct the coordinates.
-          The matrix dynamically expands as your retention scales. You have 3 lives.
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+          A grid of tiles will flash briefly. Memorize and tap the coordinates of all active tiles.
+          The spatial dimensions scale up as your level increases. You have 3 lives.
         </p>
 
         <Button
           onClick={startGame}
           size="lg"
-          className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-cyan-500/20"
         >
-          Initialize Matrix
+          Start Visual Memory
         </Button>
       </div>
     )
@@ -140,23 +150,26 @@ export default function VisualMemoryTest() {
 
   if (gameState === "result") {
     return (
-      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 text-center animate-in fade-in">
-        <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto mb-4">
-          <Eye className="w-8 h-8" />
+      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-mono">
+        <div className="w-16 h-16 border-2 border-black dark:border-white bg-cyan-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A]">
+          <Eye className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-xs font-mono uppercase text-muted-foreground tracking-wider mb-1">
-          Spatial Visual Capacity
+        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">
+          Max Matrix Completed
         </h2>
-        <div className="text-5xl font-mono font-black text-foreground mb-2 tabular">
+        <div className="text-6xl font-black text-foreground mb-2 tabular">
           Level {level - 1}
         </div>
+
+        <p className="text-xs text-muted-foreground uppercase font-bold mb-4">
+          Spatial Sketchpad Capacity: {gridDim}×{gridDim} Matrix
+        </p>
 
         <BellCurve testId="visual-memory" score={level - 1} unit="lvl" percentile={percentile} />
 
         <div className="flex gap-3 justify-center mt-6">
           <Button
             onClick={startGame}
-            className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-6 py-2.5 rounded-xl transition-all"
           >
             <RotateCcw className="w-4 h-4 mr-2" /> Try Again
           </Button>
@@ -165,52 +178,68 @@ export default function VisualMemoryTest() {
     )
   }
 
-  const totalCells = gridDim * gridDim
-
   return (
-    <div className="max-w-md mx-auto">
-      {/* Telemetry bar */}
-      <div className="flex items-center justify-between mb-4 px-2 text-xs font-mono">
-        <div>
-          <span className="text-muted-foreground">Level: </span>
-          <span className="font-bold text-cyan-400 tabular">{level}</span>
+    <div className="max-w-lg mx-auto font-mono">
+      {/* Telemetry header */}
+      <div className="flex items-center justify-between text-xs uppercase font-bold px-2 mb-3">
+        <div className="flex items-center gap-1.5">
+          <span className="text-muted-foreground">Lives:</span>
+          <div className="flex gap-1">
+            {[1, 2, 3].map((heart) => (
+              <div
+                key={heart}
+                className={`w-3.5 h-3.5 border-2 border-black dark:border-white shadow-[1px_1px_0px_0px_#0A0A0A] ${
+                  heart <= lives ? "bg-rose-500" : "bg-card"
+                }`}
+              />
+            ))}
+          </div>
         </div>
-        <div className="flex items-center gap-1.5 text-rose-400">
-          {[...Array(3)].map((_, i) => (
-            <Heart
-              key={i}
-              className={`w-4 h-4 ${i < lives ? "fill-rose-500 text-rose-500" : "text-muted-foreground/30"}`}
-            />
-          ))}
+
+        <div className="flex items-center gap-4">
+          <span className="text-muted-foreground">
+            Grid: <strong className="text-foreground">{gridDim}×{gridDim}</strong>
+          </span>
+          <span className="text-muted-foreground">
+            Level: <strong className="text-amber-500 dark:text-cyan-400 tabular text-sm">{level}</strong>
+          </span>
         </div>
       </div>
 
-      {/* Dynamic Grid */}
+      {/* Grid Container */}
       <div
-        className="grid gap-2.5 p-4 rounded-2xl bg-card/60 border border-border/50 max-w-[380px] mx-auto"
+        className="brutal-card p-4 sm:p-6"
         style={{
+          display: "grid",
           gridTemplateColumns: `repeat(${gridDim}, minmax(0, 1fr))`,
+          gap: "8px",
         }}
       >
-        {[...Array(totalCells)].map((_, index) => {
+        {Array.from({ length: totalCells }).map((_, index) => {
           const isTarget = targets.has(index)
-          const isCorrectSelected = selected.has(index)
-          const isWrongSelected = wrongSelections.has(index)
+          const isSelected = selected.has(index)
+          const isWrong = wrongSelections.has(index)
+          const isShowing = gameState === "showing"
+          const isRevealingFail = gameState === "failed-reveal"
 
-          const isLit = (gameState === "showing" && isTarget) || isCorrectSelected
+          let cellStyle = "bg-card hover:bg-secondary text-transparent"
+
+          if (isShowing && isTarget) {
+            cellStyle = "bg-cyan-400 text-black shadow-[4px_4px_0px_0px_#0A0A0A]"
+          } else if (isSelected) {
+            cellStyle = "bg-emerald-400 text-black shadow-[4px_4px_0px_0px_#0A0A0A]"
+          } else if (isWrong) {
+            cellStyle = "bg-rose-500 text-white shadow-[4px_4px_0px_0px_#0A0A0A]"
+          } else if (isRevealingFail && isTarget) {
+            cellStyle = "bg-cyan-400/80 animate-pulse text-transparent"
+          }
 
           return (
             <button
               key={index}
-              disabled={gameState === "showing"}
+              disabled={gameState !== "selecting"}
               onClick={() => handleCellClick(index)}
-              className={`aspect-square rounded-xl border transition-all duration-200 select-none ${
-                isLit
-                  ? "bg-cyan-400 border-cyan-200 shadow-lg shadow-cyan-500/40 scale-[0.98]"
-                  : isWrongSelected
-                  ? "bg-rose-500 border-rose-300 shadow-lg shadow-rose-500/30"
-                  : "bg-secondary/60 border-border/60 hover:border-cyan-500/30 hover:bg-secondary/90 active:scale-95"
-              }`}
+              className={`aspect-square border-2 border-black dark:border-white transition-all shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] ${cellStyle} active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer disabled:cursor-default`}
             />
           )
         })}

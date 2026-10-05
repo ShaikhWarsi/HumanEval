@@ -1,3 +1,4 @@
+// components/tests/chimp-test.tsx
 "use client"
 
 import { useState } from "react"
@@ -5,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useScore } from "@/lib/score-context"
 import { sound } from "@/lib/audio"
 import BellCurve from "@/components/bell-curve"
-import { Brain, RotateCcw, AlertCircle } from "lucide-react"
+import { Brain, RotateCcw } from "lucide-react"
 
 type GameState = "instructions" | "playing" | "result"
 
@@ -28,6 +29,7 @@ export default function ChimpTest() {
   const [tiles, setTiles] = useState<Tile[]>([])
   const [nextExpected, setNextExpected] = useState(1)
   const [masked, setMasked] = useState(false)
+  const [isLocked, setIsLocked] = useState(false)
   const [percentile, setPercentile] = useState(50)
 
   const { addScore } = useScore()
@@ -62,6 +64,7 @@ export default function ChimpTest() {
     setTiles(newTiles)
     setNextExpected(1)
     setMasked(false)
+    setIsLocked(false)
   }
 
   const startGame = () => {
@@ -72,7 +75,7 @@ export default function ChimpTest() {
   }
 
   const handleTileClick = (tile: Tile) => {
-    if (gameState !== "playing" || tile.cleared) return
+    if (gameState !== "playing" || tile.cleared || isLocked) return
 
     if (tile.num === nextExpected) {
       // Correct click
@@ -91,58 +94,57 @@ export default function ChimpTest() {
       // Level cleared?
       if (nextNum > tiles.length) {
         sound.playSuccess()
+        setIsLocked(true)
         const nextLevel = level + 1
         setLevel(nextLevel)
         setTimeout(() => startLevel(nextLevel), 600)
       }
     } else {
-      // Strike!
+      // Wrong click - Strike!
       sound.playError()
+      setIsLocked(true)
+      setMasked(false) // Unmask on failure
       const newStrikes = strikes + 1
       setStrikes(newStrikes)
 
       if (newStrikes >= 3) {
-        // Game Over
-        const finalScore = INITIAL_COUNT + level - 2
+        // Game Over!
+        const finalScore = Math.max(0, INITIAL_COUNT + level - 2)
         const saved = addScore({
           testId: "chimp-test",
           testName: "Chimp Test",
-          score: Math.max(0, finalScore),
+          score: finalScore,
           unit: "pts",
-          details: { maxTilesCompleted: finalScore, levelReached: level },
+          details: { strikes: newStrikes, levelReached: level },
         })
         setPercentile(saved.percentile)
-        setGameState("result")
+        setTimeout(() => setGameState("result"), 1000)
       } else {
-        // Retry current level with fresh tiles
-        setTimeout(() => startLevel(level), 800)
+        // Retry level after momentary pause
+        setTimeout(() => startLevel(level), 900)
       }
     }
   }
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 sm:p-12 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center mx-auto mb-6">
-          <Brain className="w-8 h-8" />
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
+        <div className="w-16 h-16 border-2 border-black dark:border-white bg-pink-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+          <Brain className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-2xl font-bold font-mono tracking-tight text-foreground mb-3">
-          Chimp Test (Ayumu Protocol)
+        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
+          Chimp Test (Ayumu Spatial Span)
         </h2>
-        <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
-          Click the numbers in ascending order (1, 2, 3...). 
-          <span className="text-pink-400 font-semibold block mt-1">
-            As soon as you click 1, all other numbers are masked into blank tiles!
-          </span>
-          Chimpanzees routinely outscore 95% of human adults on this test. 3 strikes and you are out.
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+          Click the numbers in ascending order (1, 2, 3...). Clicking &ldquo;1&rdquo; masks the remaining tiles.
+          Inspired by cognitive studies at Kyoto University where chimpanzee Ayumu scored 9+ effortlessly.
         </p>
 
         <Button
           onClick={startGame}
           size="lg"
-          className="bg-pink-500 hover:bg-pink-400 text-white font-mono font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-pink-500/20"
         >
-          Begin Ayumu Trial
+          Start Chimp Memory
         </Button>
       </div>
     )
@@ -151,18 +153,18 @@ export default function ChimpTest() {
   if (gameState === "result") {
     const finalScore = Math.max(0, INITIAL_COUNT + level - 2)
     return (
-      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 text-center animate-in fade-in">
-        <div className="w-16 h-16 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center mx-auto mb-4">
-          <Brain className="w-8 h-8" />
+      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-mono">
+        <div className="w-16 h-16 border-2 border-black dark:border-white bg-pink-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A]">
+          <Brain className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-xs font-mono uppercase text-muted-foreground tracking-wider mb-1">
+        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">
           Working Memory Span
         </h2>
-        <div className="text-5xl font-mono font-black text-foreground mb-2 tabular">
-          {finalScore} <span className="text-2xl text-pink-400">numbers</span>
+        <div className="text-6xl font-black text-foreground mb-2 tabular">
+          {finalScore} <span className="text-2xl text-pink-500">numbers</span>
         </div>
 
-        <p className="text-xs text-muted-foreground font-mono mb-4">
+        <p className="text-xs text-muted-foreground uppercase font-bold mb-4">
           {finalScore >= 9
             ? "Ayumu Chimpanzee parity achieved! Elite iconic visual memory."
             : "Average human score is 7 to 9. Ayumu (Chimp) retains 9 digits in 0.5s."}
@@ -173,7 +175,6 @@ export default function ChimpTest() {
         <div className="flex gap-3 justify-center mt-6">
           <Button
             onClick={startGame}
-            className="bg-pink-500 hover:bg-pink-400 text-white font-mono font-bold px-6 py-2.5 rounded-xl transition-all"
           >
             <RotateCcw className="w-4 h-4 mr-2" /> Try Again
           </Button>
@@ -192,20 +193,21 @@ export default function ChimpTest() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto font-mono">
       {/* Telemetry header */}
-      <div className="flex items-center justify-between mb-4 px-2 text-xs font-mono">
+      <div className="flex items-center justify-between mb-3 px-2 text-xs uppercase font-bold">
         <div>
           <span className="text-muted-foreground">Numbers: </span>
-          <span className="font-bold text-pink-400 tabular">{INITIAL_COUNT + level - 1}</span>
+          <span className="text-pink-500 font-black tabular">{INITIAL_COUNT + level - 1}</span>
         </div>
-        <div className="flex items-center gap-1">
+
+        <div className="flex items-center gap-1.5">
           <span className="text-muted-foreground mr-1">Strikes:</span>
           {[0, 1, 2].map((s) => (
             <span
               key={s}
-              className={`w-2.5 h-2.5 rounded-full inline-block ${
-                s < strikes ? "bg-rose-500 shadow-sm shadow-rose-500/50" : "bg-muted"
+              className={`w-3.5 h-3.5 border-2 border-black dark:border-white inline-block shadow-[1px_1px_0px_0px_#0A0A0A] ${
+                s < strikes ? "bg-red-500" : "bg-card"
               }`}
             />
           ))}
@@ -213,17 +215,20 @@ export default function ChimpTest() {
       </div>
 
       {/* Grid Canvas */}
-      <div className="grid grid-cols-8 gap-2 p-4 rounded-2xl bg-card/60 border border-border/50">
+      <div className="grid grid-cols-8 gap-2 p-4 brutal-card">
         {gridCells.map(({ r, c, tile }) => {
           if (!tile || tile.cleared) {
-            return <div key={`${r}-${c}`} className="aspect-square rounded-xl" />
+            return <div key={`${r}-${c}`} className="aspect-square" />
           }
 
           return (
             <button
               key={`${r}-${c}`}
+              disabled={isLocked}
               onClick={() => handleTileClick(tile)}
-              className="aspect-square rounded-xl border border-pink-500/40 bg-pink-500/10 hover:bg-pink-500/20 active:scale-90 flex items-center justify-center font-mono font-extrabold text-lg sm:text-xl text-foreground transition-all select-none shadow-sm shadow-pink-500/20"
+              className={`aspect-square border-2 border-black dark:border-white ${
+                masked ? "bg-card hover:bg-secondary" : "bg-pink-400 text-black font-black"
+              } shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center justify-center font-mono text-lg sm:text-xl transition-all select-none cursor-pointer disabled:cursor-not-allowed`}
             >
               {masked ? "" : tile.num}
             </button>

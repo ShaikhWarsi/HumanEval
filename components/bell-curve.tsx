@@ -18,7 +18,7 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
   const points: { x: number; y: number }[] = []
   const width = 360
   const height = 120
-  const paddingX = 20
+  const paddingX = 24
 
   // 3 standard deviations left and right of median
   const minVal = meta.median - 3 * meta.stdDev
@@ -34,7 +34,7 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
     const val = minVal + (i / steps) * (maxVal - minVal)
     const prob = gaussian(val)
     const px = paddingX + (i / steps) * (width - 2 * paddingX)
-    const py = height - 15 - prob * (height - 35)
+    const py = height - 18 - prob * (height - 38)
     points.push({ x: px, y: py })
   }
 
@@ -51,13 +51,13 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
   const medianX = paddingX + 0.5 * (width - 2 * paddingX)
 
   return (
-    <div className="w-full bg-card/60 border border-border/50 rounded-xl p-4 my-4">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-          Global Distribution Curve
+    <div className="w-full brutal-card p-5 my-5 font-mono text-left">
+      <div className="flex items-center justify-between mb-3 border-b-2 border-black dark:border-white pb-2">
+        <span className="text-xs uppercase font-black tracking-wider text-muted-foreground">
+          [ GAUSSIAN DISTRIBUTION ]
         </span>
-        <span className="text-xs font-mono font-bold text-cyan-400">
-          Percentile: {percentile}%
+        <span className="text-xs font-black px-2 py-0.5 border border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black shadow-[1.5px_1.5px_0px_0px_#0A0A0A]">
+          PERCENTILE: {Math.round(percentile)}% (±4% SEM)
         </span>
       </div>
 
@@ -65,78 +65,91 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible">
           {/* Shaded Area under curve */}
           <path
-            d={`${pathD} L ${width - paddingX} ${height - 15} L ${paddingX} ${height - 15} Z`}
-            fill="url(#curve-gradient)"
-            opacity={0.3}
+            d={`${pathD} L ${width - paddingX} ${height - 18} L ${paddingX} ${height - 18} Z`}
+            className="fill-amber-400/20 dark:fill-cyan-400/20"
           />
-          {/* Main curve line */}
-          <path d={pathD} fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" />
+          {/* Baseline */}
+          <line
+            x1={paddingX}
+            y1={height - 18}
+            x2={width - paddingX}
+            y2={height - 18}
+            stroke="currentColor"
+            strokeWidth="2"
+          />
 
-          {/* Gradients */}
-          <defs>
-            <linearGradient id="curve-gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#00F0FF" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#00F0FF" stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
+          {/* Main curve line */}
+          <path d={pathD} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" />
 
           {/* Median dotted line */}
           <line
             x1={medianX}
-            y1={20}
+            y1={24}
             x2={medianX}
-            y2={height - 15}
-            stroke="#94a3b8"
+            y2={height - 18}
+            stroke="currentColor"
             strokeWidth="1.5"
-            strokeDasharray="3 3"
+            strokeDasharray="4 4"
+            strokeOpacity={0.6}
           />
           <text
             x={medianX}
-            y={height - 2}
+            y={height - 4}
             textAnchor="middle"
-            fill="#94a3b8"
+            fill="currentColor"
             fontSize="9"
             fontFamily="monospace"
+            fontWeight="bold"
+            opacity={0.7}
           >
-            Avg: {meta.median}{meta.unit}
+            AVG {meta.median}{meta.unit}
           </text>
 
           {/* User Score Marker */}
           <line
             x1={userX}
-            y1={10}
+            y1={14}
             x2={userX}
-            y2={height - 15}
-            stroke="#00F0FF"
-            strokeWidth="2.5"
+            y2={height - 18}
+            stroke="currentColor"
+            strokeWidth="3"
+            className="text-amber-500 dark:text-cyan-400"
           />
-          <circle cx={userX} cy={12} r={4.5} fill="#00F0FF" />
+          <rect
+            x={userX - 4}
+            y={10}
+            width={8}
+            height={8}
+            className="fill-amber-500 dark:fill-cyan-400 stroke-black dark:stroke-white"
+            strokeWidth={1.5}
+          />
           <text
             x={userX}
             y={6}
             textAnchor="middle"
-            fill="#00F0FF"
+            fill="currentColor"
             fontSize="10"
-            fontWeight="bold"
+            fontWeight="900"
             fontFamily="monospace"
+            className="text-amber-500 dark:text-cyan-400"
           >
-            You ({score}{unit})
+            YOU ({score}{unit})
           </text>
         </svg>
       </div>
 
-      <div className="mt-2 text-center text-xs text-muted-foreground">
+      <div className="mt-3 pt-2 border-t-2 border-black dark:border-white text-center text-xs">
         {percentile >= 90 ? (
-          <span className="text-emerald-400 font-semibold font-mono">
-            ★ Elite tier: You are in the top {Math.max(1, Math.round(100 - percentile))}% of the population.
+          <span className="text-emerald-600 dark:text-emerald-400 font-black uppercase">
+            ★ ELITE TIER — TOP {Math.max(1, Math.round(100 - percentile))}% OF GLOBAL SAMPLES
           </span>
         ) : percentile >= 50 ? (
-          <span className="text-cyan-400 font-medium font-mono">
-            Above average performance. Top {Math.round(100 - percentile)}% bracket.
+          <span className="text-amber-600 dark:text-cyan-400 font-bold uppercase">
+            ABOVE POPULATION AVERAGE — TOP {Math.round(100 - percentile)}% BRACKET
           </span>
         ) : (
-          <span className="text-muted-foreground font-mono">
-            Within standard distribution. Practice improves neural latency.
+          <span className="text-muted-foreground font-bold uppercase">
+            STANDARD GAUSSIAN VARIANCE — ACCURACY AND SPEED ACCRETE WITH EXPOSURE
           </span>
         )}
       </div>

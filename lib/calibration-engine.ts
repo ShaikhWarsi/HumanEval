@@ -2,6 +2,8 @@
 // Metacognitive Calibration & Brier Scoring Engine
 // Grounded in Superforecasting (Tetlock) & Lichtenstein & Fischhoff Calibration Curves
 
+import { SeededPRNG } from "@/lib/engine/prng"
+
 export type ErrorHypothesis =
   | "heuristic_bias"
   | "misread_premise"
@@ -124,6 +126,106 @@ export const CURATED_CALIBRATION_ITEMS: CalibrationItem[] = [
     explanation:
       "According to the Pauli Exclusion Principle, no two identical fermions can occupy the same quantum state. If their spins differ, their spin quantum number differs, meaning they occupy DIFFERENT quantum states, not the same.",
     commonPitfall: "Sloppy colloquial phrasing: they can share spatial orbitals, but their total quantum states are strictly distinct.",
+  },
+  {
+    id: "cal-09",
+    statement:
+      "In the Monty Hall problem, if the host reveals a goat behind door 3, switching doors doubles your win probability from 1/3 to 2/3.",
+    domain: "probability",
+    isTrue: true,
+    explanation:
+      "Your initial choice has a 1/3 chance of holding the car and a 2/3 chance of being wrong. Because the host intentionally avoids the car when opening a door, the entire 2/3 probability mass concentrates on the remaining closed door.",
+    commonPitfall: "Assuming the two remaining doors must have equal 50/50 odds after one is opened.",
+  },
+  {
+    id: "cal-10",
+    statement:
+      "In computability theory, there exists an algorithm that can determine whether ANY arbitrary computer program will halt.",
+    domain: "logic",
+    isTrue: false,
+    explanation:
+      "This is Alan Turing's Halting Problem (1936). Turing proved by diagonal self-contradiction that no general algorithm can decide whether every program halts.",
+    commonPitfall: "Believing that with sufficient computing power or AI, all code execution paths can be solved.",
+  },
+  {
+    id: "cal-11",
+    statement:
+      "In a room of 23 people, the probability that at least two share the exact same birthday exceeds 50%.",
+    domain: "probability",
+    isTrue: true,
+    explanation:
+      "With 23 people, there are (23 × 22) / 2 = 253 pairs of people. P(no shared birthday) = (365/365) × (364/365) ... × (343/365) ≈ 49.3%. Thus P(shared) ≈ 50.7%, which is > 50%.",
+    commonPitfall: "Focusing on the probability that someone shares YOUR birthday (~1/365) rather than the combinatorial explosion of distinct pairs.",
+  },
+  {
+    id: "cal-12",
+    statement:
+      "A mirror reverses left and right, but does not reverse up and down.",
+    domain: "physics-systems",
+    isTrue: false,
+    explanation:
+      "Mirrors reverse along the perpendicular z-axis (front-to-back), NOT left-to-right. A glove pushed against a mirror has its palm facing back at itself. The perception of left-right reversal is a psychological projection of imagining turning around.",
+    commonPitfall: "Accepting visual egocentric projection as optical physics.",
+  },
+  {
+    id: "cal-13",
+    statement:
+      "In game theory's iterated Prisoner's Dilemma, Tit-for-Tat was proven to be unbeatable in every single individual match.",
+    domain: "logic",
+    isTrue: false,
+    explanation:
+      "Tit-for-Tat can never score higher than its opponent in a single head-to-head match (it either ties or loses by one defection). It wins tournaments by eliciting mutual cooperation over many rounds across diverse opponents.",
+    commonPitfall: "Confusing aggregate tournament success with winning every individual head-to-head game.",
+  },
+  {
+    id: "cal-14",
+    statement:
+      "Correlation between variables X and Y does not imply causation, but zero correlation guarantees that X and Y are independent.",
+    domain: "probability",
+    isTrue: false,
+    explanation:
+      "Pearson correlation measures only LINEAR association. If Y = X² where X is symmetric about zero (e.g. -2, -1, 0, 1, 2), the correlation is exactly 0.0 despite Y being 100% deterministically dependent on X.",
+    commonPitfall: "Equating zero linear correlation with general statistical independence.",
+  },
+  {
+    id: "cal-15",
+    statement:
+      "In thermodynamics, it is theoretically possible to construct a device whose sole effect is to extract heat from a single reservoir and convert it entirely into work.",
+    domain: "physics-systems",
+    isTrue: false,
+    explanation:
+      "This directly violates the Kelvin-Planck statement of the Second Law of Thermodynamics (Perpetual Motion of the Second Kind). You must always reject some heat to a lower-temperature sink.",
+    commonPitfall: "Confusing the First Law (energy conservation) with the Second Law (entropy generation).",
+  },
+  {
+    id: "cal-16",
+    statement:
+      "In cognitive psychology, the Dunning-Kruger effect states that low-performing individuals believe they are smarter than high-performing individuals.",
+    domain: "cognition",
+    isTrue: false,
+    explanation:
+      "In the original Kruger & Dunning (1999) study, low performers estimated their score around the 60th percentile (overconfident, but lower than top performers). Top performers estimated around the 70th-75th percentile (underconfident). Low performers never rated themselves higher in absolute terms than top performers.",
+    commonPitfall: "Pop-psychology misrepresentation of the original calibration curve data.",
+  },
+  {
+    id: "cal-17",
+    statement:
+      "If you continuously shuffle a standard 52-card deck 7 times, the resulting arrangement is overwhelmingly likely to be completely unique in human history.",
+    domain: "probability",
+    isTrue: true,
+    explanation:
+      "52! ≈ 8.06 × 10^67. If every human who ever lived shuffled a deck every second since the Big Bang, the total shuffles would still be a microscopic fraction of 52!.",
+    commonPitfall: "Failing to comprehend the staggering magnitude of factorial growth.",
+  },
+  {
+    id: "cal-18",
+    statement:
+      "A person running in the rain will always get wetter by running faster than walking.",
+    domain: "physics-systems",
+    isTrue: false,
+    explanation:
+      "Running faster sweeps out the same total volume of raindrops from the front between two fixed points, but minimizes the time exposed to rain falling vertically from above. Running almost always reduces total water absorbed.",
+    commonPitfall: "Assuming faster forward velocity increases total frontal water encountered over a fixed travel distance.",
   },
 ]
 
@@ -252,4 +354,105 @@ export class CalibrationEngine {
       { binLabel: "90-100%", minProb: 0.9, maxProb: 1.0, midProb: 0.95, trialsCount: 0, observedAccuracy: 95 },
     ]
   }
+
+  public static generateProceduralItems(count: number = 20, seed?: number): CalibrationItem[] {
+    return generateProceduralCalibrationItems(count, seed)
+  }
+}
+
+/**
+ * Procedural Calibration Question Generator.
+ * Generates dynamic mathematical and empirical probability scenarios with exact truth values.
+ * Eliminates static item memorization.
+ */
+export function generateProceduralCalibrationItems(count: number = 20, seed?: number): CalibrationItem[] {
+  const prng = new SeededPRNG(seed ?? Math.floor(Math.random() * 1000000))
+  const items: CalibrationItem[] = []
+
+  for (let i = 0; i < count; i++) {
+    const type = prng.int(1, 5)
+
+    if (type === 1) {
+      // Dice complement
+      const sides = prng.choice([6, 8, 12, 20])
+      const rolls = prng.int(3, 6)
+      const targetP = 1 - Math.pow((sides - 1) / sides, rolls)
+      const cutoff = prng.choice([40, 50, 60])
+      const isTrue = targetP > cutoff / 100
+      const actualPct = Math.round(targetP * 1000) / 10
+
+      items.push({
+        id: `cal_dice_${prng.int(1000, 9999)}`,
+        domain: "probability",
+        statement: `If you roll a fair ${sides}-sided die ${rolls} times, the probability of rolling AT LEAST ONE highest face is greater than ${cutoff}%.`,
+        isTrue,
+        explanation: `Under the complement rule, P(at least one) = 1 - (${sides - 1}/${sides})^${rolls} = 1 - ${(Math.pow((sides - 1)/sides, rolls)).toFixed(3)} ≈ ${actualPct}%. Since ${actualPct}% ${isTrue ? ">" : "≤"} ${cutoff}%, the proposition is ${isTrue ? "TRUE" : "FALSE"}.`,
+        commonPitfall: `Attempting linear addition (${rolls} × 1/${sides} = ${Math.round((rolls/sides)*100)}%) which erroneously ignores overlapping multi-outcome intersections.`,
+      })
+    } else if (type === 2) {
+      // Bayesian Screening
+      const prior = prng.choice([1, 2, 5, 10])
+      const sens = prng.choice([85, 90, 95])
+      const fp = prng.choice([5, 8, 12])
+      const pA = prior / 100
+      const pNotA = 1 - pA
+      const num = (sens / 100) * pA
+      const den = num + (fp / 100) * pNotA
+      const posterior = (num / den) * 100
+      const cutoff = prng.choice([40, 50, 60])
+      const isTrue = posterior > cutoff
+
+      items.push({
+        id: `cal_bayes_${prng.int(1000, 9999)}`,
+        domain: "probability",
+        statement: `A condition affects ${prior}% of a population. A diagnostic scanner has ${sens}% sensitivity and an ${fp}% false positive rate. A randomly selected unit tests positive. The true probability that the unit actually has the condition is greater than ${cutoff}%.`,
+        isTrue,
+        explanation: `Applying Bayes' Theorem: P(Condition | Positive) = (${sens/100} × ${pA}) / [(${sens/100} × ${pA}) + (${fp/100} × ${pNotA.toFixed(2)})] = ${(num/den * 100).toFixed(1)}%. Since ${(num/den * 100).toFixed(1)}% ${isTrue ? ">" : "≤"} ${cutoff}%, the statement is ${isTrue ? "TRUE" : "FALSE"}.`,
+        commonPitfall: `Base rate neglect: intuitively focusing on the ${sens}% sensitivity while ignoring the overwhelming pool of false positives from the non-affected majority.`,
+      })
+    } else if (type === 3) {
+      // Birthday collision variant
+      const groupSize = prng.int(20, 28)
+      let pNone = 1.0
+      for (let k = 0; k < groupSize; k++) {
+        pNone *= (365 - k) / 365
+      }
+      const pCollision = (1 - pNone) * 100
+      const isTrue = pCollision > 50
+
+      items.push({
+        id: `cal_bday_${prng.int(1000, 9999)}`,
+        domain: "probability",
+        statement: `In a randomly assembled group of ${groupSize} unrelated individuals, the probability that at least two people share the exact same birthday (month and day) is greater than 50%.`,
+        isTrue,
+        explanation: `The probability of at least one shared birthday is 1 - ∏_{k=0}^{${groupSize-1}} (365-k)/365 ≈ ${pCollision.toFixed(1)}%. Since ${pCollision.toFixed(1)}% ${isTrue ? ">" : "≤"} 50%, the proposition is ${isTrue ? "TRUE" : "FALSE"}. (The 50% crossover threshold occurs at 23 individuals).`,
+        commonPitfall: `Comparing each person only to oneself instead of counting all pairwise combinations: N×(N-1)/2 = ${(groupSize * (groupSize - 1))/2} pairs.`,
+      })
+    } else if (type === 4) {
+      // Urn without replacement
+      const red = prng.int(4, 8)
+      const blue = prng.int(4, 8)
+      const total = red + blue
+      const draws = 2
+      let pAllRed = (red / total) * ((red - 1) / (total - 1))
+      const pPct = pAllRed * 100
+      const cutoff = prng.choice([15, 25, 35])
+      const isTrue = pPct > cutoff
+
+      items.push({
+        id: `cal_urn_${prng.int(1000, 9999)}`,
+        domain: "probability",
+        statement: `An urn contains ${red} red marbles and ${blue} blue marbles. If you draw 2 marbles consecutively WITHOUT replacement, the probability that both drawn marbles are red exceeds ${cutoff}%.`,
+        isTrue,
+        explanation: `Probability is (${red}/${total}) × (${red - 1}/${total - 1}) ≈ ${pPct.toFixed(1)}%. Since ${pPct.toFixed(1)}% ${isTrue ? ">" : "≤"} ${cutoff}%, the statement is ${isTrue ? "TRUE" : "FALSE"}.`,
+        commonPitfall: `Treating draws as independent with replacement (${Math.pow(red/total, 2).toFixed(3)}), ignoring the conditional depletion of the urn.`,
+      })
+    } else {
+      // Epistemic curated item
+      const curated = prng.choice(CURATED_CALIBRATION_ITEMS)
+      items.push(curated)
+    }
+  }
+
+  return items
 }

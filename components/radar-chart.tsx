@@ -7,17 +7,17 @@ interface RadarChartProps {
   size?: number
 }
 
-export default function CognitiveRadarChart({ scores, size = 300 }: RadarChartProps) {
+export default function CognitiveRadarChart({ scores, size = 320 }: RadarChartProps) {
   const categories = [
-    { key: "Speed", label: "Speed ⚡" },
-    { key: "Memory", label: "Memory 🧠" },
-    { key: "Motor", label: "Motor 🎯" },
-    { key: "Language", label: "Language 📖" },
-    { key: "Vision", label: "Vision 👁️" },
+    { key: "Speed", label: "SPEED ⚡" },
+    { key: "Memory", label: "MEMORY 🧠" },
+    { key: "Motor", label: "MOTOR 🎯" },
+    { key: "Language", label: "LANGUAGE 📖" },
+    { key: "Vision", label: "VISION 👁️" },
   ]
 
   const center = size / 2
-  const radius = size * 0.38
+  const radius = size * 0.36
   const total = categories.length
 
   // Calculate coordinates for a category at a given ratio (0 to 1)
@@ -36,7 +36,6 @@ export default function CognitiveRadarChart({ scores, size = 300 }: RadarChartPr
   // Compute data polygon path
   const dataPoints = categories.map((cat, i) => {
     const raw = scores[cat.key] ?? 50
-    // Normalize percentile 1-100 to ratio 0.15 - 1.0
     const ratio = Math.max(0.15, Math.min(1.0, raw / 100))
     return getCoordinates(i, ratio)
   })
@@ -46,7 +45,7 @@ export default function CognitiveRadarChart({ scores, size = 300 }: RadarChartPr
   }, "") + " Z"
 
   return (
-    <div className="relative flex flex-col items-center justify-center">
+    <div className="relative flex flex-col items-center justify-center font-mono">
       <svg width={size} height={size} className="overflow-visible">
         {/* Background Grids */}
         {levels.map((lvl) => {
@@ -60,8 +59,9 @@ export default function CognitiveRadarChart({ scores, size = 300 }: RadarChartPr
               key={lvl}
               d={gridPath}
               fill="none"
-              stroke="rgba(255, 255, 255, 0.08)"
-              strokeWidth="1"
+              stroke="currentColor"
+              strokeOpacity={0.25}
+              strokeWidth="1.5"
             />
           )
         })}
@@ -76,8 +76,9 @@ export default function CognitiveRadarChart({ scores, size = 300 }: RadarChartPr
               y1={center}
               x2={pt.x}
               y2={pt.y}
-              stroke="rgba(255, 255, 255, 0.12)"
-              strokeWidth="1"
+              stroke="currentColor"
+              strokeOpacity={0.35}
+              strokeWidth="1.5"
             />
           )
         })}
@@ -85,52 +86,49 @@ export default function CognitiveRadarChart({ scores, size = 300 }: RadarChartPr
         {/* User Data Polygon */}
         <path
           d={dataPath}
-          fill="rgba(0, 240, 255, 0.22)"
-          stroke="#00F0FF"
-          strokeWidth="2.5"
-          className="transition-all duration-500"
+          className="fill-amber-400/25 dark:fill-cyan-400/25 stroke-black dark:stroke-white stroke-[2.5]"
         />
 
-        {/* Data Vertices */}
+        {/* Data Vertices (Square Brutalist Nodes) */}
         {dataPoints.map((pt, i) => (
-          <circle
+          <rect
             key={i}
-            cx={pt.x}
-            cy={pt.y}
-            r={4}
-            fill="#00F0FF"
-            stroke="#0b0f19"
-            strokeWidth="1.5"
+            x={pt.x - 4}
+            y={pt.y - 4}
+            width={8}
+            height={8}
+            className="fill-amber-400 dark:fill-cyan-400 stroke-black dark:stroke-white stroke-[1.5]"
           />
         ))}
 
         {/* Axis Labels */}
         {categories.map((cat, i) => {
-          const labelPt = getCoordinates(i, 1.22)
+          const labelPt = getCoordinates(i, 1.25)
           const val = scores[cat.key] ?? 50
           return (
             <g key={cat.key}>
               <text
                 x={labelPt.x}
-                y={labelPt.y}
+                y={labelPt.y - 4}
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill="#94a3b8"
+                fill="currentColor"
                 fontSize="11"
                 fontFamily="monospace"
-                className="font-medium"
+                fontWeight="900"
               >
                 {cat.label}
               </text>
               <text
                 x={labelPt.x}
-                y={labelPt.y + 13}
+                y={labelPt.y + 11}
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill="#00F0FF"
+                fill="currentColor"
                 fontSize="10"
                 fontFamily="monospace"
-                className="font-bold"
+                fontWeight="bold"
+                className="text-amber-500 dark:text-cyan-400"
               >
                 {val}%
               </text>

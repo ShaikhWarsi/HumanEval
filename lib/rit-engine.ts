@@ -1,6 +1,9 @@
 // lib/rit-engine.ts
 // Relational Integration Training (RIT) Engine
 // Grounded in Wang et al. (2025) & 2026 Fluid Intelligence (Gf) relational research
+// Fully procedural problem generator ensuring zero repetitive or duplicate items
+
+import { SeededPRNG } from "./engine/prng"
 
 export type RelationalModality = "numerical" | "spatial" | "verbal" | "causal" | "scientific"
 
@@ -8,14 +11,14 @@ export interface RelationalPremise {
   id: string
   entityA: string
   entityB: string
-  relation: ">" | "<" | "=" | "2x" | "half" | "causes" | "inhibits"
+  relation: string
 }
 
 export interface RelationalItem {
   id: string
   modality: RelationalModality
   depth: number // R1 to R4+
-  interferenceDensity: number // 0.0 to 1.0 (distractor density)
+  interferenceDensity: number
   premises: RelationalPremise[]
   targetEntityA: string
   targetEntityB: string
@@ -25,177 +28,377 @@ export interface RelationalItem {
   explanation: string
 }
 
+const NUMERICAL_NAMES = [
+  "Voltage V", "Current I", "Resistance R", "Flux Φ", "Impedance Z",
+  "Frequency Ω", "Amplitude A", "Capacitance C", "Inductance L", "Energy E",
+  "Asset Alpha", "Asset Beta", "Asset Gamma", "Asset Delta", "Asset Epsilon",
+  "Asset Zeta", "Vector X", "Vector Y", "Vector Z", "Vector W",
+  "Matrix P", "Matrix Q", "Matrix R", "Matrix S"
+]
+
+const CAUSAL_NAMES = [
+  "Dopamine Binding", "PKA Activation", "CREB Phosphorylation", "AMPAR Insertion",
+  "GABAergic Influx", "NMDA Depolarization", "BDNF Expression", "Synaptic LTP",
+  "Microglial Priming", "Neuroinflammation", "Astrocyte Clearance", "Oxidative Stress",
+  "Cache Miss Rate", "Memory Bus Saturation", "CPU Pipeline Stall", "Latency Spike",
+  "Lock Contention", "Thread Starvation", "Queue Congestion", "Throughput Drop"
+]
+
+const VERBAL_NAMES = [
+  "Theory Alpha", "Hypothesis Beta", "Model Gamma", "Paradigm Delta", "Axiom Epsilon",
+  "Postulate Zeta", "Conjecture Eta", "Lemma Theta", "Theorem Iota", "Corollary Kappa",
+  "Framework Omega", "Construct Sigma", "Doctrine Nu", "Schema Mu"
+]
+
+function shuffleArray<T>(arr: T[], prng?: SeededPRNG): T[] {
+  const result = [...arr]
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = prng ? prng.integer(0, i) : Math.floor(Math.random() * (i + 1))
+    ;[result[i], result[j]] = [result[j], result[i]]
+  }
+  return result
+}
+
+function sampleUnique<T>(pool: T[], count: number, prng?: SeededPRNG): T[] {
+  const shuffled = shuffleArray(pool, prng)
+  return shuffled.slice(0, count)
+}
+
 export class RelationalEngine {
   /**
-   * Generates an adaptive relational integration problem scaled by user ability theta [-3.0 to +3.0]
+   * Generates a fully procedural adaptive relational integration problem
+   * scaled by user ability theta [-3.0 to +3.0], optionally deterministically seeded.
    */
-  public static generateAdaptiveItem(theta: number, modality: RelationalModality): RelationalItem {
+  public static generateAdaptiveItem(
+    theta: number,
+    modality: RelationalModality,
+    seed?: number
+  ): RelationalItem {
     let depth = 2
     if (theta < -0.8) depth = 1
     else if (theta < 0.6) depth = 2
     else if (theta < 1.8) depth = 3
     else depth = 4 // Apex relational integration
 
-    const interference = Math.max(0.1, Math.min(0.85, (theta + 3.0) / 6.0))
-    const timeLimitMs = Math.max(7000, Math.round(24000 - theta * 2800))
+    const effectiveSeed = seed ?? Math.floor(Math.random() * 1000000)
+    const prng = new SeededPRNG(effectiveSeed)
 
-    return this.buildItem(depth, modality, interference, timeLimitMs)
+    const interference = Math.max(0.1, Math.min(0.85, (theta + 3.0) / 6.0))
+    const timeLimitMs = Math.max(8000, Math.round(26000 - theta * 2800))
+
+    return this.buildProceduralItem(depth, modality, interference, timeLimitMs, prng, effectiveSeed)
   }
 
-  private static buildItem(
+  private static buildProceduralItem(
     depth: number,
     modality: RelationalModality,
     interference: number,
-    timeLimitMs: number
+    timeLimitMs: number,
+    prng: SeededPRNG,
+    seed: number
   ): RelationalItem {
-    const id = `rit_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`
+    const id = `rit_${seed}_${prng.integer(1000, 9999)}`
 
-    if (modality === "numerical") {
-      if (depth === 1) {
-        return {
-          id,
-          modality,
-          depth,
-          interferenceDensity: interference,
-          premises: [
-            { id: "p1", entityA: "Voltage X", entityB: "Voltage Y", relation: ">" },
-          ],
-          targetEntityA: "Voltage X",
-          targetEntityB: "Voltage Y",
-          correctDeduction: "Voltage X is greater than Voltage Y",
-          options: [
-            "Voltage X is greater than Voltage Y",
-            "Voltage Y is greater than Voltage X",
-            "Voltage X equals Voltage Y",
-            "Indeterminate relation",
-          ],
-          timeLimitMs,
-          explanation: "Direct relational comparison from single premise.",
-        }
-      }
+    if (modality === "causal") {
+      return this.generateProceduralCausal(id, depth, interference, timeLimitMs, prng)
+    }
 
-      if (depth === 2) {
-        return {
-          id,
-          modality,
-          depth,
-          interferenceDensity: interference,
-          premises: [
-            { id: "p1", entityA: "Asset Alpha", entityB: "Asset Beta", relation: ">" },
-            { id: "p2", entityA: "Asset Beta", entityB: "Asset Gamma", relation: ">" },
-          ],
-          targetEntityA: "Asset Alpha",
-          targetEntityB: "Asset Gamma",
-          correctDeduction: "Asset Alpha > Asset Gamma",
-          options: [
-            "Asset Alpha > Asset Gamma",
-            "Asset Gamma > Asset Alpha",
-            "Asset Alpha = Asset Gamma",
-            "Indeterminate without Asset Delta",
-          ],
-          timeLimitMs,
-          explanation: "Transitive property: If Alpha > Beta and Beta > Gamma, then Alpha > Gamma.",
-        }
-      }
+    if (modality === "verbal") {
+      return this.generateProceduralVerbal(id, depth, interference, timeLimitMs, prng)
+    }
 
-      if (depth === 3) {
-        return {
-          id,
-          modality,
-          depth,
-          interferenceDensity: interference,
-          premises: [
-            { id: "p1", entityA: "Node X", entityB: "Node Y", relation: "2x" },
-            { id: "p2", entityA: "Node Z", entityB: "Node X", relation: "<" },
-            { id: "p3", entityA: "Node Y", entityB: "Node W", relation: "=" },
-          ],
-          targetEntityA: "Node X",
-          targetEntityB: "Node W",
-          correctDeduction: "Node X = 2·Node W",
-          options: [
-            "Node X = 2·Node W",
-            "Node X = 0.5·Node W",
-            "Node W > Node X",
-            "Node X = Node W",
-          ],
-          timeLimitMs,
-          explanation: "Substitute Y = W into X = 2Y yielding X = 2W.",
-        }
-      }
+    // Default to Numerical / Quantitative
+    return this.generateProceduralNumerical(id, depth, interference, timeLimitMs, prng)
+  }
 
-      // Depth R4
+  private static generateProceduralNumerical(
+    id: string,
+    depth: number,
+    interference: number,
+    timeLimitMs: number,
+    prng: SeededPRNG
+  ): RelationalItem {
+    const entities = sampleUnique(NUMERICAL_NAMES, depth + 2, prng)
+    const [A, B, C, D, E] = entities
+
+    if (depth === 1) {
+      const isGreater = prng.boolean(0.5)
+      const rel = isGreater ? ">" : "<"
+      const correct = isGreater ? `${A} > ${B}` : `${A} < ${B}`
+      const options = shuffleArray(
+        [
+          `${A} > ${B}`,
+          `${A} < ${B}`,
+          `${A} = ${B}`,
+          "Indeterminate magnitude",
+        ],
+        prng
+      )
+
       return {
         id,
-        modality,
-        depth: 4,
+        modality: "numerical",
+        depth: 1,
         interferenceDensity: interference,
-        premises: [
-          { id: "p1", entityA: "Matrix A", entityB: "Matrix B", relation: "2x" },
-          { id: "p2", entityA: "Matrix C", entityB: "Matrix A", relation: "half" },
-          { id: "p3", entityA: "Matrix D", entityB: "Matrix B", relation: "=" },
-          { id: "p4", entityA: "Distractor E", entityB: "Matrix C", relation: ">" },
-        ],
-        targetEntityA: "Matrix C",
-        targetEntityB: "Matrix D",
-        correctDeduction: "Matrix C = Matrix D",
-        options: [
-          "Matrix C = Matrix D",
-          "Matrix C = 2·Matrix D",
-          "Matrix D = 2·Matrix C",
-          "Matrix C < Matrix D",
-        ],
+        premises: [{ id: "p1", entityA: A, entityB: B, relation: rel }],
+        targetEntityA: A,
+        targetEntityB: B,
+        correctDeduction: correct,
+        options,
         timeLimitMs,
-        explanation: "C = 0.5·A. Since A = 2·B, C = 0.5·(2·B) = B. Since B = D, C = D.",
+        explanation: `Direct assessment: Premise establishes that ${A} ${rel} ${B}.`,
       }
     }
 
-    if (modality === "causal") {
+    if (depth === 2) {
+      // 2 premises: A > B, B > C => A > C OR A < B, B < C => A < C
+      const isGreater = prng.boolean(0.5)
+      const rel = isGreater ? ">" : "<"
+      const correct = isGreater ? `${A} > ${C}` : `${A} < ${C}`
+      const opposite = isGreater ? `${A} < ${C}` : `${A} > ${C}`
+
+      const options = shuffleArray(
+        [
+          correct,
+          opposite,
+          `${A} = ${C}`,
+          "Indeterminate without secondary baseline",
+        ],
+        prng
+      )
+
       return {
         id,
-        modality,
+        modality: "numerical",
+        depth: 2,
+        interferenceDensity: interference,
+        premises: [
+          { id: "p1", entityA: A, entityB: B, relation: rel },
+          { id: "p2", entityA: B, entityB: C, relation: rel },
+        ],
+        targetEntityA: A,
+        targetEntityB: C,
+        correctDeduction: correct,
+        options,
+        timeLimitMs,
+        explanation: `Transitive chain: Since ${A} ${rel} ${B} and ${B} ${rel} ${C}, it deductively follows that ${A} ${rel} ${C}.`,
+      }
+    }
+
+    if (depth === 3) {
+      // 3 premises with substitution or scaling: A = 2·B, B = C, D < C => A = 2·C
+      const multiplier = prng.boolean(0.5) ? 2 : 3
+      const correct = `${A} = ${multiplier}·${C}`
+      const options = shuffleArray(
+        [
+          `${A} = ${multiplier}·${C}`,
+          `${A} = ${C}`,
+          `${A} = 0.5·${C}`,
+          `${C} > ${A}`,
+        ],
+        prng
+      )
+
+      return {
+        id,
+        modality: "numerical",
+        depth: 3,
+        interferenceDensity: interference,
+        premises: [
+          { id: "p1", entityA: A, entityB: B, relation: `${multiplier}x` },
+          { id: "p2", entityA: B, entityB: C, relation: "=" },
+          { id: "p3", entityA: D, entityB: B, relation: "<" },
+        ],
+        targetEntityA: A,
+        targetEntityB: C,
+        correctDeduction: correct,
+        options,
+        timeLimitMs,
+        explanation: `Substitution deduction: From ${B} = ${C}, substitute into ${A} = ${multiplier}·${B} to obtain ${A} = ${multiplier}·${C}. (Premise 3 with ${D} is a distractor).`,
+      }
+    }
+
+    // Depth R4: Compound Multi-Variable Binding
+    // A = 2·B, C = 0.5·A, B = D, E > C => C = D
+    const correct = `${C} = ${D}`
+    const options = shuffleArray(
+      [
+        `${C} = ${D}`,
+        `${C} = 2·${D}`,
+        `${D} = 2·${C}`,
+        `${C} < ${D}`,
+      ],
+      prng
+    )
+
+    return {
+      id,
+      modality: "numerical",
+      depth: 4,
+      interferenceDensity: interference,
+      premises: [
+        { id: "p1", entityA: A, entityB: B, relation: "2x" },
+        { id: "p2", entityA: C, entityB: A, relation: "half" },
+        { id: "p3", entityA: B, entityB: D, relation: "=" },
+        { id: "p4", entityA: E, entityB: C, relation: ">" },
+      ],
+      targetEntityA: C,
+      targetEntityB: D,
+      correctDeduction: correct,
+      options,
+      timeLimitMs,
+      explanation: `Multi-step transitive resolution: ${C} is half of ${A}. Since ${A} = 2·${B}, ${C} = 0.5·(2·${B}) = ${B}. Since ${B} = ${D}, ${C} = ${D}.`,
+    }
+  }
+
+  private static generateProceduralCausal(
+    id: string,
+    depth: number,
+    interference: number,
+    timeLimitMs: number,
+    prng: SeededPRNG
+  ): RelationalItem {
+    const entities = sampleUnique(CAUSAL_NAMES, 4, prng)
+    const [A, B, C, D] = entities
+
+    // Cascades: A causes B, B causes C, D inhibits B
+    const isDoubleInhibition = prng.boolean(0.35)
+    if (isDoubleInhibition) {
+      // A inhibits B, B causes C => A suppresses C
+      const correct = `${A} suppresses ${C}`
+      const options = shuffleArray(
+        [
+          `${A} suppresses ${C}`,
+          `${A} promotes ${C}`,
+          `${A} is causally uncoupled from ${C}`,
+          `${C} directly stimulates ${A}`,
+        ],
+        prng
+      )
+
+      return {
+        id,
+        modality: "causal",
         depth: Math.max(2, depth),
         interferenceDensity: interference,
         premises: [
-          { id: "p1", entityA: "Dopamine D1 Binding", entityB: "PKA Signaling", relation: "causes" },
-          { id: "p2", entityA: "PKA Signaling", entityB: "AMPAR Exocytosis", relation: "causes" },
-          { id: "p3", entityA: "Phosphatase PP1", entityB: "PKA Signaling", relation: "inhibits" },
+          { id: "p1", entityA: A, entityB: B, relation: "inhibits" },
+          { id: "p2", entityA: B, entityB: C, relation: "causes" },
+          { id: "p3", entityA: D, entityB: B, relation: "modulates" },
         ],
-        targetEntityA: "D1 Activation",
-        targetEntityB: "AMPAR Exocytosis",
-        correctDeduction: "D1 Activation promotes AMPAR Exocytosis",
-        options: [
-          "D1 Activation promotes AMPAR Exocytosis",
-          "D1 Activation suppresses AMPAR Exocytosis",
-          "D1 Activation is decoupled from AMPAR",
-          "PP1 blocks D1 Activation directly",
-        ],
+        targetEntityA: A,
+        targetEntityB: C,
+        correctDeduction: correct,
+        options,
         timeLimitMs,
-        explanation: "Positive feed-forward cascade from D1 -> PKA -> AMPAR exocytosis.",
+        explanation: `Inhibitory cascade: Because ${A} inhibits ${B}, and ${B} is required to drive ${C}, activation of ${A} suppresses downstream ${C}.`,
       }
     }
 
-    // Verbal Default
+    // A causes B, B causes C => A promotes C
+    const correct = `${A} promotes ${C}`
+    const options = shuffleArray(
+      [
+        `${A} promotes ${C}`,
+        `${A} suppresses ${C}`,
+        `${A} and ${C} are decoupled`,
+        `${D} neutralizes ${A} directly`,
+      ],
+      prng
+    )
+
+    return {
+      id,
+      modality: "causal",
+      depth: Math.max(2, depth),
+      interferenceDensity: interference,
+      premises: [
+        { id: "p1", entityA: A, entityB: B, relation: "causes" },
+        { id: "p2", entityA: B, entityB: C, relation: "causes" },
+        { id: "p3", entityA: D, entityB: B, relation: "inhibits" },
+      ],
+      targetEntityA: A,
+      targetEntityB: C,
+      correctDeduction: correct,
+      options,
+      timeLimitMs,
+      explanation: `Forward activation cascade: ${A} activates ${B}, which subsequently triggers ${C}. Therefore, ${A} promotes ${C}.`,
+    }
+  }
+
+  private static generateProceduralVerbal(
+    id: string,
+    depth: number,
+    interference: number,
+    timeLimitMs: number,
+    prng: SeededPRNG
+  ): RelationalItem {
+    const entities = sampleUnique(VERBAL_NAMES, 4, prng)
+    const [A, B, C, D] = entities
+
+    // Indeterminate or Transitive
+    const isIndeterminate = prng.boolean(0.5)
+
+    if (isIndeterminate) {
+      // A > B, C > B => Relation between A and C is unconstrained
+      const correct = `Indeterminate without additional constraints`
+      const options = shuffleArray(
+        [
+          `Indeterminate without additional constraints`,
+          `${A} > ${C}`,
+          `${A} < ${C}`,
+          `${A} = ${C}`,
+        ],
+        prng
+      )
+
+      return {
+        id,
+        modality: "verbal",
+        depth: Math.max(2, depth),
+        interferenceDensity: interference,
+        premises: [
+          { id: "p1", entityA: A, entityB: B, relation: ">" },
+          { id: "p2", entityA: C, entityB: B, relation: ">" },
+          { id: "p3", entityA: D, entityB: A, relation: "<" },
+        ],
+        targetEntityA: A,
+        targetEntityB: C,
+        correctDeduction: correct,
+        options,
+        timeLimitMs,
+        explanation: `Logical independence: Both ${A} and ${C} are greater than ${B}. Knowing they both exceed a common baseline provides zero information on whether ${A} > ${C}, ${A} < ${C}, or ${A} = ${C}.`,
+      }
+    }
+
+    // Transitive: A > B, B = C, C > D => A > D
+    const correct = `${A} > ${D}`
+    const options = shuffleArray(
+      [
+        `${A} > ${D}`,
+        `${D} > ${A}`,
+        `${A} = ${D}`,
+        `Indeterminate relation`,
+      ],
+      prng
+    )
+
     return {
       id,
       modality: "verbal",
       depth: Math.max(2, depth),
       interferenceDensity: interference,
       premises: [
-        { id: "p1", entityA: "Theory Alpha", entityB: "Hypothesis Beta", relation: ">" },
-        { id: "p2", entityA: "Hypothesis Beta", entityB: "Model Gamma", relation: "=" },
-        { id: "p3", entityA: "Paradigm Delta", entityB: "Theory Alpha", relation: "<" },
+        { id: "p1", entityA: A, entityB: B, relation: ">" },
+        { id: "p2", entityA: B, entityB: C, relation: "=" },
+        { id: "p3", entityA: C, entityB: D, relation: ">" },
       ],
-      targetEntityA: "Paradigm Delta",
-      targetEntityB: "Model Gamma",
-      correctDeduction: "Indeterminate without empirical variance",
-      options: [
-        "Indeterminate without empirical variance",
-        "Paradigm Delta > Model Gamma",
-        "Paradigm Delta = Model Gamma",
-        "Model Gamma > Theory Alpha",
-      ],
+      targetEntityA: A,
+      targetEntityB: D,
+      correctDeduction: correct,
+      options,
       timeLimitMs,
-      explanation: "Delta < Alpha and Gamma = Beta < Alpha; the relative magnitude between Delta and Gamma is unconstrained.",
+      explanation: `Transitive verbal deduction: ${A} > ${B} = ${C} > ${D}. By strict transitiveness, ${A} > ${D}.`,
     }
   }
 

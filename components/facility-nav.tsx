@@ -31,10 +31,10 @@ export function FacilityNav() {
 
   const navItems = [
     { href: "/facility", label: "Command Hub", icon: Cpu },
-    { href: "/facility/relational", label: "Relational Gym (RIT)", icon: Layers, badge: "Gf" },
-    { href: "/facility/retrieval", label: "Reconstructive Retrieval", icon: Repeat, badge: "Recall" },
-    { href: "/facility/calibration", label: "Metacognitive Calibration", icon: Compass, badge: "Brier" },
-    { href: "/facility/transfer", label: "Transfer Verification", icon: Sparkles, badge: "Audits" },
+    { href: "/facility/relational", label: "Relational Gym", icon: Layers, badge: "Gf" },
+    { href: "/facility/retrieval", label: "Retrieval", icon: Repeat, badge: "Recall" },
+    { href: "/facility/calibration", label: "Calibration", icon: Compass, badge: "Brier" },
+    { href: "/facility/transfer", label: "Transfer Audit", icon: Sparkles, badge: "τ" },
     { href: "/facility/feynman", label: "Feynman Arena", icon: Zap, badge: "v2.0" },
   ]
 
@@ -42,33 +42,33 @@ export function FacilityNav() {
     if (!fatigue) return null
     if (fatigue.state === "exhausted") {
       return (
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-mono animate-pulse">
-          <ShieldAlert className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-1.5 px-2.5 py-1 border-2 border-black dark:border-white bg-red-500 text-white text-xs font-mono font-black shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] animate-pulse">
+          <ShieldAlert className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>IIV HIGH ({fatigue.fatigueRatio}x) — REST REQUIRED</span>
         </div>
       )
     }
     if (fatigue.state === "attenuating") {
       return (
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono">
-          <Activity className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-1.5 px-2.5 py-1 border-2 border-black dark:border-white bg-amber-400 text-black text-xs font-mono font-black shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+          <Activity className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>IIV DRIFT ({fatigue.fatigueRatio}x)</span>
         </div>
       )
     }
     return (
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono">
-        <Activity className="w-3.5 h-3.5" />
+      <div className="flex items-center gap-1.5 px-2.5 py-1 border-2 border-black dark:border-white bg-emerald-400 text-black text-xs font-mono font-black shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+        <Activity className="w-3.5 h-3.5 stroke-[2.5]" />
         <span>VIGILANCE NOMINAL ({fatigue.fatigueRatio}x)</span>
       </div>
     )
   }
 
   return (
-    <div className="w-full border-b border-border/50 bg-background/60 backdrop-blur-md sticky top-16 z-40">
+    <div className="w-full border-b-2 border-black dark:border-white bg-background sticky top-16 z-40">
       <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-col md:flex-row items-center justify-between gap-3">
         {/* Navigation tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto py-1 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto py-1 scrollbar-none font-mono text-xs">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
@@ -77,18 +77,20 @@ export function FacilityNav() {
                 key={item.href}
                 href={item.href}
                 onClick={() => sound.playClick()}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono whitespace-nowrap transition-all border ${
+                className={`flex items-center gap-2 px-3 py-1.5 uppercase font-mono transition-all border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none whitespace-nowrap ${
                   isActive
-                    ? "bg-cyan-500/15 text-cyan-400 border-cyan-500/30 shadow-sm shadow-cyan-500/10 font-bold"
-                    : "text-muted-foreground border-transparent hover:text-foreground hover:bg-muted/40"
+                    ? "bg-amber-400 dark:bg-cyan-400 text-black font-black"
+                    : "bg-card text-foreground hover:bg-secondary font-bold"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
                 <span>{item.label}</span>
                 {item.badge && (
                   <span
-                    className={`text-[9px] px-1 rounded font-semibold ${
-                      isActive ? "bg-cyan-400/20 text-cyan-300" : "bg-muted text-muted-foreground"
+                    className={`text-[9px] px-1 py-0.2 border ${
+                      isActive
+                        ? "border-black bg-black text-white"
+                        : "border-black dark:border-white bg-black text-white dark:bg-white dark:text-black"
                     }`}
                   >
                     {item.badge}

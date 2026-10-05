@@ -1,94 +1,158 @@
+// components/tests/verbal-memory-test.tsx
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useScore } from "@/lib/score-context"
 import { sound } from "@/lib/audio"
 import BellCurve from "@/components/bell-curve"
-import { MessageSquare, RotateCcw, Heart } from "lucide-react"
+import { MessageSquare, RotateCcw } from "lucide-react"
 
 type GameState = "instructions" | "playing" | "result"
 
-const WORD_BANK = [
-  "matrix", "quantum", "neural", "pulse", "beacon", "crypto", "signal", "photon",
-  "nebula", "zenith", "orbit", "vortex", "echo", "vertex", "plasma", "dynamo",
-  "vector", "tensor", "nexus", "flux", "aurora", "prism", "binary", "cipher",
-  "strata", "titan", "radius", "hyper", "cyber", "lumen", "apex", "synthesis",
-  "entropy", "cosmos", "chronos", "gravity", "quasar", "eclipse", "stellar", "cortex",
-  "synapse", "axon", "proton", "neutron", "circuit", "silicon", "optics", "sonar",
-  "radar", "spectrum", "wavelength", "frequency", "resonance", "amplitude", "harmonic",
-  "crystal", "prism", "mirror", "shadow", "spark", "ember", "frost", "blaze",
-  "whisper", "thunder", "meteor", "comet", "galaxy", "cluster", "vacuum", "void",
-  "origin", "terminal", "packet", "router", "gateway", "proxy", "token", "hash",
-  "kernel", "daemon", "thread", "process", "socket", "buffer", "cache", "driver",
-  "sensor", "actuator", "chassis", "module", "relay", "switch", "diode", "transistor",
-  "battery", "engine", "turbine", "rudder", "anchor", "compass", "voyage", "horizon"
+const INITIAL_WORD_POOL = [
+  "algorithm", "bandwidth", "circuit", "database", "entropy", "frequency",
+  "gateway", "heuristic", "iteration", "junction", "kernel", "latency",
+  "matrix", "network", "optical", "protocol", "quantum", "resonance",
+  "synapse", "telemetry", "universe", "velocity", "wavelength", "zenith",
+  "aperture", "binary", "compiler", "dichotomy", "effector", "feedback",
+  "gradient", "hardware", "induction", "kinetics", "logic", "modem",
+  "neuron", "orbital", "photon", "qubit", "refraction", "spectrum",
+  "topology", "upgrade", "vector", "waveform", "yield", "zero",
+  "absolute", "beacon", "catalyst", "dynamic", "electron", "flux",
+  "gyroscope", "horizon", "impulse", "joule", "kelvin", "lumbar",
+  "monolith", "nucleus", "oscillator", "plasma", "quark", "radiation",
+  "silicon", "trajectory", "uranium", "vacuum", "watt", "xenon",
+  "acoustic", "biosphere", "cadence", "diffraction", "emission", "fission",
+  "gravity", "hydraulics", "isotope", "laser", "magnet", "nebula",
+  "optics", "pulsar", "radar", "satellite", "thermodynamics", "ultrasound",
+  "valence", "volt", "amplifier", "battery", "capacitor",
+  "diode", "electrode", "filament", "generator", "harness", "inverter",
+  "lumens", "microchip", "nanometer", "ohm", "particle", "rectifier",
+  "solenoid", "transistor", "ultraviolet", "varistor", "winding", "actuator",
+  "bistable", "coulomb", "deflector", "elastomer", "ferrite", "governor",
+  "impedance", "kinematics", "magnetron", "potentiometer", "rheostat", "tachometer",
+  "accelerator", "ballistics", "caliper", "dynamometer", "encoder", "flywheel",
+  "gyro", "interferometer", "manometer", "nozzle", "odometer", "pyrometer",
+  "radiometer", "spectrometer", "thermistor", "viscometer", "windlass", "anemometer",
+  "chronometer", "dosimeter", "galvanometer", "hydrometer", "inclinometer", "luxmeter",
+  "micrometer", "oscilloscope", "polarimeter", "refractometer", "seismometer", "turbidimeter",
+  "antigen", "axon", "bacterium", "chromosome", "dendrite", "enzyme",
+  "fungus", "genome", "hormone", "immunity", "jugular", "karyotype",
+  "leukocyte", "mitochondria", "neuron", "organelle", "pathogen", "receptor",
+  "stemcell", "telomere", "uracil", "vaccine", "whitehead", "xylem",
+  "yeast", "zygote", "abyss", "boulder", "canyon", "delta",
+  "estuary", "fjord", "geyser", "highland", "island", "jungle",
+  "karst", "lagoon", "mesa", "oasis", "plateau", "quarry",
+  "ridge", "savanna", "tundra", "upland", "valley", "wetland",
+  "anchor", "bridge", "cathedral", "dome", "edifice", "fortress",
+  "gallery", "hangar", "igloo", "jetty", "kiosk", "lighthouse",
+  "monastery", "nexus", "obelisk", "pavilion", "quay", "ramp",
+  "spire", "tower", "viaduct", "wharf", "atoll", "crater",
+  "dune", "escarpment", "faultline", "glacier", "headland", "iceberg",
+  "keystone", "limestone", "moraine", "outcrop", "pinnacle", "ravine",
+  "sinkhole", "trench", "volcano", "watershed", "zenith", "archipelago",
+  "badlands", "chasm", "drumlin", "estuary", "fissure", "geode",
+  "hotspring", "inselberg", "kame", "lava", "magma", "nunatak",
+  "oxbow", "peninsula", "quartzite", "rift", "sandbar", "tarn",
+  "vent", "waterfall", "basalt", "calcite", "diorite", "epidote",
+  "feldspar", "granite", "halite", "igneous", "jasper", "kimberlite",
+  "lignite", "mica", "nephrite", "obsidian", "pumice", "rhyolite",
+  "schist", "talc", "ultramafic", "vesicle", "wollastonite", "zeolite",
+  "anvil", "bellows", "chisel", "drill", "engine", "forge",
+  "gasket", "hammer", "impeller", "joist", "knurling", "lathe",
+  "mandrel", "nut", "oiler", "pulley", "ratchet", "spindle",
+  "tappet", "universal", "valve", "wrench", "yoke", "camshaft",
+  "crankshaft", "differential", "exhaust", "flywheel", "gearbox", "housing",
+  "injector", "journal", "linkage", "manifold", "pinion", "rocker",
+  "supercharger", "throttle", "turbo", "valvehead", "wristpin", "aerofoil",
+  "aileron", "bulkhead", "canard", "empennage", "fuselage", "gimbal",
+  "horizon", "nacelle", "pitot", "rudder", "stabilizer", "trimtab",
+  "winglet", "yaw", "altitude", "bearing", "compass", "drift",
+  "elevation", "fix", "heading", "latitude", "longitude", "meridian",
+  "nadir", "orbit", "pitch", "roll", "sextant", "track",
+  "vector", "waypoint", "azimuth", "zenith", "barometer", "chronometer"
 ]
 
 export default function VerbalMemoryTest() {
   const [gameState, setGameState] = useState<GameState>("instructions")
   const [score, setScore] = useState(0)
   const [lives, setLives] = useState(3)
-  const [currentWord, setCurrentWord] = useState("")
   const [seenWords, setSeenWords] = useState<Set<string>>(new Set())
-  const [isCurrentWordSeen, setIsCurrentWordSeen] = useState(false)
+  const [currentWord, setCurrentWord] = useState("")
+  const [isLocked, setIsLocked] = useState(false)
   const [percentile, setPercentile] = useState(50)
 
   const { addScore } = useScore()
 
-  const pickNextWord = (seen: Set<string>) => {
-    // 50% chance to repeat if we have seen at least 2 words
-    const shouldRepeat = seen.size >= 2 && Math.random() < 0.5
+  const pickNextWord = (currentSeen: Set<string>, lastWord: string) => {
+    // 50% chance of showing a previously seen word if at least 3 seen words exist
+    const shouldShowSeen = currentSeen.size >= 3 && Math.random() < 0.5
 
-    if (shouldRepeat) {
-      const seenArray = Array.from(seen)
-      const randomSeen = seenArray[Math.floor(Math.random() * seenArray.length)]
-      setCurrentWord(randomSeen)
-      setIsCurrentWordSeen(true)
-    } else {
-      // Pick an unseen word
-      const available = WORD_BANK.filter((w) => !seen.has(w))
-      const word = available.length > 0
-        ? available[Math.floor(Math.random() * available.length)]
-        : `word_${Math.floor(Math.random() * 1000)}` // fallback
-      
-      setCurrentWord(word)
-      setIsCurrentWordSeen(false)
+    if (shouldShowSeen) {
+      const seenArray = Array.from(currentSeen).filter((w) => w !== lastWord)
+      if (seenArray.length > 0) {
+        const word = seenArray[Math.floor(Math.random() * seenArray.length)]
+        setCurrentWord(word)
+        setIsLocked(false)
+        return
+      }
     }
+
+    // Pick a novel word not yet seen
+    const unvisited = INITIAL_WORD_POOL.filter((w) => !currentSeen.has(w) && w !== lastWord)
+    if (unvisited.length > 0) {
+      const word = unvisited[Math.floor(Math.random() * unvisited.length)]
+      setCurrentWord(word)
+    } else {
+      // Procedurally append indexed words if dictionary is saturated
+      const word = `stimulus_${currentSeen.size + 1}`
+      setCurrentWord(word)
+    }
+    setIsLocked(false)
   }
 
   const startGame = () => {
     setScore(0)
     setLives(3)
-    const initialSeen = new Set<string>()
-    setSeenWords(initialSeen)
+    const newSeen = new Set<string>()
+    setSeenWords(newSeen)
     setGameState("playing")
-    pickNextWord(initialSeen)
+    setIsLocked(false)
+    pickNextWord(newSeen, "")
   }
 
-  const handleDecision = (userClaimedSeen: boolean) => {
-    if (gameState !== "playing") return
+  const handleDecision = (userClickedSeen: boolean) => {
+    if (gameState !== "playing" || isLocked) return
+    setIsLocked(true)
 
-    if (userClaimedSeen === isCurrentWordSeen) {
+    const isActuallySeen = seenWords.has(currentWord)
+
+    if (userClickedSeen === isActuallySeen) {
       // Correct!
       sound.playClick()
       const newScore = score + 1
       setScore(newScore)
 
+      // Add to seen set if it was novel
       const updatedSeen = new Set(seenWords)
-      if (!isCurrentWordSeen) {
-        updatedSeen.add(currentWord)
-        setSeenWords(updatedSeen)
-      }
-      pickNextWord(updatedSeen)
+      updatedSeen.add(currentWord)
+      setSeenWords(updatedSeen)
+
+      pickNextWord(updatedSeen, currentWord)
     } else {
-      // Wrong!
+      // Incorrect!
       sound.playError()
       const newLives = lives - 1
       setLives(newLives)
 
+      // Even on failure, word is now encountered
+      const updatedSeen = new Set(seenWords)
+      updatedSeen.add(currentWord)
+      setSeenWords(updatedSeen)
+
       if (newLives <= 0) {
-        // Game Over
+        // Game Over!
         const saved = addScore({
           testId: "verbal-memory",
           testName: "Verbal Memory",
@@ -99,51 +163,31 @@ export default function VerbalMemoryTest() {
         setPercentile(saved.percentile)
         setGameState("result")
       } else {
-        const updatedSeen = new Set(seenWords)
-        if (!isCurrentWordSeen) {
-          updatedSeen.add(currentWord)
-          setSeenWords(updatedSeen)
-        }
-        pickNextWord(updatedSeen)
+        pickNextWord(updatedSeen, currentWord)
       }
     }
   }
 
-  // Keyboard controls: ArrowLeft or 'S' for SEEN, ArrowRight or 'N' for NEW
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (gameState !== "playing") return
-      if (e.key === "ArrowLeft" || e.key.toLowerCase() === "s") {
-        handleDecision(true)
-      } else if (e.key === "ArrowRight" || e.key.toLowerCase() === "n") {
-        handleDecision(false)
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [gameState, currentWord, isCurrentWordSeen, score, lives, seenWords])
-
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 sm:p-12 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-6">
-          <MessageSquare className="w-8 h-8" />
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
+        <div className="w-16 h-16 border-2 border-black dark:border-white bg-amber-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+          <MessageSquare className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-2xl font-bold font-mono tracking-tight text-foreground mb-3">
-          Verbal Memory Protocol
+        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
+          Verbal Working Memory
         </h2>
-        <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
-          Words will be presented one at a time. If you have seen the word in this session, choose <strong className="text-amber-400">SEEN</strong>. 
-          If the word is novel, choose <strong className="text-cyan-400">NEW</strong>. You have 3 lives.
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+          You will be shown words one by one. If you have seen the word before in this session, click{" "}
+          <strong className="text-foreground uppercase">SEEN</strong>. If it is novel, click{" "}
+          <strong className="text-foreground uppercase">NEW</strong>. 3 strikes and the test terminates.
         </p>
 
         <Button
           onClick={startGame}
           size="lg"
-          className="bg-amber-500 hover:bg-amber-400 text-black font-mono font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-amber-500/20"
         >
-          Initialize Word Stream
+          Start Verbal Test
         </Button>
       </div>
     )
@@ -151,23 +195,27 @@ export default function VerbalMemoryTest() {
 
   if (gameState === "result") {
     return (
-      <div className="max-w-2xl mx-auto cyber-card rounded-2xl p-8 text-center animate-in fade-in">
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-4">
-          <MessageSquare className="w-8 h-8" />
+      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-mono">
+        <div className="w-16 h-16 border-2 border-black dark:border-white bg-amber-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A]">
+          <MessageSquare className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-xs font-mono uppercase text-muted-foreground tracking-wider mb-1">
-          Lexical Memory Capacity
+        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">
+          Lexical Memory Score
         </h2>
-        <div className="text-5xl font-mono font-black text-foreground mb-2 tabular">
-          {score} <span className="text-2xl text-amber-400">words</span>
+        <div className="text-6xl font-black text-foreground mb-2 tabular">
+          {score}
+          <span className="text-2xl text-amber-500 ml-1">words</span>
         </div>
+
+        <p className="text-xs font-bold uppercase text-muted-foreground mb-6">
+          Vocabulary Buffer: {seenWords.size} unique words retained
+        </p>
 
         <BellCurve testId="verbal-memory" score={score} unit="words" percentile={percentile} />
 
         <div className="flex gap-3 justify-center mt-6">
           <Button
             onClick={startGame}
-            className="bg-amber-500 hover:bg-amber-400 text-black font-mono font-bold px-6 py-2.5 rounded-xl transition-all"
           >
             <RotateCcw className="w-4 h-4 mr-2" /> Try Again
           </Button>
@@ -177,45 +225,56 @@ export default function VerbalMemoryTest() {
   }
 
   return (
-    <div className="max-w-xl mx-auto cyber-card rounded-2xl p-8 sm:p-12 text-center">
+    <div className="max-w-xl mx-auto space-y-4 font-mono">
       {/* Telemetry bar */}
-      <div className="flex items-center justify-between mb-8 text-xs font-mono">
-        <div className="flex items-center gap-1.5 text-rose-400">
-          {[...Array(3)].map((_, i) => (
-            <Heart
-              key={i}
-              className={`w-4 h-4 ${i < lives ? "fill-rose-500 text-rose-500" : "text-muted-foreground/30"}`}
-            />
-          ))}
+      <div className="flex items-center justify-between text-xs font-bold uppercase px-2">
+        <div className="flex items-center gap-1.5">
+          <span className="text-muted-foreground">Lives:</span>
+          <div className="flex gap-1">
+            {[1, 2, 3].map((heart) => (
+              <div
+                key={heart}
+                className={`w-3.5 h-3.5 border-2 border-black dark:border-white shadow-[1px_1px_0px_0px_#0A0A0A] ${
+                  heart <= lives ? "bg-rose-500" : "bg-card"
+                }`}
+              />
+            ))}
+          </div>
         </div>
-        <div className="text-muted-foreground">
-          Score: <span className="text-foreground font-bold text-sm tabular">{score}</span>
+
+        <div className="flex items-center gap-4">
+          <span className="text-muted-foreground">
+            Bank: <strong className="text-foreground">{seenWords.size}</strong>
+          </span>
+          <span className="text-muted-foreground">
+            Score: <strong className="text-amber-500 dark:text-cyan-400 tabular text-sm">{score}</strong>
+          </span>
         </div>
       </div>
 
-      {/* Target Word */}
-      <div className="my-10 animate-in zoom-in-95 duration-100">
-        <span className="text-4xl sm:text-5xl font-mono font-black tracking-wider text-foreground">
+      {/* Main Word Card */}
+      <div className="brutal-card p-10 sm:p-16 text-center space-y-8">
+        <div className="text-4xl sm:text-6xl font-black text-foreground tracking-wide select-none">
           {currentWord}
-        </span>
-      </div>
+        </div>
 
-      {/* Decision Buttons */}
-      <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
-        <Button
-          onClick={() => handleDecision(true)}
-          size="lg"
-          className="bg-amber-500 hover:bg-amber-400 text-black font-mono font-bold py-6 text-base rounded-xl transition-all shadow-md active:scale-95"
-        >
-          SEEN <span className="text-[10px] opacity-70 ml-1">(← / S)</span>
-        </Button>
-        <Button
-          onClick={() => handleDecision(false)}
-          size="lg"
-          className="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold py-6 text-base rounded-xl transition-all shadow-md active:scale-95"
-        >
-          NEW <span className="text-[10px] opacity-70 ml-1">(→ / N)</span>
-        </Button>
+        <div className="flex items-center justify-center gap-4 pt-4">
+          <Button
+            onClick={() => handleDecision(true)}
+            size="lg"
+            className="flex-1 max-w-[180px] bg-cyan-400 text-black py-6 text-base font-black shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF] hover:bg-cyan-300"
+          >
+            SEEN
+          </Button>
+
+          <Button
+            onClick={() => handleDecision(false)}
+            size="lg"
+            className="flex-1 max-w-[180px] bg-amber-400 text-black py-6 text-base font-black shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF] hover:bg-amber-300"
+          >
+            NEW
+          </Button>
+        </div>
       </div>
     </div>
   )

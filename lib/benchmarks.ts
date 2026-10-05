@@ -153,35 +153,54 @@ export function calculatePercentile(testId: string, score: number): number {
 
   // Standard Normal CDF: 0.5 * (1 + erf(z / sqrt(2)))
   const cdf = 0.5 * (1 + erf(effectiveZ / Math.SQRT2))
-  const percentile = Math.max(1, Math.min(99.9, cdf * 100))
+  // Round to nearest integer percentile to reflect authentic measurement precision without fake decimals
+  const percentile = Math.max(1, Math.min(99, Math.round(cdf * 100)))
 
-  return Math.round(percentile * 10) / 10
+  return percentile
+}
+
+export function getPercentileSEM(percentile: number): { value: number; sem: number; low: number; high: number } {
+  const sem = 4 // ±4% standard error of measurement under computerized test-retest reliability
+  const val = Math.round(percentile)
+  return {
+    value: val,
+    sem,
+    low: Math.max(1, val - sem),
+    high: Math.min(99, val + sem),
+  }
 }
 
 // Calculate Composite Cognitive Index (CGI rating: scale from 700 to 1600, median 1000)
-export function calculateCGI(bestScores: Record<string, number>): {
+// Psychometric standard: Pure motor tasks (Aim Trainer, Typing Speed) are isolated as auxiliary
+// motor metrics and excluded from the core cognitive index to prevent confounding motor DPI with intelligence.
+export function calculateCGI(scores: Record<string, number>): {
   cgi: number
   tier: string
   domainScores: Record<string, number>
+  auxiliaryMotorScore: number
 } {
   const domains: Record<string, number[]> = {
     Speed: [],
     Memory: [],
-    Motor: [],
     Language: [],
     Vision: [],
   }
+  const motorPercentiles: number[] = []
 
-  let totalPercentile = 0
-  let count = 0
+  let totalCognitivePercentile = 0
+  let cognitiveCount = 0
 
-  for (const [testId, score] of Object.entries(bestScores)) {
+  for (const [testId, score] of Object.entries(scores)) {
     const meta = BENCHMARKS[testId]
     if (meta && typeof score === "number" && score > 0) {
       const p = calculatePercentile(testId, score)
-      domains[meta.category].push(p)
-      totalPercentile += p
-      count++
+      if (meta.category === "Motor") {
+        motorPercentiles.push(p)
+      } else {
+        domains[meta.category].push(p)
+        totalCognitivePercentile += p
+        cognitiveCount++
+      }
     }
   }
 
@@ -190,19 +209,26 @@ export function calculateCGI(bestScores: Record<string, number>): {
     if (vals.length > 0) {
       domainScores[domain] = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length)
     } else {
-      domainScores[domain] = 50 // baseline
+      domainScores[domain] = 0 // uncalibrated
     }
   }
 
-  if (count === 0) {
+  const auxiliaryMotorScore =
+    motorPercentiles.length > 0
+      ? Math.round(motorPercentiles.reduce((a, b) => a + b, 0) / motorPercentiles.length)
+      : 0
+  domainScores["Motor"] = auxiliaryMotorScore
+
+  if (cognitiveCount === 0) {
     return {
-      cgi: 1000,
+      cgi: 0,
       tier: "Uncalibrated",
-      domainScores: { Speed: 50, Memory: 50, Motor: 50, Language: 50, Vision: 50 },
+      domainScores: { Speed: 0, Memory: 0, Language: 0, Vision: 0, Motor: auxiliaryMotorScore },
+      auxiliaryMotorScore,
     }
   }
 
-  const avgPercentile = totalPercentile / count
+  const avgPercentile = totalCognitivePercentile / cognitiveCount
   // Scale percentile into Elo-like rating: 50th percentile -> 1000, 99th -> 1450, 1st -> 750
   const cgi = Math.round(750 + avgPercentile * 7)
 
@@ -213,5 +239,5 @@ export function calculateCGI(bestScores: Record<string, number>): {
   else if (cgi >= 950) tier = "Average Human"
   else tier = "Developing"
 
-  return { cgi, tier, domainScores }
+  return { cgi, tier, domainScores, auxiliaryMotorScore }
 }

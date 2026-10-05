@@ -11,7 +11,7 @@ import VisualMemoryTest from "@/components/tests/visual-memory-test"
 import TypingTest from "@/components/tests/typing-test"
 import Footer from "@/components/footer"
 import { BENCHMARKS } from "@/lib/benchmarks"
-import { ArrowLeft, Brain, Sparkles, Activity, Info } from "lucide-react"
+import { ArrowLeft, Activity, Info } from "lucide-react"
 
 const testDetails: Record<
   string,
@@ -133,25 +133,25 @@ export default async function TestPage({ params }: { params: Promise<{ testId: s
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col font-mono">
       <div className="max-w-6xl mx-auto w-full px-4 pt-6 pb-16 flex-1">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between mb-8">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-cyan-400 transition-colors py-1 px-2.5 rounded-lg border border-border/40 bg-card/40"
+            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-foreground py-1.5 px-3 border-2 border-black dark:border-white bg-card shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none uppercase transition-all"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>ALL BENCHMARKS</span>
           </Link>
 
           {benchmarkMeta && (
             <div className="flex items-center gap-2 text-xs font-mono">
-              <span className="text-muted-foreground">Human Avg:</span>
-              <span className="font-bold text-foreground">
+              <span className="text-muted-foreground uppercase font-bold">Pop Avg:</span>
+              <span className="font-black text-foreground tabular">
                 {benchmarkMeta.median} {benchmarkMeta.unit}
               </span>
-              <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              <span className="px-2 py-0.5 border border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black font-black uppercase text-xs shadow-[1.5px_1.5px_0px_0px_#0A0A0A]">
                 {benchmarkMeta.category}
               </span>
             </div>
@@ -160,10 +160,10 @@ export default async function TestPage({ params }: { params: Promise<{ testId: s
 
         {/* Test Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-mono">
+          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-foreground font-mono">
             {test.title}
           </h1>
-          <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-2 max-w-xl mx-auto font-mono">
             {test.description}
           </p>
         </div>
@@ -173,26 +173,26 @@ export default async function TestPage({ params }: { params: Promise<{ testId: s
 
         {/* Scientific Context & Methodology Card */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
-          <div className="cyber-card rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-3 text-cyan-400">
-              <Info className="w-4 h-4" />
-              <h3 className="text-sm font-bold font-mono tracking-wider uppercase text-foreground">
+          <div className="brutal-card p-6">
+            <div className="flex items-center gap-2 mb-3 text-amber-500 dark:text-cyan-400">
+              <Info className="w-4 h-4 stroke-[2.5]" />
+              <h3 className="text-sm font-black font-mono tracking-wider uppercase text-foreground">
                 Benchmark Protocol
               </h3>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed font-mono">
               {test.about}
             </p>
           </div>
 
-          <div className="cyber-card rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-3 text-emerald-400">
-              <Activity className="w-4 h-4" />
-              <h3 className="text-sm font-bold font-mono tracking-wider uppercase text-foreground">
+          <div className="brutal-card p-6">
+            <div className="flex items-center gap-2 mb-3 text-emerald-500">
+              <Activity className="w-4 h-4 stroke-[2.5]" />
+              <h3 className="text-sm font-black font-mono tracking-wider uppercase text-foreground">
                 Cognitive Neuro-Telemetry
               </h3>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed font-mono">
               {test.scientificBasis}
             </p>
           </div>

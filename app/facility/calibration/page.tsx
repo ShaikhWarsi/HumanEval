@@ -27,7 +27,7 @@ import {
 import { sound } from "@/lib/audio"
 
 export default function CalibrationPage() {
-  const [items] = useState<CalibrationItem[]>(CURATED_CALIBRATION_ITEMS)
+  const [items, setItems] = useState<CalibrationItem[]>(CURATED_CALIBRATION_ITEMS)
   const [currentIndex, setCurrentIndex] = useState<number>(0)
   const [probability, setProbability] = useState<number>(0.5)
   const [selectedHypothesis, setSelectedHypothesis] = useState<ErrorHypothesis>("heuristic_bias")
@@ -38,6 +38,8 @@ export default function CalibrationPage() {
   const currentItem = items[currentIndex]
 
   useEffect(() => {
+    const procedural = CalibrationEngine.generateProceduralItems(30)
+    setItems(procedural)
     setSummary(CalibrationEngine.computeSummary())
   }, [])
 

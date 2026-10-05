@@ -123,6 +123,82 @@ export const CURATED_CONCEPTS: ConceptItem[] = [
       "Frictional reconstructive effort drives synaptic stabilization",
     ],
   },
+  {
+    id: "concept-hebbian-stdp",
+    title: "Hebbian Plasticity & Spike-Timing-Dependent Plasticity (STDP)",
+    category: "neurobiology",
+    keyPrinciple: "Neurons that fire together wire together, conditioned by millisecond spike latency",
+    denseExplanation:
+      "Donald Hebb postulated that coordinated activity between pre- and post-synaptic neurons strengthens their connection. STDP refines this temporally: if a presynaptic spike precedes a postsynaptic spike by 5-20ms, long-term potentiation (LTP) occurs; if the postsynaptic spike occurs before the presynaptic spike, long-term depression (LTD) is induced. Temporal causality dictates synaptic directionality.",
+    distractorTask: "Subtract 13 from 100 iteratively three times mentally.",
+    retrievalPrompt:
+      "Explain Spike-Timing-Dependent Plasticity (STDP): What determines whether a synapse undergoes long-term potentiation (LTP) versus long-term depression (LTD)?",
+    modelAnswer:
+      "STDP is governed by precise millisecond timing of action potentials. If the presynaptic neuron fires shortly before the postsynaptic neuron (causal sequence), the synapse strengthens via LTP. If the presynaptic neuron fires after the postsynaptic neuron (acausal sequence), the synapse weakens via LTD.",
+    crucialCheckpoints: [
+      "Millisecond spike order determines plasticity outcome",
+      "Presynaptic before postsynaptic triggers LTP (strengthening)",
+      "Postsynaptic before presynaptic triggers LTD (weakening)",
+      "Biological implementation of temporal causality in neural circuits",
+    ],
+  },
+  {
+    id: "concept-cap-theorem",
+    title: "The CAP Theorem in Distributed Architecture",
+    category: "systems-engineering",
+    keyPrinciple: "Consistency, Availability, and Partition Tolerance: choose two under network partition",
+    denseExplanation:
+      "Eric Brewer's CAP Theorem states that in any asynchronous distributed data store over an unreliable network, it is impossible to simultaneously guarantee Consistency (every read receives the most recent write), Availability (every non-failing node returns a non-error response), and Partition Tolerance (the system functions despite arbitrary message loss). Because network partitions (P) are physically unavoidable, systems must trade CP (halting writes to ensure consistency) against AP (accepting stale reads to preserve uptime).",
+    distractorTask: "Count the number of syllables in 'EPIDEMIOLOGICAL' mentally.",
+    retrievalPrompt:
+      "Formulate the CAP Theorem. Why is 'choosing CA' considered a myth in real-world distributed networks?",
+    modelAnswer:
+      "CAP states that a distributed system cannot achieve Consistency, Availability, and Partition Tolerance simultaneously. Because physical networks inherently suffer packet loss and latency partitions (P cannot be avoided), the trade-off is strictly between Consistency (CP) and Availability (AP) during a network partition.",
+    crucialCheckpoints: [
+      "C = Consistency, A = Availability, P = Partition Tolerance",
+      "Partitions are physically unavoidable in real networks",
+      "Under partition, system must sacrifice either fresh reads (A) or linearizability (C)",
+      "CA without P is impossible over physically separated nodes",
+    ],
+  },
+  {
+    id: "concept-kahneman-dual-process",
+    title: "Dual-Process Theory: System 1 vs System 2",
+    category: "cognitive-science",
+    keyPrinciple: "Fast, associative, automated heuristics vs Slow, serial, effortful executive computation",
+    denseExplanation:
+      "Daniel Kahneman and Amos Tversky characterized human cognition as dual interacting systems. System 1 operates automatically and swiftly with minimal voluntary control, employing associative memory, emotional heuristics, and pattern matching. System 2 allocates serial attention to effortful mental operations, including complex arithmetic, formal logic, and inhibitory suppression. System 1 generates fast impressions; System 2 endorses or vetoes them, but suffers from cognitive ego depletion under continuous load.",
+    distractorTask: "Reverse the letters of 'COGNITION' in your mind.",
+    retrievalPrompt:
+      "Contrast System 1 and System 2 cognitive processing. Why does System 1 produce cognitive biases, and why does System 2 fail to catch all of them?",
+    modelAnswer:
+      "System 1 is fast, automatic, parallel, and driven by heuristics; System 2 is slow, effortful, serial, and rule-governed. System 1 substitutes easier intuitive questions for complex ones (attribute substitution), creating systematic biases. System 2 is computationally expensive and lazy, frequently rubber-stamping System 1 impressions without deep analytical auditing.",
+    crucialCheckpoints: [
+      "System 1: fast, automated, heuristic, associative",
+      "System 2: slow, serial, effortful, logical, deliberative",
+      "Attribute substitution drives intuitive heuristic biases",
+      "System 2 cognitive laziness allows errors to pass unvetted",
+    ],
+  },
+  {
+    id: "concept-stroop-interference",
+    title: "The Stroop Effect & Attentional Interference",
+    category: "cognitive-science",
+    keyPrinciple: "Automatic lexical semantic processing overrides voluntary ink-color naming",
+    denseExplanation:
+      "John Ridley Stroop demonstrated that naming the ink color of a color-word printed in an incongruent ink (e.g. the word 'RED' printed in blue ink) incurs substantial reaction time latency and error rates compared to neutral stimuli. Reading words is an over-learned, automatic skill in literate adults; extracting visual ink color requires deliberate executive control mediated by the anterior cingulate cortex (ACC) and dorsolateral PFC to inhibit the dominant lexical pathway.",
+    distractorTask: "Multiply 12 × 14 mentally.",
+    retrievalPrompt:
+      "Explain the neuro-cognitive mechanism behind the Stroop Effect. Why is ink-color naming slowed down by incongruent color words?",
+    modelAnswer:
+      "Reading words is automated through thousands of hours of practice and activates involuntary semantic retrieval. Naming visual ink color requires slower, effortful visual processing. Incongruence creates a response conflict in the anterior cingulate cortex (ACC), which must actively recruit prefrontal executive control to inhibit the dominant reading reflex.",
+    crucialCheckpoints: [
+      "Automated lexical reading reflex vs voluntary color naming",
+      "Response competition and semantic interference",
+      "Anterior cingulate cortex (ACC) detects conflict",
+      "Dorsolateral PFC executes top-down inhibitory control",
+    ],
+  },
 ]
 
 export class SpacingScheduler {

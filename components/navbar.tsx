@@ -27,6 +27,7 @@ export default function Navbar() {
 
   const navItems = [
     { label: "Tests", href: "/", icon: Sparkles },
+    { label: "Engine", href: "/engine", icon: Brain, badge: "NEW" },
     { label: "Facility", href: "/facility", icon: Cpu, badge: "OS 2.0" },
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "Profile", href: "/profile", icon: User },
@@ -34,23 +35,25 @@ export default function Navbar() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 w-full border-b-2 border-black dark:border-white bg-background">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 group-hover:scale-105 group-hover:border-cyan-500/40 transition-all shadow-sm">
-            <Brain className="w-5 h-5" />
+          <div className="w-9 h-9 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black flex items-center justify-center shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] group-hover:translate-x-[-1px] group-hover:translate-y-[-1px] transition-transform">
+            <Brain className="w-5 h-5 stroke-[2.5]" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-mono font-bold tracking-tight text-foreground text-sm sm:text-base">
-                HUMAN<span className="text-cyan-400">EVAL</span>
+              <span className="font-mono font-black tracking-tight text-foreground text-sm sm:text-base uppercase">
+                HUMAN<span className="text-amber-500 dark:text-cyan-400">EVAL</span>
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 font-semibold border border-cyan-500/20">
+              <span className="text-[10px] font-mono px-1.5 py-0.2 border border-black dark:border-white bg-black text-white dark:bg-white dark:text-black font-black uppercase">
                 PRO
               </span>
             </div>
-            <p className="text-[10px] text-muted-foreground font-mono hidden sm:block">Cognitive Benchmark Suite</p>
+            <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider hidden sm:block">
+              Cognitive Benchmark Suite
+            </p>
           </div>
         </Link>
 
@@ -63,16 +66,20 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-mono uppercase tracking-wider transition-all border-2 ${
                   isActive
-                    ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    ? "bg-amber-400 dark:bg-cyan-400 text-black border-black dark:border-white shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] font-black"
+                    : "text-foreground border-transparent hover:border-black dark:hover:border-white hover:bg-secondary font-bold"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
                 <span>{item.label}</span>
                 {item.badge && (
-                  <span className="hidden lg:inline-block text-[9px] font-mono px-1 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30">
+                  <span className={`hidden lg:inline-block text-[9px] font-mono px-1 font-black border ${
+                    isActive
+                      ? "border-black bg-black text-white dark:border-black dark:bg-black dark:text-white"
+                      : "border-black dark:border-white bg-black text-white dark:bg-white dark:text-black"
+                  }`}>
                     {item.badge}
                   </span>
                 )}
@@ -88,9 +95,9 @@ export default function Navbar() {
             <button
               onClick={toggleSound}
               title={isMuted ? "Unmute SFX" : "Mute SFX"}
-              className="p-2 rounded-lg border border-border/50 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="p-2 border-2 border-black dark:border-white bg-card text-foreground shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
             >
-              {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-cyan-400" />}
+              {isMuted ? <VolumeX className="w-4 h-4 text-red-500" /> : <Volume2 className="w-4 h-4" />}
             </button>
           )}
 
@@ -98,10 +105,10 @@ export default function Navbar() {
           {mounted && userStats.totalGamesPlayed > 0 && (
             <Link
               href="/dashboard"
-              className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 font-mono text-xs"
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 border-2 border-black dark:border-white bg-card text-foreground shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] font-mono text-xs font-bold hover:translate-x-[-1px] hover:translate-y-[-1px] transition-transform"
             >
               <span className="text-[10px] text-muted-foreground uppercase">CGI</span>
-              <span className="font-bold tabular">{userStats.cgi}</span>
+              <span className="font-black tabular text-amber-500 dark:text-cyan-400">{userStats.cgi}</span>
             </Link>
           )}
 

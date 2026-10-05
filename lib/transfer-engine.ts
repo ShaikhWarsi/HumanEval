@@ -64,21 +64,8 @@ export class TransferEngine {
     } catch {
       // Fallback
     }
-    // Return sample baseline audit if user hasn't completed their first 30-day gauntlet
-    return [
-      {
-        id: "audit-init-01",
-        date: "Baseline Benchmark",
-        trainedGainPercent: 32.5,
-        nearTransferGainPercent: 18.2,
-        farTransferGainPercent: 10.4,
-        transferIndex: 0.46,
-        trainedBatteryName: "Relational Integration RIT",
-        nearBatteryName: "Raven-Style Transitive Matrices",
-        farBatteryName: "Reading & Epistemic Synthesis",
-        notes: "Initial pre/post facility test cycle",
-      },
-    ]
+    // Return empty array if user hasn't recorded an audit yet
+    return []
   }
 
   public static recordAudit(record: Omit<TransferAuditRecord, "id" | "transferIndex">): TransferAuditRecord {

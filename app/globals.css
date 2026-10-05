@@ -4,48 +4,48 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.99 0.002 240);
-  --foreground: oklch(0.12 0.02 240);
-  --card: oklch(0.98 0.005 240);
-  --card-foreground: oklch(0.12 0.02 240);
-  --popover: oklch(0.99 0.002 240);
-  --popover-foreground: oklch(0.12 0.02 240);
-  --primary: oklch(0.3 0.18 260);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.94 0.01 240);
-  --secondary-foreground: oklch(0.2 0.02 240);
-  --muted: oklch(0.94 0.01 240);
-  --muted-foreground: oklch(0.48 0.02 240);
-  --accent: oklch(0.93 0.02 240);
-  --accent-foreground: oklch(0.15 0.02 240);
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.89 0.01 240);
-  --input: oklch(0.89 0.01 240);
-  --ring: oklch(0.3 0.18 260);
-  --radius: 0.75rem;
+  --background: #F4F4F0;
+  --foreground: #0A0A0A;
+  --card: #FFFFFF;
+  --card-foreground: #0A0A0A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0A0A0A;
+  --primary: #0A0A0A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #E9E9E3;
+  --secondary-foreground: #0A0A0A;
+  --muted: #E9E9E3;
+  --muted-foreground: #4B4F58;
+  --accent: #FFDE59;
+  --accent-foreground: #0A0A0A;
+  --destructive: #E61919;
+  --destructive-foreground: #FFFFFF;
+  --border: #0A0A0A;
+  --input: #0A0A0A;
+  --ring: #0A0A0A;
+  --radius: 0px;
 }
 
 .dark {
-  --background: oklch(0.09 0.015 250);
-  --foreground: oklch(0.96 0.01 250);
-  --card: oklch(0.12 0.02 250);
-  --card-foreground: oklch(0.96 0.01 250);
-  --popover: oklch(0.11 0.02 250);
-  --popover-foreground: oklch(0.96 0.01 250);
-  --primary: oklch(0.72 0.16 210);
-  --primary-foreground: oklch(0.08 0.02 250);
-  --secondary: oklch(0.17 0.02 250);
-  --secondary-foreground: oklch(0.95 0.01 250);
-  --muted: oklch(0.16 0.02 250);
-  --muted-foreground: oklch(0.62 0.02 250);
-  --accent: oklch(0.18 0.03 250);
-  --accent-foreground: oklch(0.96 0.01 250);
-  --destructive: oklch(0.6 0.22 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.22 0.02 250);
-  --input: oklch(0.22 0.02 250);
-  --ring: oklch(0.72 0.16 210);
+  --background: #0C0D0F;
+  --foreground: #FFFFFF;
+  --card: #13151B;
+  --card-foreground: #FFFFFF;
+  --popover: #13151B;
+  --popover-foreground: #FFFFFF;
+  --primary: #00F0FF;
+  --primary-foreground: #0A0A0A;
+  --secondary: #1C1F27;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1C1F27;
+  --muted-foreground: #9EA5B3;
+  --accent: #FFDE59;
+  --accent-foreground: #0A0A0A;
+  --destructive: #FF3B30;
+  --destructive-foreground: #FFFFFF;
+  --border: #FFFFFF;
+  --input: #FFFFFF;
+  --ring: #00F0FF;
 }
 
 @theme inline {
@@ -70,72 +70,130 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
 }
 
 @layer base {
   * {
     @apply border-border;
+    border-radius: 0px !important;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-cyan-500/30 selection:text-cyan-200;
+    @apply bg-background text-foreground font-sans antialiased selection:bg-amber-400 selection:text-black;
     min-height: 100vh;
   }
 
-  /* Sleek custom scrollbars */
+  /* Utilitarian custom scrollbars */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: var(--secondary);
+    border: 1px solid var(--border);
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(140, 160, 200, 0.2);
-    border-radius: 9999px;
+    background: var(--foreground);
+    border-radius: 0px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(140, 160, 200, 0.4);
+    background: var(--accent);
   }
 }
 
-/* Precision Technical Backgrounds */
+/* Precision Technical Dot Grid */
 .dot-grid {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
-.light .dot-grid {
-  background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+.dark .dot-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
-.mesh-glow {
-  background: radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.08) 0%, transparent 60%),
-              radial-gradient(circle at 100% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-              radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
-}
-
-/* Cyber & Glass Cards */
+/* Neo-Brutalist Cards */
+.brutal-card,
 .cyber-card {
-  background: rgba(15, 18, 28, 0.7);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--card);
+  border: 2px solid #0A0A0A;
+  box-shadow: 4px 4px 0px 0px #0A0A0A;
+  border-radius: 0px !important;
+  transition: transform 0.12s cubic-bezier(0, 0, 0.2, 1), box-shadow 0.12s cubic-bezier(0, 0, 0.2, 1);
 }
 
-.light .cyber-card {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.06);
+.dark .brutal-card,
+.dark .cyber-card {
+  background: #13151B;
+  border: 2px solid #FFFFFF;
+  box-shadow: 4px 4px 0px 0px #FFFFFF;
 }
 
+.brutal-card:hover,
 .cyber-card:hover {
-  border-color: rgba(0, 240, 255, 0.25);
-  box-shadow: 0 12px 40px 0 rgba(0, 240, 255, 0.08);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #0A0A0A;
+}
+
+.dark .brutal-card:hover,
+.dark .cyber-card:hover {
+  box-shadow: 6px 6px 0px 0px #FFFFFF;
+}
+
+.brutal-card-flat {
+  background: var(--card);
+  border: 2px solid currentColor;
+  box-shadow: none !important;
+  border-radius: 0px !important;
+}
+
+/* Neo-Brutalist Button Utility */
+.brutal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 2px solid #0A0A0A;
+  box-shadow: 3px 3px 0px 0px #0A0A0A;
+  border-radius: 0px !important;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  cursor: pointer;
+}
+
+.dark .brutal-btn {
+  border: 2px solid #FFFFFF;
+  box-shadow: 3px 3px 0px 0px #FFFFFF;
+}
+
+.brutal-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px currentColor;
+}
+
+/* Neo-Brutalist Badges */
+.brutal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1.5px solid #0A0A0A;
+  box-shadow: 2px 2px 0px 0px #0A0A0A;
+  border-radius: 0px !important;
+  padding: 0.15rem 0.5rem;
+}
+
+.dark .brutal-badge {
+  border: 1.5px solid #FFFFFF;
+  box-shadow: 2px 2px 0px 0px #FFFFFF;
 }
 
 .tabular {

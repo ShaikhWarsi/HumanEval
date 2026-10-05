@@ -280,28 +280,37 @@ export default function TransferAuditPage() {
           </div>
 
           <div className="space-y-2">
-            {audits.map((a) => (
-              <div
-                key={a.id}
-                className="p-3.5 rounded-xl border border-border/50 bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-foreground">{a.date}</span>
-                    <span className={`px-2 py-0.5 rounded border text-[10px] font-bold ${getTierColor(a.transferIndex)}`}>
-                      τ {a.transferIndex.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-muted-foreground">
-                    Trained: +{a.trainedGainPercent}% ({a.trainedBatteryName}) • Near: +{a.nearTransferGainPercent}% • Far: +{a.farTransferGainPercent}%
-                  </div>
-                </div>
-
-                <div className="text-right text-[10px] text-muted-foreground font-sans">
-                  {a.notes || "Verified"}
-                </div>
+            {audits.length === 0 ? (
+              <div className="p-6 rounded-xl border border-dashed border-border/60 bg-muted/10 text-center space-y-2">
+                <p className="text-muted-foreground font-bold">No empirical transfer audits recorded yet.</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Complete your baseline assessment, train for a multi-week block, and log your pre/post test gains to calculate your individual Transfer Index τ.
+                </p>
               </div>
-            ))}
+            ) : (
+              audits.map((a) => (
+                <div
+                  key={a.id}
+                  className="p-3.5 rounded-xl border border-border/50 bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-foreground">{a.date}</span>
+                      <span className={`px-2 py-0.5 rounded border text-[10px] font-bold ${getTierColor(a.transferIndex)}`}>
+                        τ {a.transferIndex.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Trained: +{a.trainedGainPercent}% ({a.trainedBatteryName}) • Near: +{a.nearTransferGainPercent}% • Far: +{a.farTransferGainPercent}%
+                    </div>
+                  </div>
+
+                  <div className="text-right text-[10px] text-muted-foreground font-sans">
+                    {a.notes || "Verified"}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </main>

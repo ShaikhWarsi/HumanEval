@@ -22,6 +22,7 @@ export interface UserStats {
   cgi: number
   tier: string
   domainScores: Record<string, number>
+  auxiliaryMotorScore?: number
 }
 
 interface ScoreContextType {
@@ -37,6 +38,8 @@ interface ScoreContextType {
   getBestScore: (testId: string) => GameScore | null
   getAverageScore: (testId: string) => number
   clearAllData: () => void
+  exportBackupData: () => string
+  importBackupData: (jsonData: string) => boolean
 }
 
 const initialStats: UserStats = {
@@ -44,9 +47,10 @@ const initialStats: UserStats = {
   bestScores: {},
   recentScores: [],
   achievements: [],
-  cgi: 1000,
+  cgi: 0,
   tier: "Uncalibrated",
-  domainScores: { Speed: 50, Memory: 50, Motor: 50, Language: 50, Vision: 50 },
+  domainScores: { Speed: 0, Memory: 0, Motor: 0, Language: 0, Vision: 0 },
+  auxiliaryMotorScore: 0,
 }
 
 const ScoreContext = createContext<ScoreContextType | undefined>(undefined)
@@ -57,6 +61,39 @@ export function isScoreBetter(testId: string, newScore: number, currentBest: num
     return newScore < currentBest
   }
   return newScore > currentBest
+}
+
+/**
+ * Computes robust representative scores (median of last 5 trials) per test
+ * to prevent single-trial lucky anticipations or lucky guesses from corrupting CGI.
+ */
+export function computeRepresentativeScores(
+  recent: GameScore[],
+  bestScores: Record<string, GameScore>
+): Record<string, number> {
+  const byTest: Record<string, number[]> = {}
+  recent.forEach((s) => {
+    if (!byTest[s.testId]) byTest[s.testId] = []
+    byTest[s.testId].push(s.score)
+  })
+
+  const representative: Record<string, number> = {}
+  Object.entries(byTest).forEach(([testId, vals]) => {
+    const meta = BENCHMARKS[testId]
+    const lastN = vals.slice(0, 5).sort((a, b) => a - b)
+    const mid = Math.floor(lastN.length / 2)
+    const medianVal = lastN.length % 2 !== 0 ? lastN[mid] : (lastN[mid - 1] + lastN[mid]) / 2
+    representative[testId] = medianVal
+  })
+
+  // Fallback to best score if test has not enough recent trials
+  Object.entries(bestScores).forEach(([testId, gs]) => {
+    if (representative[testId] === undefined) {
+      representative[testId] = gs.score
+    }
+  })
+
+  return representative
 }
 
 export function ScoreProvider({ children }: { children: React.ReactNode }) {
@@ -84,12 +121,9 @@ export function ScoreProvider({ children }: { children: React.ReactNode }) {
           })
         }
 
-        // Recompute CGI
-        const bestScoresRaw: Record<string, number> = {}
-        Object.entries(parsed.bestScores || {}).forEach(([k, v]: [string, any]) => {
-          bestScoresRaw[k] = v.score
-        })
-        const cgiData = calculateCGI(bestScoresRaw)
+        // Recompute CGI with robust median across recent sessions to prevent lucky outlier distortion
+        const representativeScores = computeRepresentativeScores(parsed.recentScores || [], parsed.bestScores || {})
+        const cgiData = calculateCGI(representativeScores)
 
         setUserStats({
           ...initialStats,
@@ -97,6 +131,7 @@ export function ScoreProvider({ children }: { children: React.ReactNode }) {
           cgi: cgiData.cgi,
           tier: cgiData.tier,
           domainScores: cgiData.domainScores,
+          auxiliaryMotorScore: cgiData.auxiliaryMotorScore,
         })
       }
     } catch (e) {
@@ -147,12 +182,9 @@ export function ScoreProvider({ children }: { children: React.ReactNode }) {
       if (percentile >= 90) achievements.add("Top 10% Neuro")
       if (percentile >= 99) achievements.add("Apex 99th Percentile")
 
-      // Recompute CGI
-      const bestMap: Record<string, number> = {}
-      Object.entries(updatedBestScores).forEach(([k, v]) => {
-        bestMap[k] = v.score
-      })
-      const cgiData = calculateCGI(bestMap)
+      // Recompute CGI with robust median across recent sessions
+      const representativeScores = computeRepresentativeScores(recent, updatedBestScores)
+      const cgiData = calculateCGI(representativeScores)
 
       return {
         totalGamesPlayed: totalGames,
@@ -162,6 +194,7 @@ export function ScoreProvider({ children }: { children: React.ReactNode }) {
         cgi: cgiData.cgi,
         tier: cgiData.tier,
         domainScores: cgiData.domainScores,
+        auxiliaryMotorScore: cgiData.auxiliaryMotorScore,
       }
     })
 
@@ -191,6 +224,35 @@ export function ScoreProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const exportBackupData = (): string => {
+    return JSON.stringify(
+      {
+        version: "2.0",
+        exportTimestamp: Date.now(),
+        userStats,
+      },
+      null,
+      2
+    )
+  }
+
+  const importBackupData = (jsonData: string): boolean => {
+    try {
+      const parsed = JSON.parse(jsonData)
+      const stats = parsed.userStats || parsed
+      if (stats && typeof stats.totalGamesPlayed === "number" && stats.bestScores) {
+        setUserStats(stats)
+        if (typeof window !== "undefined") {
+          localStorage.setItem("humaneval_stats_v2", JSON.stringify(stats))
+        }
+        return true
+      }
+      return false
+    } catch {
+      return false
+    }
+  }
+
   return (
     <ScoreContext.Provider
       value={{
@@ -200,6 +262,8 @@ export function ScoreProvider({ children }: { children: React.ReactNode }) {
         getBestScore,
         getAverageScore,
         clearAllData,
+        exportBackupData,
+        importBackupData,
       }}
     >
       {children}
