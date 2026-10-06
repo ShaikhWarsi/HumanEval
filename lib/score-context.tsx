@@ -111,13 +111,13 @@ export function ScoreProvider({ children }: { children: React.ReactNode }) {
           parsed.recentScores = parsed.recentScores.map((s: any) => ({
             ...s,
             date: new Date(s.date),
-            percentile: s.percentile ?? calculatePercentile(s.testId, s.score),
+            percentile: calculatePercentile(s.testId, s.score),
           }))
         }
         if (parsed.bestScores) {
           Object.keys(parsed.bestScores).forEach((k) => {
             parsed.bestScores[k].date = new Date(parsed.bestScores[k].date)
-            parsed.bestScores[k].percentile = parsed.bestScores[k].percentile ?? calculatePercentile(k, parsed.bestScores[k].score)
+            parsed.bestScores[k].percentile = calculatePercentile(k, parsed.bestScores[k].score)
           })
         }
 

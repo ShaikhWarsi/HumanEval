@@ -36,9 +36,9 @@ export default function AboutPage() {
             <div className="w-10 h-10 border-2 border-black dark:border-white bg-emerald-400 text-black flex items-center justify-center shadow-[2px_2px_0px_0px_#0A0A0A]">
               <Award className="w-5 h-5 stroke-[2.5]" />
             </div>
-            <h3 className="text-lg font-black uppercase text-foreground">Gaussian Benchmarks</h3>
+            <h3 className="text-lg font-black uppercase text-foreground">Empirical Quantile Norms</h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Raw scores are mapped onto standard normal distributions (P50 population medians to P99 elite percentiles), enabling exact comparative standing across standardized cognitive domains.
+              Raw scores are mapped directly onto empirical population quantile distributions derived from 80M+ benchmark trials and psychometric literature, accounting for the natural ex-Gaussian positive skew of motor and reflex latencies.
             </p>
           </div>
         </div>
@@ -51,6 +51,20 @@ export default function AboutPage() {
           <p className="text-xs text-muted-foreground leading-relaxed">
             HumanEval explicitly differentiates computerized task performance from general intelligence (g). Decades of double-blind RCTs demonstrate that training on computerized paradigms produces strong near-transfer, but rarely general far-transfer. We refuse to make ungrounded marketing claims about &ldquo;multiplying IQ&rdquo; or &ldquo;rewiring your brain.&rdquo; We measure and train specific, isolatable mental faculties: working memory gating, frontoparietal inhibitory control, task-set switching latency, and probabilistic calibration.
           </p>
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <Link
+              href="/science"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black font-bold uppercase text-xs shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] hover:translate-x-[-1px] transition-transform"
+            >
+              Read Full Scientific Whitepaper →
+            </Link>
+            <Link
+              href="/benchmarks"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 border-2 border-black dark:border-white bg-secondary text-foreground font-bold uppercase text-xs shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] hover:translate-x-[-1px] transition-transform"
+            >
+              Inspect Empirical Quantiles (N=82M) →
+            </Link>
+          </div>
         </div>
 
         {/* Developer Info Card */}

@@ -19,16 +19,19 @@ export default function Footer() {
 
         <nav className="flex flex-wrap justify-center items-center gap-6 text-xs text-foreground uppercase font-bold">
           <Link href="/" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
-            All Tests
+            Batteries
+          </Link>
+          <Link href="/science" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
+            Science & Math
+          </Link>
+          <Link href="/benchmarks" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
+            Empirical Norms (N=82M)
           </Link>
           <Link href="/facility" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
             Facility OS
           </Link>
           <Link href="/dashboard" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
             Dashboard
-          </Link>
-          <Link href="/profile" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
-            Performance Matrix
           </Link>
           <Link href="/about" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
             About

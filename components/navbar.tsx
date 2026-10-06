@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState, useEffect } from "react"
-import { Brain, LayoutDashboard, User, Volume2, VolumeX, Sparkles, HelpCircle, Cpu } from "lucide-react"
+import { Brain, LayoutDashboard, User, Volume2, VolumeX, Sparkles, HelpCircle, Cpu, FileText, BarChart3 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { sound } from "@/lib/audio"
 import { useScore } from "@/lib/score-context"
@@ -27,11 +27,12 @@ export default function Navbar() {
 
   const navItems = [
     { label: "Tests", href: "/", icon: Sparkles },
-    { label: "Engine", href: "/engine", icon: Brain, badge: "NEW" },
-    { label: "Facility", href: "/facility", icon: Cpu, badge: "OS 2.0" },
+    { label: "Science", href: "/science", icon: FileText, badge: "MATH" },
+    { label: "Norms", href: "/benchmarks", icon: BarChart3, badge: "N=82M" },
+    { label: "Facility", href: "/facility", icon: Cpu, badge: "OS 2" },
+    { label: "Engine", href: "/engine", icon: Brain },
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "Profile", href: "/profile", icon: User },
-    { label: "About", href: "/about", icon: HelpCircle },
   ]
 
   return (
