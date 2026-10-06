@@ -27,8 +27,7 @@ export default function Navbar() {
 
   const navItems = [
     { label: "Tests", href: "/", icon: Sparkles },
-    { label: "Science", href: "/science", icon: FileText, badge: "MATH" },
-    { label: "Norms", href: "/benchmarks", icon: BarChart3, badge: "N=82M" },
+    { label: "Research & Math", href: "/science", icon: FileText, badge: "WHITE PAPER" },
     { label: "Facility", href: "/facility", icon: Cpu, badge: "OS 2" },
     { label: "Engine", href: "/engine", icon: Brain },
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },

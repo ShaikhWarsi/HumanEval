@@ -22,16 +22,16 @@ export default function Footer() {
             Batteries
           </Link>
           <Link href="/science" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
-            Science & Math
-          </Link>
-          <Link href="/benchmarks" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
-            Empirical Norms (N=82M)
+            Research &amp; Math
           </Link>
           <Link href="/facility" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
             Facility OS
           </Link>
           <Link href="/dashboard" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
             Dashboard
+          </Link>
+          <Link href="/profile" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
+            Performance Matrix
           </Link>
           <Link href="/about" className="hover:text-amber-500 dark:hover:text-cyan-400 hover:underline transition-colors">
             About

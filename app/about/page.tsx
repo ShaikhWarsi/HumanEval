@@ -59,10 +59,10 @@ export default function AboutPage() {
               Read Full Scientific Whitepaper →
             </Link>
             <Link
-              href="/benchmarks"
+              href="/science#interactive-bench"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 border-2 border-black dark:border-white bg-secondary text-foreground font-bold uppercase text-xs shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] hover:translate-x-[-1px] transition-transform"
             >
-              Inspect Empirical Quantiles (N=82M) →
+              Interactive Empirical Workbench (N=82M) →
             </Link>
           </div>
         </div>
