@@ -143,14 +143,14 @@ export default function ChimpTest() {
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-pink-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-pink-500 text-white flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Brain className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
+        <h2 className="text-2xl sm:text-3xl font-black font-display uppercase tracking-tight text-foreground mb-3">
           Chimp Test (Ayumu Spatial Span)
         </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto mb-8 font-sans">
           Click the numbers in ascending order (1, 2, 3...). Clicking &ldquo;1&rdquo; masks the remaining tiles.
           Inspired by cognitive studies at Kyoto University where chimpanzee Ayumu scored 9+ effortlessly.
         </p>
@@ -168,18 +168,18 @@ export default function ChimpTest() {
   if (gameState === "result") {
     const finalScore = Math.max(0, INITIAL_COUNT + level - 2)
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-pink-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-pink-500 text-white flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Brain className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">
+        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold font-mono">
           Working Memory Span
         </h2>
-        <div className="text-6xl font-black text-foreground mb-2 tabular">
+        <div className="text-6xl font-black text-foreground mb-2 tabular font-mono">
           {finalScore} <span className="text-2xl text-pink-500">numbers</span>
         </div>
 
-        <p className="text-xs text-muted-foreground uppercase font-bold mb-4">
+        <p className="text-sm text-muted-foreground font-medium mb-4 font-sans">
           {finalScore >= 9
             ? "Ayumu Chimpanzee parity achieved! Elite iconic visual memory."
             : "Average human score is 7 to 9. Ayumu (Chimp) retains 9 digits in 0.5s."}
@@ -208,9 +208,9 @@ export default function ChimpTest() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto font-mono">
+    <div className="max-w-2xl mx-auto font-sans">
       {/* Telemetry header */}
-      <div className="flex items-center justify-between mb-3 px-2 text-xs uppercase font-bold">
+      <div className="flex items-center justify-between mb-3 px-2 text-xs uppercase font-mono font-bold">
         <div>
           <span className="text-muted-foreground">Numbers: </span>
           <span className="text-pink-500 font-black tabular">{INITIAL_COUNT + level - 1}</span>
@@ -221,7 +221,7 @@ export default function ChimpTest() {
           {[0, 1, 2].map((s) => (
             <span
               key={s}
-              className={`w-3.5 h-3.5 border-2 border-black dark:border-white inline-block shadow-[1px_1px_0px_0px_#0A0A0A] ${
+              className={`w-3.5 h-3.5 border-2 border-black dark:border-slate-700 inline-block shadow-[1px_1px_0px_0px_#0A0A0A] ${
                 s < strikes ? "bg-red-500" : "bg-card"
               }`}
             />
@@ -241,9 +241,9 @@ export default function ChimpTest() {
               key={`${r}-${c}`}
               disabled={isLocked}
               onClick={() => handleTileClick(tile)}
-              className={`aspect-square border-2 border-black dark:border-white ${
-                masked ? "bg-card hover:bg-secondary" : "bg-pink-400 text-black font-black"
-              } shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center justify-center font-mono text-lg sm:text-xl transition-all select-none cursor-pointer disabled:cursor-not-allowed`}
+              className={`aspect-square border-2 border-black dark:border-slate-700 ${
+                masked ? "bg-card hover:bg-secondary text-transparent" : "bg-pink-500 text-white font-black"
+              } shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center justify-center font-mono text-lg sm:text-xl transition-all select-none cursor-pointer disabled:cursor-not-allowed`}
             >
               {masked ? "" : tile.num}
             </button>

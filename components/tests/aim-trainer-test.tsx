@@ -123,14 +123,14 @@ export default function AimTrainerTest() {
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-rose-500 text-white flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-rose-500 text-white flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Target className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
+        <h2 className="text-2xl sm:text-3xl font-black font-display uppercase tracking-tight text-foreground mb-3">
           Neuromuscular Aim Trainer
         </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto mb-8 font-sans">
           Eliminate 30 randomized targets as quickly and accurately as possible.
           Measures ballistic saccadic acquisition latency and target click precision.
         </p>
@@ -147,19 +147,19 @@ export default function AimTrainerTest() {
 
   if (gameState === "result") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-rose-500 text-white flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-rose-500 text-white flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Target className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">
+        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold font-mono">
           Mean Target Acquisition Latency
         </h2>
-        <div className="text-6xl font-black text-foreground mb-2 tabular">
+        <div className="text-6xl font-black text-foreground mb-2 tabular font-mono">
           {finalAvgTime}
           <span className="text-2xl text-rose-500 ml-1">ms</span>
         </div>
 
-        <div className="flex items-center justify-center gap-6 my-4 text-xs font-bold uppercase">
+        <div className="flex items-center justify-center gap-6 my-4 text-xs font-mono font-bold uppercase">
           <span>
             Accuracy: <strong className="text-foreground">{finalAccuracy}%</strong>
           </span>
@@ -183,9 +183,9 @@ export default function AimTrainerTest() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-3 font-mono">
+    <div className="max-w-4xl mx-auto space-y-3 font-sans">
       {/* Telemetry bar */}
-      <div className="flex items-center justify-between text-xs font-bold uppercase px-2">
+      <div className="flex items-center justify-between text-xs font-mono font-bold uppercase px-2">
         <div className="flex items-center gap-4">
           <span className="text-muted-foreground">
             Targets: <strong className="text-rose-500 tabular">{TOTAL_TARGETS - targetsHit}</strong> remaining
@@ -219,10 +219,10 @@ export default function AimTrainerTest() {
               width: `${TARGET_SIZE}px`,
               height: `${TARGET_SIZE}px`,
             }}
-            className="rounded-full bg-rose-500 hover:bg-rose-400 border-2 border-black dark:border-white shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#FFFFFF] flex items-center justify-center transition-transform duration-75 active:scale-95"
+            className="rounded-full bg-rose-500 hover:bg-rose-400 border-2 border-black dark:border-slate-700 shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#000000] flex items-center justify-center transition-transform duration-75 active:scale-95"
           >
-            <div className="w-6 h-6 rounded-full border border-black dark:border-white flex items-center justify-center pointer-events-none">
-              <div className="w-2.5 h-2.5 rounded-full bg-black dark:bg-white pointer-events-none" />
+            <div className="w-6 h-6 rounded-full border border-black dark:border-slate-900 flex items-center justify-center pointer-events-none">
+              <div className="w-2.5 h-2.5 rounded-full bg-black dark:bg-slate-900 pointer-events-none" />
             </div>
           </button>
         )}

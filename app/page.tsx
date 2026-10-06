@@ -132,13 +132,13 @@ export default function HomePage() {
             <span>COGNITIVE BENCHMARK OS 2.0</span>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl font-black tracking-tight font-mono uppercase text-foreground leading-[1.05]">
-            HUMAN <span className="text-amber-500 dark:text-cyan-400">EVALUATION</span>
+          <h1 className="text-5xl sm:text-7xl font-black tracking-tight font-display uppercase text-foreground leading-[1.05]">
+            HUMAN <span className="text-amber-500 dark:text-sky-400">EVALUATION</span>
           </h1>
 
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed font-mono">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed font-sans">
             Precision cognitive diagnostics and real-time human telemetry. 
-            Measure your synaptic reaction velocity, digit span, spatial memory, and motor accuracy against global distributions.
+            Measure your synaptic reaction velocity, digit span, spatial memory, and motor accuracy against empirical distributions.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-4">

@@ -5,20 +5,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-xs sm:text-sm font-mono font-bold uppercase tracking-wider border-2 border-black dark:border-white transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]]:size-4 shrink-0 [&_svg]:shrink-0 outline-none cursor-pointer active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-xs sm:text-sm font-sans font-bold uppercase tracking-wide border-2 border-black dark:border-slate-700 transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]]:size-4 shrink-0 [&_svg]:shrink-0 outline-none cursor-pointer active:translate-x-[2px] active:translate-y-[2px] active:shadow-none",
   {
     variants: {
       variant: {
         default:
-          "bg-amber-400 text-black shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#FFFFFF] hover:bg-amber-300 dark:bg-cyan-400 dark:text-black dark:hover:bg-cyan-300",
+          "bg-amber-400 text-slate-950 shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#000000] hover:bg-amber-300 dark:bg-sky-400 dark:text-slate-950 dark:hover:bg-sky-300",
         destructive:
-          "bg-red-500 text-white shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#FFFFFF] hover:bg-red-400",
+          "bg-rose-600 text-white shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#000000] hover:bg-rose-500",
         outline:
-          "bg-card text-foreground shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#FFFFFF] hover:bg-secondary",
+          "bg-card text-foreground shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#000000] hover:bg-secondary border-black dark:border-slate-700",
         secondary:
-          "bg-secondary text-foreground shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#FFFFFF] hover:bg-secondary/80",
+          "bg-secondary text-foreground shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#000000] hover:bg-secondary/80 border-black dark:border-slate-700",
         ghost:
-          "border-transparent shadow-none hover:border-black dark:hover:border-white hover:bg-secondary hover:shadow-[2px_2px_0px_0px_currentColor] active:shadow-none",
+          "border-transparent shadow-none hover:border-black dark:hover:border-slate-700 hover:bg-secondary hover:shadow-[2px_2px_0px_0px_currentColor] active:shadow-none",
         link: "border-none shadow-none text-foreground underline-offset-4 hover:underline",
       },
       size: {

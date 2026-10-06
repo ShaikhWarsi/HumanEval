@@ -470,18 +470,18 @@ export function ExerciseRunner({
   if (phase === "contract") {
     const contract = exercise.cognitiveContract
     return (
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div className="border-2 border-black dark:border-white bg-card p-6 shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF]">
-          <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-4 mb-5">
+      <div className="max-w-3xl mx-auto space-y-6 font-sans">
+        <div className="border-2 border-black dark:border-slate-700 bg-card p-6 shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#000000]">
+          <div className="flex items-center justify-between border-b-2 border-black dark:border-slate-700 pb-4 mb-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black flex items-center justify-center font-mono font-black text-xl shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
-                <Brain className="w-6 h-6" />
+              <div className="w-10 h-10 border-2 border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 flex items-center justify-center font-display font-black text-xl shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
+                <Brain className="w-6 h-6 stroke-[2.5]" />
               </div>
               <div>
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 border border-black dark:border-white bg-secondary font-bold">
+                <span className="text-[10px] font-mono uppercase px-2 py-0.5 border border-black dark:border-slate-700 bg-secondary font-bold">
                   {exercise.categoryName}
                 </span>
-                <h1 className="font-mono font-black text-xl sm:text-2xl text-foreground uppercase mt-1">
+                <h1 className="font-display font-black text-xl sm:text-2xl text-foreground uppercase mt-1">
                   {exercise.name}
                 </h1>
               </div>
@@ -494,32 +494,32 @@ export function ExerciseRunner({
 
           <div className="space-y-5">
             {/* Target */}
-            <div className="border-2 border-black dark:border-white bg-secondary/40 p-4">
-              <span className="text-xs font-mono font-black text-amber-500 dark:text-cyan-400 uppercase tracking-wider block mb-1">
+            <div className="border-2 border-black dark:border-slate-700 bg-secondary/40 p-4">
+              <span className="text-xs font-mono font-black text-amber-500 dark:text-sky-400 uppercase tracking-wider block mb-1">
                 // COGNITIVE TARGET
               </span>
-              <p className="font-mono text-sm text-foreground font-medium">{contract.trainingTarget}</p>
+              <p className="font-sans text-sm sm:text-base text-foreground font-medium leading-relaxed">{contract.trainingTarget}</p>
             </div>
 
             {/* Protocol */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="border-2 border-black dark:border-white bg-card p-4">
+              <div className="border-2 border-black dark:border-slate-700 bg-card p-4">
                 <span className="text-xs font-mono font-black text-foreground uppercase tracking-wider block mb-1">
                   1. WHAT YOU DO
                 </span>
-                <p className="font-mono text-xs text-muted-foreground leading-relaxed">{contract.whatYouDo}</p>
+                <p className="font-sans text-xs sm:text-sm text-muted-foreground leading-relaxed">{contract.whatYouDo}</p>
               </div>
 
-              <div className="border-2 border-black dark:border-white bg-card p-4">
+              <div className="border-2 border-black dark:border-slate-700 bg-card p-4">
                 <span className="text-xs font-mono font-black text-foreground uppercase tracking-wider block mb-1">
                   2. WHAT MATTERS
                 </span>
-                <p className="font-mono text-xs text-muted-foreground leading-relaxed">{contract.whatMatters}</p>
+                <p className="font-sans text-xs sm:text-sm text-muted-foreground leading-relaxed">{contract.whatMatters}</p>
               </div>
             </div>
 
             {/* Telemetry Metrics */}
-            <div className="border-2 border-black dark:border-white bg-card p-4">
+            <div className="border-2 border-black dark:border-slate-700 bg-card p-4">
               <span className="text-xs font-mono font-black text-foreground uppercase tracking-wider block mb-2">
                 3. WHAT IS MEASURED
               </span>
@@ -527,7 +527,7 @@ export function ExerciseRunner({
                 {contract.whatIsMeasured.map((m, idx) => (
                   <span
                     key={idx}
-                    className="font-mono text-xs px-2.5 py-1 border border-black dark:border-white bg-secondary text-foreground font-semibold"
+                    className="font-mono text-xs px-2.5 py-1 border border-black dark:border-slate-700 bg-secondary text-foreground font-semibold"
                   >
                     • {m}
                   </span>
@@ -536,32 +536,32 @@ export function ExerciseRunner({
             </div>
 
             {/* Transfer mappings */}
-            <div className="border-2 border-black dark:border-white bg-card p-4">
+            <div className="border-2 border-black dark:border-slate-700 bg-card p-4">
               <span className="text-xs font-mono font-black text-foreground uppercase tracking-wider block mb-2">
                 4. SCIENTIFIC TRANSFER MAPPINGS
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
                 <div>
-                  <span className="text-[10px] text-muted-foreground uppercase block">Near Transfer</span>
+                  <span className="text-[10px] text-muted-foreground uppercase block font-bold">Near Transfer</span>
                   <span className="font-bold text-foreground">{exercise.transferMappings.nearTransferDomain}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted-foreground uppercase block">Far Transfer</span>
+                  <span className="text-[10px] text-muted-foreground uppercase block font-bold">Far Transfer</span>
                   <span className="font-bold text-foreground">{exercise.transferMappings.farTransferDomain}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted-foreground uppercase block">Real-World Skill</span>
+                  <span className="text-[10px] text-muted-foreground uppercase block font-bold">Real-World Skill</span>
                   <span className="font-bold text-foreground">{exercise.transferMappings.realWorldSkill}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t-2 border-black dark:border-white">
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t-2 border-black dark:border-slate-700">
             {onExit ? (
               <button
                 onClick={onExit}
-                className="w-full sm:w-auto px-4 py-2 border-2 border-black dark:border-white bg-secondary font-mono text-xs font-bold uppercase hover:bg-secondary/70 transition-colors"
+                className="w-full sm:w-auto px-4 py-2 border-2 border-black dark:border-slate-700 bg-secondary font-mono text-xs font-bold uppercase hover:bg-secondary/70 transition-colors"
               >
                 [ EXIT TO CATALOG ]
               </button>
@@ -573,10 +573,10 @@ export function ExerciseRunner({
                   sound.playClick()
                   setPhase("demonstration")
                 }}
-                className="flex-1 sm:flex-none px-6 py-2.5 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black font-mono text-xs font-black uppercase tracking-wider shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#FFFFFF] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 sm:flex-none px-6 py-2.5 border-2 border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 font-sans font-black text-xs uppercase tracking-wider shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#000000] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>PROCEED TO DEMONSTRATION</span>
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4 stroke-[3]" />
               </button>
             </div>
           </div>
@@ -592,14 +592,14 @@ export function ExerciseRunner({
     const demoSteps = exercise.generateDemonstration()
 
     return (
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div className="border-2 border-black dark:border-white bg-card p-6 shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF]">
-          <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-4 mb-6">
+      <div className="max-w-3xl mx-auto space-y-6 font-sans">
+        <div className="border-2 border-black dark:border-slate-700 bg-card p-6 shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#000000]">
+          <div className="flex items-center justify-between border-b-2 border-black dark:border-slate-700 pb-4 mb-6">
             <div>
-              <span className="text-[10px] font-mono uppercase px-2 py-0.5 border border-black dark:border-white bg-secondary font-bold">
+              <span className="text-[10px] font-mono uppercase px-2 py-0.5 border border-black dark:border-slate-700 bg-secondary font-bold">
                 PHASE 2 / 5
               </span>
-              <h2 className="font-mono font-black text-xl text-foreground uppercase mt-1">
+              <h2 className="font-display font-black text-xl text-foreground uppercase mt-1">
                 Guided Interactive Demonstration
               </h2>
             </div>
@@ -618,10 +618,10 @@ export function ExerciseRunner({
             {demoSteps.map((step) => (
               <div
                 key={step.stepNumber}
-                className="border-2 border-black dark:border-white bg-secondary/20 p-4 space-y-3"
+                className="border-2 border-black dark:border-slate-700 bg-secondary/20 p-4 space-y-3"
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-6 h-6 border-2 border-black dark:border-white bg-black text-white dark:bg-white dark:text-black font-mono font-black text-xs flex items-center justify-center">
+                  <span className="w-6 h-6 border-2 border-black dark:border-slate-700 bg-black text-white dark:bg-white dark:text-black font-mono font-black text-xs flex items-center justify-center">
                     {step.stepNumber}
                   </span>
                   <span className="font-mono font-black text-xs uppercase tracking-wider text-foreground">
@@ -629,42 +629,42 @@ export function ExerciseRunner({
                   </span>
                 </div>
 
-                <div className="border-2 border-black dark:border-white bg-card p-3 font-mono text-sm font-bold text-foreground">
+                <div className="border-2 border-black dark:border-slate-700 bg-card p-3 font-sans text-sm font-bold text-foreground">
                   {step.stimulusSummary}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
-                  <div className="border border-black dark:border-white bg-card p-2.5">
+                  <div className="border border-black dark:border-slate-700 bg-card p-2.5">
                     <span className="text-[10px] text-muted-foreground uppercase block font-bold">Action</span>
-                    <span className="text-amber-500 dark:text-cyan-400 font-black">{step.demonstrationAction}</span>
+                    <span className="text-amber-500 dark:text-sky-400 font-black">{step.demonstrationAction}</span>
                   </div>
-                  <div className="border border-black dark:border-white bg-card p-2.5">
+                  <div className="border border-black dark:border-slate-700 bg-card p-2.5">
                     <span className="text-[10px] text-muted-foreground uppercase block font-bold">Outcome</span>
                     <span className="text-emerald-500 font-bold">{step.expectedOutcome}</span>
                   </div>
                 </div>
 
-                <p className="text-xs font-mono text-muted-foreground leading-relaxed italic">
+                <p className="text-xs sm:text-sm font-sans text-muted-foreground leading-relaxed italic">
                   💡 {step.guidance}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t-2 border-black dark:border-white">
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t-2 border-black dark:border-slate-700">
             <button
               onClick={startPractice}
-              className="w-full sm:w-auto px-5 py-2.5 border-2 border-black dark:border-white bg-secondary text-foreground font-mono text-xs font-black uppercase tracking-wider hover:bg-secondary/70 transition-colors"
+              className="w-full sm:w-auto px-5 py-2.5 border-2 border-black dark:border-slate-700 bg-secondary text-foreground font-mono text-xs font-black uppercase tracking-wider hover:bg-secondary/70 transition-colors"
             >
               [ RUN 3 PRACTICE TRIALS ]
             </button>
 
             <button
               onClick={startFormalRun}
-              className="w-full sm:w-auto px-6 py-2.5 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black font-mono text-xs font-black uppercase tracking-wider shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#FFFFFF] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-6 py-2.5 border-2 border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 font-sans text-xs font-black uppercase tracking-wider shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#000000] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>COMMENCE FORMAL {pool.toUpperCase()}</span>
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-4 h-4 stroke-[3]" />
             </button>
           </div>
         </div>
@@ -1144,14 +1144,14 @@ export function ExerciseRunner({
         : 100
 
     return (
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div className="border-2 border-black dark:border-white bg-card p-6 shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF] space-y-6">
-          <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-4">
+      <div className="max-w-3xl mx-auto space-y-6 font-sans">
+        <div className="border-2 border-black dark:border-slate-700 bg-card p-6 shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#000000] space-y-6">
+          <div className="flex items-center justify-between border-b-2 border-black dark:border-slate-700 pb-4">
             <div>
-              <span className="text-[10px] font-mono uppercase px-2 py-0.5 border border-black dark:border-white bg-emerald-500 text-black font-black">
+              <span className="text-[10px] font-mono uppercase px-2 py-0.5 border border-black dark:border-slate-700 bg-emerald-500 text-slate-950 font-black">
                 SESSION COMPLETED
               </span>
-              <h2 className="font-mono font-black text-2xl text-foreground uppercase mt-1">
+              <h2 className="font-display font-black text-2xl text-foreground uppercase mt-1">
                 Cognitive Telemetry Audit
               </h2>
             </div>
@@ -1163,42 +1163,42 @@ export function ExerciseRunner({
 
           {/* Primary Telemetry Metrics */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="border-2 border-black dark:border-white bg-card p-3 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase block font-bold">Accuracy</span>
-              <span className="font-mono font-black text-2xl text-amber-500 dark:text-cyan-400">
+            <div className="border-2 border-black dark:border-slate-700 bg-card p-3 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
+              <span className="text-xs font-sans text-muted-foreground uppercase block font-bold">Accuracy</span>
+              <span className="font-mono font-black text-2xl text-amber-500 dark:text-sky-400">
                 {accuracyPercent}%
               </span>
-              <span className="text-[10px] font-mono text-muted-foreground block mt-1">
+              <span className="text-xs font-mono text-muted-foreground block mt-1">
                 {correctTrials} / {totalTrials} trials
               </span>
             </div>
 
-            <div className="border-2 border-black dark:border-white bg-card p-3 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase block font-bold">Mean Latency</span>
+            <div className="border-2 border-black dark:border-slate-700 bg-card p-3 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
+              <span className="text-xs font-sans text-muted-foreground uppercase block font-bold">Mean Latency</span>
               <span className="font-mono font-black text-2xl text-foreground">
                 {avgLatency}ms
               </span>
-              <span className="text-[10px] font-mono text-muted-foreground block mt-1">
+              <span className="text-xs font-mono text-muted-foreground block mt-1">
                 Motor + decision RT
               </span>
             </div>
 
-            <div className="border-2 border-black dark:border-white bg-card p-3 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase block font-bold">Error Profile</span>
+            <div className="border-2 border-black dark:border-slate-700 bg-card p-3 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
+              <span className="text-xs font-sans text-muted-foreground uppercase block font-bold">Error Profile</span>
               <span className="font-mono font-black text-lg text-foreground">
                 {totalTrials - correctTrials} Total
               </span>
-              <span className="text-[10px] font-mono text-muted-foreground block mt-1">
+              <span className="text-xs font-mono text-muted-foreground block mt-1">
                 FA: {falseAlarms} | Miss: {misses}
               </span>
             </div>
 
-            <div className="border-2 border-black dark:border-white bg-card p-3 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase block font-bold">IRT Parameter</span>
+            <div className="border-2 border-black dark:border-slate-700 bg-card p-3 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
+              <span className="text-xs font-sans text-muted-foreground uppercase block font-bold">IRT Parameter</span>
               <span className="font-mono font-black text-lg text-emerald-500">
                 θ Calibrated
               </span>
-              <span className="text-[10px] font-mono text-muted-foreground block mt-1">
+              <span className="text-xs font-mono text-muted-foreground block mt-1">
                 Profile updated
               </span>
             </div>
@@ -1206,30 +1206,30 @@ export function ExerciseRunner({
 
           {/* Dedicated Logan & Cowan SSRT Decomposition for Stop Signal Task */}
           {isStopSignal && (
-            <div className="border-2 border-black dark:border-white bg-amber-400/10 dark:bg-cyan-400/10 p-4 space-y-3 font-mono">
-              <div className="flex items-center justify-between border-b border-black dark:border-white pb-2">
+            <div className="border-2 border-black dark:border-slate-700 bg-amber-400/10 dark:bg-sky-400/10 p-4 space-y-3 font-mono">
+              <div className="flex items-center justify-between border-b border-black dark:border-slate-700 pb-2">
                 <span className="text-xs font-black uppercase text-foreground">
                   ⚡ SSRT Inhibitory Cancellation Decomposition
                 </span>
-                <span className="text-[10px] font-bold text-muted-foreground">
+                <span className="text-xs font-bold text-muted-foreground">
                   Logan & Cowan (1984) Race Architecture
                 </span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                <div className="border border-black dark:border-white bg-card p-2">
-                  <span className="text-[10px] text-muted-foreground block uppercase">SSRT (Brake Speed)</span>
+                <div className="border border-black dark:border-slate-700 bg-card p-2">
+                  <span className="text-xs text-muted-foreground block uppercase">SSRT (Brake Speed)</span>
                   <span className="font-black text-xl text-emerald-500">{estimatedSsrt}ms</span>
                 </div>
-                <div className="border border-black dark:border-white bg-card p-2">
-                  <span className="text-[10px] text-muted-foreground block uppercase">Go Reaction Time</span>
+                <div className="border border-black dark:border-slate-700 bg-card p-2">
+                  <span className="text-xs text-muted-foreground block uppercase">Go Reaction Time</span>
                   <span className="font-black text-xl text-foreground">{meanGoRt}ms</span>
                 </div>
-                <div className="border border-black dark:border-white bg-card p-2">
-                  <span className="text-[10px] text-muted-foreground block uppercase">Mean SSD Delay</span>
+                <div className="border border-black dark:border-slate-700 bg-card p-2">
+                  <span className="text-xs text-muted-foreground block uppercase">Mean SSD Delay</span>
                   <span className="font-black text-xl text-foreground">{meanSsd}ms</span>
                 </div>
-                <div className="border border-black dark:border-white bg-card p-2">
-                  <span className="text-[10px] text-muted-foreground block uppercase">Stop Success Rate</span>
+                <div className="border border-black dark:border-slate-700 bg-card p-2">
+                  <span className="text-xs text-muted-foreground block uppercase">Stop Success Rate</span>
                   <span className="font-black text-xl text-foreground">{stopSuccessRate}%</span>
                 </div>
               </div>
@@ -1237,33 +1237,33 @@ export function ExerciseRunner({
           )}
 
           {/* Scientific Transfer Impact */}
-          <div className="border-2 border-black dark:border-white bg-secondary/30 p-4 space-y-2">
+          <div className="border-2 border-black dark:border-slate-700 bg-secondary/30 p-4 space-y-2">
             <span className="text-xs font-mono font-black text-foreground uppercase tracking-wider block">
               // TRANSFER EXPECTATIONS (NO FALSE CLAIMS)
             </span>
-            <p className="font-mono text-xs text-muted-foreground leading-relaxed">
+            <p className="font-sans text-xs sm:text-sm text-muted-foreground leading-relaxed">
               Performance gains on this specific computerized task do not imply general fluid intelligence inflation. Real-world transfer operates through the following specific mechanisms:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 text-xs font-mono">
-              <div className="border border-black dark:border-white bg-card p-2">
-                <span className="text-[10px] text-muted-foreground uppercase block">Near Transfer</span>
+              <div className="border border-black dark:border-slate-700 bg-card p-2">
+                <span className="text-[10px] text-muted-foreground uppercase block font-bold">Near Transfer</span>
                 <span className="font-bold text-foreground">{exercise.transferMappings.nearTransferDomain}</span>
               </div>
-              <div className="border border-black dark:border-white bg-card p-2">
-                <span className="text-[10px] text-muted-foreground uppercase block">Operational Skill</span>
+              <div className="border border-black dark:border-slate-700 bg-card p-2">
+                <span className="text-[10px] text-muted-foreground uppercase block font-bold">Operational Skill</span>
                 <span className="font-bold text-foreground">{exercise.transferMappings.realWorldSkill}</span>
               </div>
             </div>
           </div>
 
           {/* Action buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t-2 border-black dark:border-white">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t-2 border-black dark:border-slate-700">
             <button
               onClick={() => {
                 baseSeedRef.current = Math.floor(Math.random() * 1000000)
                 startFormalRun()
               }}
-              className="w-full sm:w-auto px-5 py-2.5 border-2 border-black dark:border-white bg-secondary text-foreground font-mono text-xs font-bold uppercase hover:bg-secondary/70 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-5 py-2.5 border-2 border-black dark:border-slate-700 bg-secondary text-foreground font-sans text-xs font-bold uppercase hover:bg-secondary/70 transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
               <span>RETRY WITH NEW SEED</span>
@@ -1272,7 +1272,7 @@ export function ExerciseRunner({
             {onExit && (
               <button
                 onClick={onExit}
-                className="w-full sm:w-auto px-6 py-2.5 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black font-mono text-xs font-black uppercase tracking-wider shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#FFFFFF] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto px-6 py-2.5 border-2 border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 font-sans text-xs font-black uppercase tracking-wider shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#000000] hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>RETURN TO ENGINE CATALOG</span>
                 <ArrowRight className="w-4 h-4" />

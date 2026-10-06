@@ -4,53 +4,54 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #F4F4F0;
-  --foreground: #0A0A0A;
+  --background: #F8F9FA;
+  --foreground: #0F172A;
   --card: #FFFFFF;
-  --card-foreground: #0A0A0A;
+  --card-foreground: #0F172A;
   --popover: #FFFFFF;
-  --popover-foreground: #0A0A0A;
-  --primary: #0A0A0A;
+  --popover-foreground: #0F172A;
+  --primary: #0F172A;
   --primary-foreground: #FFFFFF;
-  --secondary: #E9E9E3;
-  --secondary-foreground: #0A0A0A;
-  --muted: #E9E9E3;
-  --muted-foreground: #4B4F58;
-  --accent: #FFDE59;
-  --accent-foreground: #0A0A0A;
-  --destructive: #E61919;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #0F172A;
+  --muted: #F1F5F9;
+  --muted-foreground: #334155;
+  --accent: #F59E0B;
+  --accent-foreground: #0F172A;
+  --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
-  --border: #0A0A0A;
-  --input: #0A0A0A;
-  --ring: #0A0A0A;
+  --border: #0F172A;
+  --input: #0F172A;
+  --ring: #0F172A;
   --radius: 0px;
 }
 
 .dark {
-  --background: #0C0D0F;
-  --foreground: #FFFFFF;
-  --card: #13151B;
-  --card-foreground: #FFFFFF;
-  --popover: #13151B;
-  --popover-foreground: #FFFFFF;
-  --primary: #00F0FF;
-  --primary-foreground: #0A0A0A;
-  --secondary: #1C1F27;
-  --secondary-foreground: #FFFFFF;
-  --muted: #1C1F27;
-  --muted-foreground: #9EA5B3;
-  --accent: #FFDE59;
-  --accent-foreground: #0A0A0A;
-  --destructive: #FF3B30;
+  --background: #090D16;
+  --foreground: #F8FAFC;
+  --card: #111827;
+  --card-foreground: #F8FAFC;
+  --popover: #111827;
+  --popover-foreground: #F8FAFC;
+  --primary: #38BDF8;
+  --primary-foreground: #090D16;
+  --secondary: #1E293B;
+  --secondary-foreground: #F8FAFC;
+  --muted: #1E293B;
+  --muted-foreground: #94A3B8;
+  --accent: #F59E0B;
+  --accent-foreground: #090D16;
+  --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --border: #FFFFFF;
-  --input: #FFFFFF;
-  --ring: #00F0FF;
+  --border: #334155;
+  --input: #334155;
+  --ring: #38BDF8;
 }
 
 @theme inline {
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-space-grotesk);
+  --font-sans: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --font-display: var(--font-space-grotesk), var(--font-inter), sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -84,6 +85,9 @@
   body {
     @apply bg-background text-foreground font-sans antialiased selection:bg-amber-400 selection:text-black;
     min-height: 100vh;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* Utilitarian custom scrollbars */
@@ -106,48 +110,53 @@
 
 /* Precision Technical Dot Grid */
 .dot-grid {
-  background-image: radial-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .dark .dot-grid {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 /* Neo-Brutalist Cards */
 .brutal-card,
 .cyber-card {
   background: var(--card);
-  border: 2px solid #0A0A0A;
-  box-shadow: 4px 4px 0px 0px #0A0A0A;
+  border: 2px solid var(--border);
+  box-shadow: 4px 4px 0px 0px #0F172A;
   border-radius: 0px !important;
   transition: transform 0.12s cubic-bezier(0, 0, 0.2, 1), box-shadow 0.12s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .dark .brutal-card,
 .dark .cyber-card {
-  background: #13151B;
-  border: 2px solid #FFFFFF;
-  box-shadow: 4px 4px 0px 0px #FFFFFF;
+  background: var(--card);
+  border: 2px solid #334155;
+  box-shadow: 4px 4px 0px 0px #000000;
 }
 
 .brutal-card:hover,
 .cyber-card:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #0A0A0A;
+  box-shadow: 6px 6px 0px 0px #0F172A;
 }
 
 .dark .brutal-card:hover,
 .dark .cyber-card:hover {
-  box-shadow: 6px 6px 0px 0px #FFFFFF;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #000000;
 }
 
 .brutal-card-flat {
   background: var(--card);
-  border: 2px solid currentColor;
+  border: 2px solid var(--border);
   box-shadow: none !important;
   border-radius: 0px !important;
+}
+
+.dark .brutal-card-flat {
+  border: 2px solid #334155;
 }
 
 /* Neo-Brutalist Button Utility */
@@ -155,19 +164,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 700;
-  text-transform: uppercase;
-  border: 2px solid #0A0A0A;
-  box-shadow: 3px 3px 0px 0px #0A0A0A;
+  border: 2px solid #0F172A;
+  box-shadow: 3px 3px 0px 0px #0F172A;
   border-radius: 0px !important;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
   cursor: pointer;
 }
 
 .dark .brutal-btn {
-  border: 2px solid #FFFFFF;
-  box-shadow: 3px 3px 0px 0px #FFFFFF;
+  border: 2px solid #334155;
+  box-shadow: 3px 3px 0px 0px #000000;
 }
 
 .brutal-btn:active {
@@ -181,19 +189,18 @@
   align-items: center;
   gap: 0.35rem;
   font-family: var(--font-mono);
-  font-weight: 800;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border: 1.5px solid #0A0A0A;
-  box-shadow: 2px 2px 0px 0px #0A0A0A;
+  font-weight: 700;
+  font-size: 0.725rem;
+  letter-spacing: 0.04em;
+  border: 1.5px solid #0F172A;
+  box-shadow: 2px 2px 0px 0px #0F172A;
   border-radius: 0px !important;
   padding: 0.15rem 0.5rem;
 }
 
 .dark .brutal-badge {
-  border: 1.5px solid #FFFFFF;
-  box-shadow: 2px 2px 0px 0px #FFFFFF;
+  border: 1.5px solid #334155;
+  box-shadow: 2px 2px 0px 0px #000000;
 }
 
 .tabular {
@@ -204,3 +211,42 @@
 .cursor-cross {
   cursor: crosshair;
 }
+
+@layer base {
+  p {
+    line-height: 1.65;
+  }
+}
+
+/* ==========================================================================
+   Universal High-Contrast Legibility & Dark-Mode Glare Elimination
+   Converts blinding white wireframes into sleek, hyper-readable slate lines & pitch black depth
+   ========================================================================== */
+
+.dark .border-black {
+  border-color: #334155 !important;
+}
+
+.dark [class*="dark:border-white"] {
+  border-color: #334155 !important;
+}
+
+.dark [class*="dark:shadow-["] {
+  box-shadow: 2px 2px 0px 0px #000000 !important;
+}
+
+.dark [class*="dark:shadow-[3px_3px_0px_0px"] {
+  box-shadow: 3px 3px 0px 0px #000000 !important;
+}
+
+.dark [class*="dark:shadow-[4px_4px_0px_0px"] {
+  box-shadow: 4px 4px 0px 0px #000000 !important;
+}
+
+/* Ensure buttons and badges with yellow/cyan backgrounds have crisp pitch-black text */
+.dark .bg-amber-400.text-black,
+.dark .bg-cyan-400.text-black,
+.dark .bg-emerald-400.text-black {
+  color: #000000 !important;
+}
+

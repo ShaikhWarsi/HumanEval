@@ -170,17 +170,17 @@ export default function VerbalMemoryTest() {
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-amber-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <MessageSquare className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
+        <h2 className="text-2xl sm:text-3xl font-black font-display uppercase tracking-tight text-foreground mb-3">
           Verbal Working Memory
         </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto mb-8 font-sans">
           You will be shown words one by one. If you have seen the word before in this session, click{" "}
-          <strong className="text-foreground uppercase">SEEN</strong>. If it is novel, click{" "}
-          <strong className="text-foreground uppercase">NEW</strong>. 3 strikes and the test terminates.
+          <strong className="text-foreground uppercase font-black">SEEN</strong>. If it is novel, click{" "}
+          <strong className="text-foreground uppercase font-black">NEW</strong>. 3 strikes and the test terminates.
         </p>
 
         <Button
@@ -195,20 +195,20 @@ export default function VerbalMemoryTest() {
 
   if (gameState === "result") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-amber-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <MessageSquare className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">
+        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold font-mono">
           Lexical Memory Score
         </h2>
-        <div className="text-6xl font-black text-foreground mb-2 tabular">
+        <div className="text-6xl font-black text-foreground mb-2 tabular font-mono">
           {score}
-          <span className="text-2xl text-amber-500 ml-1">words</span>
+          <span className="text-2xl text-amber-500 dark:text-sky-400 ml-1">words</span>
         </div>
 
-        <p className="text-xs font-bold uppercase text-muted-foreground mb-6">
-          Vocabulary Buffer: {seenWords.size} unique words retained
+        <p className="text-sm font-medium text-muted-foreground mb-6 font-sans">
+          Vocabulary Buffer: <strong className="text-foreground font-mono">{seenWords.size}</strong> unique words retained
         </p>
 
         <BellCurve testId="verbal-memory" score={score} unit="words" percentile={percentile} />
@@ -225,16 +225,16 @@ export default function VerbalMemoryTest() {
   }
 
   return (
-    <div className="max-w-xl mx-auto space-y-4 font-mono">
+    <div className="max-w-xl mx-auto space-y-4 font-sans">
       {/* Telemetry bar */}
-      <div className="flex items-center justify-between text-xs font-bold uppercase px-2">
+      <div className="flex items-center justify-between text-xs font-mono font-bold uppercase px-2">
         <div className="flex items-center gap-1.5">
           <span className="text-muted-foreground">Lives:</span>
           <div className="flex gap-1">
             {[1, 2, 3].map((heart) => (
               <div
                 key={heart}
-                className={`w-3.5 h-3.5 border-2 border-black dark:border-white shadow-[1px_1px_0px_0px_#0A0A0A] ${
+                className={`w-3.5 h-3.5 border-2 border-black dark:border-slate-700 shadow-[1px_1px_0px_0px_#0A0A0A] ${
                   heart <= lives ? "bg-rose-500" : "bg-card"
                 }`}
               />
@@ -244,17 +244,17 @@ export default function VerbalMemoryTest() {
 
         <div className="flex items-center gap-4">
           <span className="text-muted-foreground">
-            Bank: <strong className="text-foreground">{seenWords.size}</strong>
+            Bank: <strong className="text-foreground tabular">{seenWords.size}</strong>
           </span>
           <span className="text-muted-foreground">
-            Score: <strong className="text-amber-500 dark:text-cyan-400 tabular text-sm">{score}</strong>
+            Score: <strong className="text-amber-500 dark:text-sky-400 tabular text-sm">{score}</strong>
           </span>
         </div>
       </div>
 
       {/* Main Word Card */}
       <div className="brutal-card p-10 sm:p-16 text-center space-y-8">
-        <div className="text-4xl sm:text-6xl font-black text-foreground tracking-wide select-none">
+        <div className="text-4xl sm:text-6xl font-black font-display text-foreground tracking-wide select-none">
           {currentWord}
         </div>
 
@@ -262,7 +262,7 @@ export default function VerbalMemoryTest() {
           <Button
             onClick={() => handleDecision(true)}
             size="lg"
-            className="flex-1 max-w-[180px] bg-cyan-400 text-black py-6 text-base font-black shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF] hover:bg-cyan-300"
+            className="flex-1 max-w-[180px] bg-cyan-400 text-slate-950 py-6 text-base font-black shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#000000] hover:bg-cyan-300"
           >
             SEEN
           </Button>
@@ -270,7 +270,7 @@ export default function VerbalMemoryTest() {
           <Button
             onClick={() => handleDecision(false)}
             size="lg"
-            className="flex-1 max-w-[180px] bg-amber-400 text-black py-6 text-base font-black shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF] hover:bg-amber-300"
+            className="flex-1 max-w-[180px] bg-amber-400 text-slate-950 py-6 text-base font-black shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#000000] hover:bg-amber-300"
           >
             NEW
           </Button>

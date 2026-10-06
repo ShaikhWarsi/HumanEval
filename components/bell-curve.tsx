@@ -53,12 +53,12 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
   const badge = formatPercentileBadge(percentile)
 
   return (
-    <div className="w-full brutal-card p-5 my-5 font-mono text-left">
-      <div className="flex items-center justify-between mb-3 border-b-2 border-black dark:border-white pb-2">
-        <span className="text-xs uppercase font-black tracking-wider text-muted-foreground">
+    <div className="w-full brutal-card p-5 my-5 font-sans text-left">
+      <div className="flex items-center justify-between mb-3 border-b-2 border-black dark:border-slate-700 pb-2">
+        <span className="text-xs font-mono uppercase font-bold tracking-wider text-muted-foreground">
           [ EMPIRICAL DISTRIBUTION ]
         </span>
-        <span className={`text-xs font-black px-2 py-0.5 border ${badge.badgeClass}`}>
+        <span className={`text-xs font-mono font-bold px-2 py-0.5 border border-black dark:border-slate-700 ${badge.badgeClass}`}>
           {badge.label} • {Math.round(percentile)}TH %ILE (±4% SEM)
         </span>
       </div>
@@ -78,10 +78,11 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
             y2={height - 18}
             stroke="currentColor"
             strokeWidth="2"
+            className="text-foreground"
           />
 
           {/* Main curve line */}
-          <path d={pathD} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" />
+          <path d={pathD} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" className="text-foreground" />
 
           {/* Median dotted line */}
           <line
@@ -92,7 +93,7 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
             stroke="currentColor"
             strokeWidth="1.5"
             strokeDasharray="4 4"
-            strokeOpacity={0.6}
+            className="text-muted-foreground opacity-60"
           />
           <text
             x={medianX}
@@ -102,7 +103,7 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
             fontSize="9"
             fontFamily="monospace"
             fontWeight="bold"
-            opacity={0.7}
+            className="text-muted-foreground"
           >
             AVG {meta.median}{meta.unit}
           </text>
@@ -115,14 +116,14 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
             y2={height - 18}
             stroke="currentColor"
             strokeWidth="3"
-            className="text-amber-500 dark:text-cyan-400"
+            className="text-amber-500 dark:text-sky-400"
           />
           <rect
             x={userX - 4}
             y={10}
             width={8}
             height={8}
-            className="fill-amber-500 dark:fill-cyan-400 stroke-black dark:stroke-white"
+            className="fill-amber-500 dark:fill-sky-400 stroke-black dark:stroke-slate-900"
             strokeWidth={1.5}
           />
           <text
@@ -133,29 +134,29 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
             fontSize="10"
             fontWeight="900"
             fontFamily="monospace"
-            className="text-amber-500 dark:text-cyan-400"
+            className="text-amber-500 dark:text-sky-400"
           >
             YOU ({score}{unit})
           </text>
         </svg>
       </div>
 
-      <div className="mt-3 pt-2 border-t-2 border-black dark:border-white text-center text-xs">
+      <div className="mt-3 pt-2.5 border-t-2 border-black dark:border-slate-700 text-center text-xs">
         {percentile >= 90 ? (
-          <span className="text-emerald-600 dark:text-emerald-400 font-black uppercase">
-            ★ ELITE TIER — TOP {Math.max(1, Math.round(100 - percentile))}% OF EMPIRICAL SAMPLES
+          <span className="text-emerald-600 dark:text-emerald-400 font-bold font-sans">
+            ★ Elite Tier — Top {Math.max(1, Math.round(100 - percentile))}% of empirical samples
           </span>
         ) : percentile >= 60 ? (
-          <span className="text-amber-600 dark:text-cyan-400 font-bold uppercase">
-            ABOVE POPULATION AVERAGE — TOP {Math.round(100 - percentile)}% BRACKET
+          <span className="text-amber-600 dark:text-sky-400 font-bold font-sans">
+            Above Population Average — Top {Math.round(100 - percentile)}% bracket
           </span>
         ) : percentile >= 40 ? (
-          <span className="text-foreground font-bold uppercase">
-            POPULATION MEDIAN RANGE — BALANCED EMPIRICAL PERFORMANCE
+          <span className="text-foreground font-semibold font-sans">
+            Population Median Range — Balanced empirical performance
           </span>
         ) : (
-          <span className="text-muted-foreground font-bold uppercase">
-            DEVELOPING BASELINE ({Math.round(percentile)}TH %ILE) — SPEED & ACCURACY ACCRETE WITH EXPOSURE
+          <span className="text-muted-foreground font-medium font-sans">
+            Developing Baseline ({Math.round(percentile)}th percentile) — Speed & accuracy accrete with exposure
           </span>
         )}
       </div>

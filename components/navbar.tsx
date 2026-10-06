@@ -44,14 +44,14 @@ export default function Navbar() {
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-mono font-black tracking-tight text-foreground text-sm sm:text-base uppercase">
-                HUMAN<span className="text-amber-500 dark:text-cyan-400">EVAL</span>
+              <span className="font-display font-black tracking-tight text-foreground text-base sm:text-lg uppercase">
+                HUMAN<span className="text-amber-500 dark:text-sky-400">EVAL</span>
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 border border-black dark:border-white bg-black text-white dark:bg-white dark:text-black font-black uppercase">
+              <span className="text-[10px] font-mono px-1.5 py-0.2 border border-black dark:border-slate-700 bg-black text-white dark:bg-white dark:text-black font-black uppercase">
                 PRO
               </span>
             </div>
-            <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider hidden sm:block">
+            <p className="text-[11px] text-muted-foreground font-sans hidden sm:block">
               Cognitive Benchmark Suite
             </p>
           </div>
@@ -66,10 +66,10 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-mono uppercase tracking-wider transition-all border-2 ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-sans tracking-tight transition-all border-2 ${
                   isActive
-                    ? "bg-amber-400 dark:bg-cyan-400 text-black border-black dark:border-white shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] font-black"
-                    : "text-foreground border-transparent hover:border-black dark:hover:border-white hover:bg-secondary font-bold"
+                    ? "bg-amber-400 dark:bg-sky-400 text-slate-950 border-black dark:border-slate-700 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000] font-black"
+                    : "text-foreground border-transparent hover:border-black dark:hover:border-slate-700 hover:bg-secondary font-bold"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -78,7 +78,7 @@ export default function Navbar() {
                   <span className={`hidden lg:inline-block text-[9px] font-mono px-1 font-black border ${
                     isActive
                       ? "border-black bg-black text-white dark:border-black dark:bg-black dark:text-white"
-                      : "border-black dark:border-white bg-black text-white dark:bg-white dark:text-black"
+                      : "border-black dark:border-slate-700 bg-black text-white dark:bg-white dark:text-black"
                   }`}>
                     {item.badge}
                   </span>

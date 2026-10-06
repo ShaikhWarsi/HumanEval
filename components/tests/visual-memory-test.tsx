@@ -130,14 +130,14 @@ export default function VisualMemoryTest() {
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-cyan-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-cyan-400 text-slate-950 flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Eye className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
+        <h2 className="text-2xl sm:text-3xl font-black font-display uppercase tracking-tight text-foreground mb-3">
           Visual Spatial Memory
         </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto mb-8 font-sans">
           A grid of tiles will flash briefly. Memorize and tap the coordinates of all active tiles.
           The spatial dimensions scale up as your level increases. You have 3 lives.
         </p>
@@ -154,19 +154,19 @@ export default function VisualMemoryTest() {
 
   if (gameState === "result") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-cyan-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-cyan-400 text-slate-950 flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Eye className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">
+        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold font-mono">
           Max Matrix Completed
         </h2>
-        <div className="text-6xl font-black text-foreground mb-2 tabular">
+        <div className="text-6xl font-black text-foreground mb-2 tabular font-mono">
           Level {level - 1}
         </div>
 
-        <p className="text-xs text-muted-foreground uppercase font-bold mb-4">
-          Spatial Sketchpad Capacity: {gridDim}×{gridDim} Matrix
+        <p className="text-sm text-muted-foreground font-medium mb-4 font-sans">
+          Spatial Sketchpad Capacity: <strong className="text-foreground font-mono">{gridDim}×{gridDim}</strong> Matrix
         </p>
 
         <BellCurve testId="visual-memory" score={level - 1} unit="lvl" percentile={percentile} />
@@ -183,16 +183,16 @@ export default function VisualMemoryTest() {
   }
 
   return (
-    <div className="max-w-lg mx-auto font-mono">
+    <div className="max-w-lg mx-auto font-sans">
       {/* Telemetry header */}
-      <div className="flex items-center justify-between text-xs uppercase font-bold px-2 mb-3">
+      <div className="flex items-center justify-between text-xs uppercase font-mono font-bold px-2 mb-3">
         <div className="flex items-center gap-1.5">
           <span className="text-muted-foreground">Lives:</span>
           <div className="flex gap-1">
             {[1, 2, 3].map((heart) => (
               <div
                 key={heart}
-                className={`w-3.5 h-3.5 border-2 border-black dark:border-white shadow-[1px_1px_0px_0px_#0A0A0A] ${
+                className={`w-3.5 h-3.5 border-2 border-black dark:border-slate-700 shadow-[1px_1px_0px_0px_#0A0A0A] ${
                   heart <= lives ? "bg-rose-500" : "bg-card"
                 }`}
               />
@@ -207,7 +207,7 @@ export default function VisualMemoryTest() {
               {[1, 2, 3].map((strike) => (
                 <div
                   key={strike}
-                  className={`w-3 h-3 border border-black dark:border-white shadow-[1px_1px_0px_0px_#0A0A0A] ${
+                  className={`w-3 h-3 border border-black dark:border-slate-700 shadow-[1px_1px_0px_0px_#0A0A0A] ${
                     strike <= wrongSelections.size ? "bg-rose-500" : "bg-card"
                   }`}
                 />
@@ -215,10 +215,10 @@ export default function VisualMemoryTest() {
             </div>
           </div>
           <span className="text-muted-foreground">
-            Grid: <strong className="text-foreground">{gridDim}×{gridDim}</strong>
+            Grid: <strong className="text-foreground tabular">{gridDim}×{gridDim}</strong>
           </span>
           <span className="text-muted-foreground">
-            Level: <strong className="text-amber-500 dark:text-cyan-400 tabular text-sm">{level}</strong>
+            Level: <strong className="text-amber-500 dark:text-sky-400 tabular text-sm">{level}</strong>
           </span>
         </div>
       </div>
@@ -242,11 +242,11 @@ export default function VisualMemoryTest() {
           let cellStyle = "bg-card hover:bg-secondary text-transparent"
 
           if (isShowing && isTarget) {
-            cellStyle = "bg-cyan-400 text-black shadow-[4px_4px_0px_0px_#0A0A0A]"
+            cellStyle = "bg-cyan-400 text-slate-950 shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#000000]"
           } else if (isSelected) {
-            cellStyle = "bg-emerald-400 text-black shadow-[4px_4px_0px_0px_#0A0A0A]"
+            cellStyle = "bg-emerald-400 text-slate-950 shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#000000]"
           } else if (isWrong) {
-            cellStyle = "bg-rose-500 text-white shadow-[4px_4px_0px_0px_#0A0A0A]"
+            cellStyle = "bg-rose-500 text-white shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#000000]"
           } else if (isRevealingFail && isTarget) {
             cellStyle = "bg-cyan-400/80 animate-pulse text-transparent"
           }
@@ -256,7 +256,7 @@ export default function VisualMemoryTest() {
               key={index}
               disabled={gameState !== "selecting"}
               onClick={() => handleCellClick(index)}
-              className={`aspect-square border-2 border-black dark:border-white transition-all shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] ${cellStyle} active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer disabled:cursor-default`}
+              className={`aspect-square border-2 border-black dark:border-slate-700 transition-all shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000] ${cellStyle} active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer disabled:cursor-default`}
             />
           )
         })}

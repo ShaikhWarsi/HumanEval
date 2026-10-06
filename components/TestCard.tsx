@@ -64,35 +64,35 @@ export default function TestCard({
               <IconComponent className="w-6 h-6 stroke-[2.5]" />
             </div>
 
-            <div className="flex items-center gap-1.5 font-mono">
+            <div className="flex items-center gap-1.5 font-sans">
               {isNew && (
-                <span className="text-[10px] uppercase px-2 py-0.5 border border-black dark:border-white bg-pink-500 text-white font-black shadow-[1.5px_1.5px_0px_0px_#0A0A0A]">
+                <span className="text-[10px] uppercase px-2 py-0.5 border border-black dark:border-slate-700 bg-pink-500 text-white font-black shadow-[1.5px_1.5px_0px_0px_#0A0A0A] dark:shadow-[1.5px_1.5px_0px_0px_#000000]">
                   NEW
                 </span>
               )}
-              <span className="text-[11px] uppercase px-2 py-0.5 border border-black dark:border-white bg-secondary text-foreground font-bold shadow-[1.5px_1.5px_0px_0px_#0A0A0A] dark:shadow-[1.5px_1.5px_0px_0px_#FFFFFF]">
+              <span className="text-[11px] uppercase px-2 py-0.5 border border-black dark:border-slate-700 bg-secondary text-foreground font-bold shadow-[1.5px_1.5px_0px_0px_#0A0A0A] dark:shadow-[1.5px_1.5px_0px_0px_#000000]">
                 {category}
               </span>
             </div>
           </div>
 
           {/* Title & Description */}
-          <h3 className="text-lg font-black tracking-tight text-foreground group-hover:text-amber-500 dark:group-hover:text-cyan-400 uppercase font-mono transition-colors mb-2">
+          <h3 className="text-lg font-black tracking-tight text-foreground group-hover:text-amber-600 dark:group-hover:text-sky-400 uppercase font-sans transition-colors mb-2">
             {title}
           </h3>
-          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 font-mono">
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed line-clamp-2 font-sans">
             {description}
           </p>
         </div>
 
         {/* Footer Score or Action */}
-        <div className="pt-4 mt-5 border-t-2 border-black dark:border-white flex items-center justify-between font-mono">
+        <div className="pt-4 mt-5 border-t-2 border-black dark:border-slate-700 flex items-center justify-between font-sans">
           {best ? (
             <div className="flex items-center gap-2">
               <span className="text-[11px] text-muted-foreground uppercase font-bold">Best:</span>
-              <span className="font-bold text-sm text-foreground tabular">
+              <span className="font-bold text-sm text-foreground tabular font-mono">
                 {best.score}
-                <span className="text-xs text-muted-foreground ml-0.5">{best.unit}</span>
+                <span className="text-xs text-muted-foreground ml-0.5 font-sans">{best.unit}</span>
               </span>
               {best.percentile !== undefined && (() => {
                 const badge = formatPercentileBadge(best.percentile)
@@ -104,7 +104,7 @@ export default function TestCard({
               })()}
             </div>
           ) : (
-            <span className="text-xs text-foreground group-hover:text-amber-500 dark:group-hover:text-cyan-400 transition-colors font-bold uppercase flex items-center gap-1">
+            <span className="text-xs text-foreground group-hover:text-amber-600 dark:group-hover:text-sky-400 transition-colors font-bold uppercase flex items-center gap-1 font-sans">
               Start Test <ChevronRight className="w-3.5 h-3.5" />
             </span>
           )}

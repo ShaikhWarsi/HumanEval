@@ -122,14 +122,14 @@ export default function SequenceMemoryTest() {
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-purple-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-purple-500 text-white flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Grid3X3 className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
+        <h2 className="text-2xl sm:text-3xl font-black font-display uppercase tracking-tight text-foreground mb-3">
           Sequence Memory Span
         </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto mb-8 font-sans">
           Memorize the sequence of flashing tiles. Tap them in exact temporal order.
           Each completed round appends an additional coordinate to the sequence.
         </p>
@@ -146,14 +146,14 @@ export default function SequenceMemoryTest() {
 
   if (gameState === "gameover") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-purple-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-purple-500 text-white flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Grid3X3 className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">
+        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold font-mono">
           Max Sequence Replicated
         </h2>
-        <div className="text-6xl font-black text-foreground mb-2 tabular">
+        <div className="text-6xl font-black text-foreground mb-2 tabular font-mono">
           Level {level - 1}
         </div>
 
@@ -171,9 +171,9 @@ export default function SequenceMemoryTest() {
   }
 
   return (
-    <div className="max-w-md mx-auto font-mono">
+    <div className="max-w-md mx-auto font-sans">
       {/* Level counter */}
-      <div className="flex items-center justify-between mb-4 px-2">
+      <div className="flex items-center justify-between mb-4 px-2 font-mono">
         <div className="flex items-center gap-2">
           <span className="text-xs uppercase text-muted-foreground font-bold">Level</span>
           <span className="text-lg font-black text-purple-500 tabular">{level}</span>
@@ -196,10 +196,10 @@ export default function SequenceMemoryTest() {
               key={index}
               disabled={gameState === "showing"}
               onClick={() => handleTileClick(index)}
-              className={`aspect-square border-2 border-black dark:border-white transition-all select-none cursor-pointer ${
+              className={`aspect-square border-2 border-black dark:border-slate-700 transition-all select-none cursor-pointer ${
                 isHighlighted
-                  ? "bg-purple-400 text-black shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF] translate-x-[-1px] translate-y-[-1px]"
-                  : "bg-card hover:bg-secondary shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                  ? "bg-purple-400 text-slate-950 shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#000000] translate-x-[-1px] translate-y-[-1px]"
+                  : "bg-card hover:bg-secondary shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
               }`}
             />
           )

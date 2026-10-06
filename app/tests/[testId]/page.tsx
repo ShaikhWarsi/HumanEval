@@ -133,13 +133,13 @@ export default async function TestPage({ params }: { params: Promise<{ testId: s
   }
 
   return (
-    <div className="min-h-screen flex flex-col font-mono">
+    <div className="min-h-screen flex flex-col font-sans">
       <div className="max-w-6xl mx-auto w-full px-4 pt-6 pb-16 flex-1">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between mb-8">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-foreground py-1.5 px-3 border-2 border-black dark:border-white bg-card shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none uppercase transition-all"
+            className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-foreground py-1.5 px-3 border-2 border-black dark:border-slate-700 bg-card shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none uppercase transition-all"
           >
             <ArrowLeft className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>ALL BENCHMARKS</span>
@@ -151,7 +151,7 @@ export default async function TestPage({ params }: { params: Promise<{ testId: s
               <span className="font-black text-foreground tabular">
                 {benchmarkMeta.median} {benchmarkMeta.unit}
               </span>
-              <span className="px-2 py-0.5 border border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black font-black uppercase text-xs shadow-[1.5px_1.5px_0px_0px_#0A0A0A]">
+              <span className="px-2 py-0.5 border border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 font-black uppercase text-xs shadow-[1.5px_1.5px_0px_0px_#0A0A0A] dark:shadow-[1.5px_1.5px_0px_0px_#000000]">
                 {benchmarkMeta.category}
               </span>
             </div>
@@ -160,10 +160,10 @@ export default async function TestPage({ params }: { params: Promise<{ testId: s
 
         {/* Test Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-foreground font-mono">
+          <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-foreground font-display">
             {test.title}
           </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-2 max-w-xl mx-auto font-mono">
+          <p className="text-sm sm:text-base text-muted-foreground mt-2 max-w-xl mx-auto font-sans leading-relaxed">
             {test.description}
           </p>
         </div>
@@ -174,13 +174,13 @@ export default async function TestPage({ params }: { params: Promise<{ testId: s
         {/* Scientific Context & Methodology Card */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
           <div className="brutal-card p-6">
-            <div className="flex items-center gap-2 mb-3 text-amber-500 dark:text-cyan-400">
+            <div className="flex items-center gap-2 mb-3 text-amber-500 dark:text-sky-400">
               <Info className="w-4 h-4 stroke-[2.5]" />
-              <h3 className="text-sm font-black font-mono tracking-wider uppercase text-foreground">
+              <h3 className="text-sm font-black font-display tracking-wider uppercase text-foreground">
                 Benchmark Protocol
               </h3>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed font-mono">
+            <p className="text-sm text-muted-foreground leading-relaxed font-sans">
               {test.about}
             </p>
           </div>
@@ -188,11 +188,11 @@ export default async function TestPage({ params }: { params: Promise<{ testId: s
           <div className="brutal-card p-6">
             <div className="flex items-center gap-2 mb-3 text-emerald-500">
               <Activity className="w-4 h-4 stroke-[2.5]" />
-              <h3 className="text-sm font-black font-mono tracking-wider uppercase text-foreground">
+              <h3 className="text-sm font-black font-display tracking-wider uppercase text-foreground">
                 Cognitive Neuro-Telemetry
               </h3>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed font-mono">
+            <p className="text-sm text-muted-foreground leading-relaxed font-sans">
               {test.scientificBasis}
             </p>
           </div>

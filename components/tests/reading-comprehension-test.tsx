@@ -296,22 +296,22 @@ export default function ReadingComprehensionTest() {
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto border-2 border-black dark:border-white bg-card p-8 sm:p-12 text-center font-mono shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF]">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-teal-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-border bg-teal-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <BookOpen className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <span className="text-[10px] font-bold px-2 py-0.5 border border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black uppercase">
+        <div className="flex items-center justify-center gap-2 mb-2 font-mono">
+          <span className="text-[10px] font-bold px-2 py-0.5 border border-border bg-amber-400 dark:bg-sky-400 text-black uppercase">
             PROCEDURAL DOSSIER ENGINE
           </span>
-          <span className="text-[10px] font-bold px-2 py-0.5 border border-black dark:border-white bg-secondary uppercase text-foreground">
+          <span className="text-[10px] font-bold px-2 py-0.5 border border-border bg-secondary uppercase text-foreground">
             ZERO REPETITION
           </span>
         </div>
-        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
+        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3 font-display">
           Reading Comprehension & Syntactic Parsing
         </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto mb-6 font-sans">
           Read a procedurally generated scientific dossier at your natural pace. Passages and causal mechanisms are uniquely synthesized on every attempt.
           Your score is Effective WPM adjusted by comprehension accuracy.
         </p>
@@ -319,7 +319,7 @@ export default function ReadingComprehensionTest() {
         <Button
           onClick={startReading}
           size="lg"
-          className="border-2 border-black dark:border-white font-mono font-black uppercase shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#FFFFFF]"
+          className="font-sans font-bold uppercase"
         >
           Begin Procedural Reading
         </Button>
@@ -329,29 +329,29 @@ export default function ReadingComprehensionTest() {
 
   if (gameState === "reading" && currentPassage) {
     return (
-      <div className="max-w-2xl mx-auto border-2 border-black dark:border-white bg-card p-6 sm:p-10 space-y-6 font-mono shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF]">
-        <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-4">
+      <div className="max-w-2xl mx-auto brutal-card p-6 sm:p-10 space-y-6 font-sans">
+        <div className="flex items-center justify-between border-b-2 border-border pb-4">
           <div>
-            <span className="text-[10px] font-bold uppercase text-muted-foreground block">
+            <span className="text-xs font-bold uppercase text-muted-foreground block font-mono">
               Domain: {currentPassage.domain}
             </span>
-            <span className="text-sm font-black uppercase text-amber-500 dark:text-cyan-400">
+            <span className="text-base sm:text-lg font-black uppercase text-amber-600 dark:text-sky-400 font-display">
               {currentPassage.title}
             </span>
           </div>
-          <span className="text-xs font-bold uppercase text-muted-foreground border border-black dark:border-white px-2 py-1">
+          <span className="text-xs font-bold uppercase text-muted-foreground border border-border px-2.5 py-1 font-mono">
             {currentPassage.wordCount} Words
           </span>
         </div>
 
-        <p className="text-sm sm:text-base leading-relaxed text-foreground select-none">
+        <p className="text-base sm:text-lg leading-relaxed text-foreground select-none font-sans">
           {currentPassage.text}
         </p>
 
-        <div className="flex justify-end pt-4 border-t-2 border-black dark:border-white">
+        <div className="flex justify-end pt-4 border-t-2 border-border">
           <Button
             onClick={finishReading}
-            className="border-2 border-black dark:border-white font-mono font-black uppercase shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#FFFFFF]"
+            className="font-sans font-bold uppercase"
           >
             I Finished Reading <ArrowRight className="w-4 h-4 ml-1.5 stroke-[3]" />
           </Button>
@@ -363,13 +363,13 @@ export default function ReadingComprehensionTest() {
   if (gameState === "questions" && currentPassage) {
     const q = currentPassage.questions[currentQuestion]
     return (
-      <div className="max-w-2xl mx-auto border-2 border-black dark:border-white bg-card p-6 sm:p-10 space-y-6 font-mono shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF]">
-        <div className="flex items-center justify-between text-xs uppercase font-bold text-muted-foreground border-b-2 border-black dark:border-white pb-3">
+      <div className="max-w-2xl mx-auto brutal-card p-6 sm:p-10 space-y-6 font-sans">
+        <div className="flex items-center justify-between text-xs uppercase font-bold text-muted-foreground border-b-2 border-border pb-3 font-mono">
           <span>Question {currentQuestion + 1} of {currentPassage.questions.length}</span>
           <span className="truncate max-w-[200px]">{currentPassage.title}</span>
         </div>
 
-        <h3 className="text-base sm:text-lg font-black uppercase text-foreground leading-relaxed">
+        <h3 className="text-lg sm:text-xl font-bold text-foreground leading-snug font-sans">
           {q.question}
         </h3>
 
@@ -378,10 +378,10 @@ export default function ReadingComprehensionTest() {
             <button
               key={i}
               onClick={() => handleSelectAnswer(i)}
-              className="p-4 border-2 border-black dark:border-white bg-card hover:bg-secondary text-left font-mono text-xs sm:text-sm text-foreground transition-all flex items-center justify-between shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer group"
+              className="p-4 border-2 border-border bg-card hover:bg-secondary text-left font-sans text-sm sm:text-base text-foreground transition-all flex items-center justify-between shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none cursor-pointer group"
             >
-              <span className="font-bold">{opt}</span>
-              <span className="w-6 h-6 border-2 border-black dark:border-white bg-card group-hover:bg-amber-400 dark:group-hover:bg-cyan-400 group-hover:text-black flex items-center justify-center text-xs font-black shrink-0 ml-3">
+              <span className="font-medium text-foreground">{opt}</span>
+              <span className="w-7 h-7 border-2 border-border bg-card group-hover:bg-amber-400 dark:group-hover:bg-sky-400 group-hover:text-black flex items-center justify-center text-xs font-black shrink-0 ml-3 font-mono">
                 {String.fromCharCode(65 + i)}
               </span>
             </button>
@@ -393,8 +393,8 @@ export default function ReadingComprehensionTest() {
 
   // Results
   return (
-    <div className="max-w-2xl mx-auto border-2 border-black dark:border-white bg-card p-8 text-center font-mono shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF]">
-      <div className="w-16 h-16 border-2 border-black dark:border-white bg-teal-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+    <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-sans">
+      <div className="w-16 h-16 border-2 border-border bg-teal-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
         <CheckCircle2 className="w-8 h-8 stroke-[2.5]" />
       </div>
       <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">

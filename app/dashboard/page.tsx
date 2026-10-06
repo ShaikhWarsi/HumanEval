@@ -23,15 +23,15 @@ export default function DashboardPage() {
     <div className="min-h-screen flex flex-col">
       <div className="max-w-7xl mx-auto w-full px-4 pt-8 pb-16 flex-1 space-y-8">
         {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b-2 border-black dark:border-white font-mono">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b-2 border-black dark:border-slate-700">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs uppercase px-2 py-0.5 border border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black font-black shadow-[1.5px_1.5px_0px_0px_#0A0A0A]">
+            <div className="flex items-center gap-2 mb-1 font-mono">
+              <span className="text-xs uppercase px-2 py-0.5 border border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 font-black shadow-[1.5px_1.5px_0px_0px_#0A0A0A] dark:shadow-[1.5px_1.5px_0px_0px_#000000]">
                 NEURAL TELEMETRY
               </span>
               <span className="text-xs text-muted-foreground font-bold uppercase">v2.0 Diagnostics</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground uppercase">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground uppercase font-display">
               Cognitive Command Center
             </h1>
           </div>
@@ -58,25 +58,25 @@ export default function DashboardPage() {
         </div>
 
         {/* Hero Rating Banner & Radar Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 font-mono">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 font-sans">
           {/* Main CGI Card */}
           <div className="brutal-card p-6 sm:p-8 flex flex-col justify-between relative">
             <div>
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs text-muted-foreground uppercase font-black tracking-wider">
+                <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider font-mono">
                   Composite Cognitive Index
                 </span>
-                <span className="text-xs font-black text-black px-2 py-0.5 border border-black dark:border-white bg-amber-400 dark:bg-cyan-400 shadow-[1.5px_1.5px_0px_0px_#0A0A0A]">
+                <span className="text-xs font-black text-slate-950 px-2 py-0.5 border border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 shadow-[1.5px_1.5px_0px_0px_#0A0A0A] dark:shadow-[1.5px_1.5px_0px_0px_#000000] font-mono">
                   {userStats.tier}
                 </span>
               </div>
 
-              <div className="text-4xl sm:text-5xl font-black text-foreground tracking-tight mb-2 tabular truncate">
+              <div className="text-4xl sm:text-5xl font-black text-foreground tracking-tight mb-2 tabular truncate font-display">
                 {userStats.cgi > 0 ? userStats.cgi : "UNCALIBRATED"}
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed font-mono">
+              <p className="text-sm text-muted-foreground leading-relaxed font-sans">
                 {userStats.cgi > 0
-                  ? "Normalized index benchmarking your multi-domain human cognitive performance against standardized populations."
+                  ? "Normalized index benchmarking your multi-domain human cognitive performance against empirical populations."
                   : "Complete at least 3 cognitive benchmarks to establish your baseline Composite Cognitive Index."}
               </p>
             </div>

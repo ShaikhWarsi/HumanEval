@@ -139,17 +139,17 @@ export default function FacilityPage() {
       <main className="max-w-7xl mx-auto px-4 pt-8 space-y-10">
         {/* Hero Section */}
         <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black font-mono text-xs font-black uppercase shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 border-2 border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 font-mono text-xs font-black uppercase shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
             <ShieldCheck className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>EMPIRICAL COGNITIVE OPERATING SYSTEM // V2.0</span>
           </div>
 
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
-              <h1 className="text-3xl sm:text-5xl font-mono font-black tracking-tight text-foreground uppercase">
-                COGNITIVE <span className="text-amber-500 dark:text-cyan-400">FACILITY</span>
+              <h1 className="text-3xl sm:text-5xl font-display font-black tracking-tight text-foreground uppercase">
+                COGNITIVE <span className="text-amber-500 dark:text-sky-400">FACILITY</span>
               </h1>
-              <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mt-2 font-mono">
+              <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mt-2 font-sans leading-relaxed">
                 Systematic cognitive training grounded in 2020–2026 neuroscience: Relational Integration,
                 Desirable Difficulties, Continuous Calibration, and Empirical Transfer Auditing.
               </p>
@@ -160,7 +160,7 @@ export default function FacilityPage() {
               <Link
                 href="/facility/relational"
                 onClick={() => sound.playClick()}
-                className="px-5 py-2.5 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black font-mono font-black text-sm shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#FFFFFF] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-2 uppercase"
+                className="px-5 py-2.5 border-2 border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 font-sans font-black text-sm shadow-[3px_3px_0px_0px_#0A0A0A] dark:shadow-[3px_3px_0px_0px_#000000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-2 uppercase"
               >
                 <span>Launch Daily Gym</span>
                 <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -170,17 +170,17 @@ export default function FacilityPage() {
         </div>
 
         {/* Telemetry & Fatigue Control Bar */}
-        <div className="brutal-card p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-black dark:border-white pb-4">
+        <div className="brutal-card p-6 space-y-4 font-sans">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-black dark:border-slate-700 pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black flex items-center justify-center shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+              <div className="w-10 h-10 border-2 border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 flex items-center justify-center shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
                 <Activity className="w-5 h-5 stroke-[2.5]" />
               </div>
               <div>
-                <h3 className="font-mono font-black uppercase text-foreground text-sm sm:text-base">
+                <h3 className="font-display font-black uppercase text-foreground text-sm sm:text-base">
                   Intra-Individual Response Time Variability (IIV) Vigilance Monitor
                 </h3>
-                <p className="text-xs text-muted-foreground font-mono">
+                <p className="text-xs text-muted-foreground font-sans">
                   Tracks micro-lapses in prefrontal executive control to abort training before neural exhaustion.
                 </p>
               </div>
@@ -189,7 +189,7 @@ export default function FacilityPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={handlePrimingPing}
-                className="px-3.5 py-1.5 border-2 border-black dark:border-white bg-card text-foreground font-mono text-xs font-bold uppercase shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-3.5 py-1.5 border-2 border-black dark:border-slate-700 bg-card text-foreground font-mono text-xs font-bold uppercase shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <Zap className="w-3.5 h-3.5 stroke-[2.5]" />
                 <span>Tap Priming Ping ({primingPingCount})</span>
@@ -197,7 +197,7 @@ export default function FacilityPage() {
               <button
                 onClick={handleResetFatigue}
                 title="Reset session telemetry"
-                className="p-1.5 border-2 border-black dark:border-white bg-card text-foreground font-mono shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+                className="p-1.5 border-2 border-black dark:border-slate-700 bg-card text-foreground font-mono shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4 stroke-[2.5]" />
               </button>
@@ -247,67 +247,68 @@ export default function FacilityPage() {
         </div>
 
         {/* 45-Minute Daily Cognitive Protocol Roadmap */}
-        <div className="brutal-card p-6 space-y-4">
-          <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-3">
-            <div className="flex items-center gap-2 font-mono">
-              <Timer className="w-4 h-4 stroke-[2.5] text-amber-500 dark:text-cyan-400" />
-              <h2 className="text-base font-black uppercase text-foreground">Recommended 45-Minute Daily Training Protocol</h2>
+        {/* 45-Minute Daily Cognitive Protocol Roadmap */}
+        <div className="brutal-card p-6 space-y-4 font-sans">
+          <div className="flex items-center justify-between border-b-2 border-black dark:border-slate-700 pb-3">
+            <div className="flex items-center gap-2">
+              <Timer className="w-4 h-4 stroke-[2.5] text-amber-500 dark:text-sky-400" />
+              <h2 className="text-base font-display font-black uppercase text-foreground">Recommended 45-Minute Daily Training Protocol</h2>
             </div>
             <span className="text-xs font-mono uppercase text-muted-foreground font-bold">Modular Neuroplasticity</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-3 font-mono">
-            <div className="p-3.5 border-2 border-black dark:border-white bg-card space-y-1 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
-              <div className="flex items-center justify-between text-xs text-muted-foreground font-bold">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+            <div className="p-3.5 border-2 border-black dark:border-slate-700 bg-card space-y-1 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
+              <div className="flex items-center justify-between text-xs text-muted-foreground font-mono font-bold">
                 <span>PHASE 1 (5m)</span>
-                <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 dark:text-cyan-400" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 dark:text-sky-400" />
               </div>
-              <div className="font-black text-sm uppercase text-foreground">Priming & IIV</div>
-              <p className="text-[11px] font-mono text-muted-foreground">
+              <div className="font-display font-black text-sm uppercase text-foreground">Priming & IIV</div>
+              <p className="text-xs font-sans text-muted-foreground leading-relaxed">
                 Rapid motor inspection to calibrate today&apos;s baseline latency variance.
               </p>
             </div>
 
-            <div className="p-3.5 border-2 border-black dark:border-white bg-amber-400/10 dark:bg-cyan-400/10 space-y-1 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
-              <div className="flex items-center justify-between text-xs font-bold text-amber-600 dark:text-cyan-400">
+            <div className="p-3.5 border-2 border-black dark:border-slate-700 bg-amber-400/10 dark:bg-sky-400/10 space-y-1 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
+              <div className="flex items-center justify-between text-xs font-bold text-amber-600 dark:text-sky-400 font-mono">
                 <span>PHASE 2 (15m)</span>
-                <span className="text-[10px] px-1 border border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black font-black">CORE</span>
+                <span className="text-[10px] px-1 border border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 font-black">CORE</span>
               </div>
-              <div className="font-black text-sm uppercase text-foreground">Relational Gym</div>
-              <p className="text-[11px] font-mono text-muted-foreground">
+              <div className="font-display font-black text-sm uppercase text-foreground">Relational Gym</div>
+              <p className="text-xs font-sans text-muted-foreground leading-relaxed">
                 Multi-premise relational integration (R1 to R4+) to exercise frontoparietal binding.
               </p>
             </div>
 
-            <div className="p-3.5 border-2 border-black dark:border-white bg-emerald-400/10 space-y-1 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
-              <div className="flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <div className="p-3.5 border-2 border-black dark:border-slate-700 bg-emerald-400/10 space-y-1 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
+              <div className="flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                 <span>PHASE 3 (10m)</span>
-                <span className="text-[10px] px-1 border border-black dark:border-white bg-emerald-400 text-black font-black">RECALL</span>
+                <span className="text-[10px] px-1 border border-black dark:border-slate-700 bg-emerald-400 text-slate-950 font-black">RECALL</span>
               </div>
-              <div className="font-black text-sm uppercase text-foreground">Spaced Retrieval</div>
-              <p className="text-[11px] font-mono text-muted-foreground">
+              <div className="font-display font-black text-sm uppercase text-foreground">Spaced Retrieval</div>
+              <p className="text-xs font-sans text-muted-foreground leading-relaxed">
                 Cold reconstructive recall under interference. Synaptic consolidation.
               </p>
             </div>
 
-            <div className="p-3.5 border-2 border-black dark:border-white bg-amber-400/10 space-y-1 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
-              <div className="flex items-center justify-between text-xs font-bold text-amber-600 dark:text-amber-400">
+            <div className="p-3.5 border-2 border-black dark:border-slate-700 bg-amber-400/10 space-y-1 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
+              <div className="flex items-center justify-between text-xs font-bold text-amber-600 dark:text-amber-400 font-mono">
                 <span>PHASE 4 (10m)</span>
-                <span className="text-[10px] px-1 border border-black dark:border-white bg-amber-400 text-black font-black">BRIER</span>
+                <span className="text-[10px] px-1 border border-black dark:border-slate-700 bg-amber-400 text-slate-950 font-black">BRIER</span>
               </div>
-              <div className="font-black text-sm uppercase text-foreground">Calibration</div>
-              <p className="text-[11px] font-mono text-muted-foreground">
+              <div className="font-display font-black text-sm uppercase text-foreground">Calibration</div>
+              <p className="text-xs font-sans text-muted-foreground leading-relaxed">
                 Continuous probability credences (0%–100%) and pre-feedback error hypothesis.
               </p>
             </div>
 
-            <div className="p-3.5 border-2 border-black dark:border-white bg-purple-400/10 space-y-1 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
-              <div className="flex items-center justify-between text-xs font-bold text-purple-600 dark:text-purple-400">
+            <div className="p-3.5 border-2 border-black dark:border-slate-700 bg-purple-400/10 space-y-1 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
+              <div className="flex items-center justify-between text-xs font-bold text-purple-600 dark:text-purple-400 font-mono">
                 <span>PHASE 5 (5m)</span>
-                <span className="text-[10px] px-1 border border-black dark:border-white bg-purple-400 text-black font-black">AUDIT</span>
+                <span className="text-[10px] px-1 border border-black dark:border-slate-700 bg-purple-400 text-slate-950 font-black">AUDIT</span>
               </div>
-              <div className="font-black text-sm uppercase text-foreground">Transfer Audit</div>
-              <p className="text-[11px] font-mono text-muted-foreground">
+              <div className="font-display font-black text-sm uppercase text-foreground">Transfer Audit</div>
+              <p className="text-xs font-sans text-muted-foreground leading-relaxed">
                 Audit Transfer Index τ to prove genuine generalized cognitive gains.
               </p>
             </div>
@@ -315,32 +316,32 @@ export default function FacilityPage() {
         </div>
 
         {/* 7-Domain Latent Ability Spectrum */}
-        <div className="brutal-card p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-black dark:border-white pb-3">
+        <div className="brutal-card p-6 space-y-4 font-sans">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-black dark:border-slate-700 pb-3">
             <div>
-              <h2 className="text-base font-mono font-black uppercase text-foreground">
+              <h2 className="text-base font-display font-black uppercase text-foreground">
                 7-Domain Latent Ability Profile (IRT Ability Parameter θ)
               </h2>
-              <p className="text-xs text-muted-foreground font-mono">
+              <p className="text-xs text-muted-foreground font-sans">
                 Separated psychometric constructs preventing the &ldquo;single brain score&rdquo; fallacy.
               </p>
             </div>
-            <span className="text-xs font-mono font-black text-black px-2 py-0.5 border border-black dark:border-white bg-amber-400 dark:bg-cyan-400 shadow-[1.5px_1.5px_0px_0px_#0A0A0A] self-start sm:self-auto">
+            <span className="text-xs font-mono font-black text-slate-950 px-2 py-0.5 border border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 shadow-[1.5px_1.5px_0px_0px_#0A0A0A] dark:shadow-[1.5px_1.5px_0px_0px_#000000] self-start sm:self-auto">
               IRT Scaled [-3.0 to +3.0]
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 font-mono">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {abilityDomains.map((dom) => (
-              <div key={dom.name} className="p-3.5 border-2 border-black dark:border-white bg-card shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] space-y-2">
+              <div key={dom.name} className="p-3.5 border-2 border-black dark:border-slate-700 bg-card shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000] space-y-2">
                 <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-foreground truncate">{dom.name}</span>
-                  <span className="text-amber-500 dark:text-cyan-400 font-black">{dom.score}</span>
+                  <span className="text-foreground truncate font-sans">{dom.name}</span>
+                  <span className="text-amber-500 dark:text-sky-400 font-mono font-black">{dom.score}</span>
                 </div>
-                <div className="w-full h-2 border border-black dark:border-white bg-secondary overflow-hidden">
+                <div className="w-full h-2 border border-black dark:border-slate-700 bg-secondary overflow-hidden">
                   <div className={`h-full ${dom.color}`} style={{ width: `${dom.pct}%` }} />
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase font-bold">
+                <div className="flex items-center justify-between text-[10px] text-muted-foreground uppercase font-mono font-bold">
                   <span>Tier: {dom.tier}</span>
                   <span>~{dom.pct}%</span>
                 </div>
@@ -350,9 +351,9 @@ export default function FacilityPage() {
         </div>
 
         {/* Arenas Grid */}
-        <div className="space-y-4">
+        <div className="space-y-4 font-sans">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-mono font-black uppercase text-foreground">[ COGNITIVE TRAINING ARENAS ]</h2>
+            <h2 className="text-lg font-display font-black uppercase text-foreground">[ COGNITIVE TRAINING ARENAS ]</h2>
             <span className="text-xs text-muted-foreground font-mono uppercase font-bold">Select Arena to Enter</span>
           </div>
 
@@ -368,27 +369,27 @@ export default function FacilityPage() {
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="w-10 h-10 border-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black flex items-center justify-center shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF] group-hover:translate-x-[-1px] group-hover:translate-y-[-1px] transition-transform">
+                      <div className="w-10 h-10 border-2 border-black dark:border-slate-700 bg-amber-400 dark:bg-sky-400 text-slate-950 flex items-center justify-center shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000] group-hover:translate-x-[-1px] group-hover:translate-y-[-1px] transition-transform">
                         <Icon className="w-5 h-5 stroke-[2.5]" />
                       </div>
-                      <span className={`text-[10px] font-mono px-2 py-0.5 border border-black dark:border-white font-black uppercase shadow-[1.5px_1.5px_0px_0px_#0A0A0A] ${arena.badgeColor}`}>
+                      <span className={`text-[10px] font-mono px-2 py-0.5 border border-black dark:border-slate-700 font-black uppercase shadow-[1.5px_1.5px_0px_0px_#0A0A0A] dark:shadow-[1.5px_1.5px_0px_0px_#000000] ${arena.badgeColor}`}>
                         {arena.badge}
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="font-mono font-black uppercase text-base text-foreground group-hover:text-amber-500 dark:group-hover:text-cyan-400 transition-colors">
+                      <h3 className="font-display font-black uppercase text-base text-foreground group-hover:text-amber-500 dark:group-hover:text-sky-400 transition-colors">
                         {arena.title}
                       </h3>
-                      <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed font-mono">
+                      <p className="text-sm text-muted-foreground mt-2 leading-relaxed font-sans">
                         {arena.description}
                       </p>
                     </div>
                   </div>
 
-                  <div className="pt-4 mt-5 border-t-2 border-black dark:border-white flex items-center justify-between font-mono text-xs">
+                  <div className="pt-4 mt-5 border-t-2 border-black dark:border-slate-700 flex items-center justify-between font-mono text-xs">
                     <span className="text-foreground font-bold">{arena.metric}</span>
-                    <div className="flex items-center gap-1 font-black uppercase text-foreground group-hover:text-amber-500 dark:group-hover:text-cyan-400 transition-colors">
+                    <div className="flex items-center gap-1 font-sans font-black uppercase text-foreground group-hover:text-amber-500 dark:group-hover:text-sky-400 transition-colors">
                       <span>ENTER</span>
                       <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
                     </div>
@@ -400,12 +401,12 @@ export default function FacilityPage() {
         </div>
 
         {/* Scientific Integrity Charter */}
-        <div className="p-6 border-2 border-black dark:border-white bg-card shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#FFFFFF] text-xs font-mono space-y-2 text-foreground">
-          <div className="flex items-center gap-2 text-foreground font-black uppercase">
-            <ShieldCheck className="w-4 h-4 text-amber-500 dark:text-cyan-400 stroke-[2.5]" />
+        <div className="p-6 border-2 border-black dark:border-slate-700 bg-card shadow-[4px_4px_0px_0px_#0A0A0A] dark:shadow-[4px_4px_0px_0px_#000000] text-sm font-sans space-y-2 text-foreground">
+          <div className="flex items-center gap-2 text-foreground font-display font-black uppercase">
+            <ShieldCheck className="w-4 h-4 text-amber-500 dark:text-sky-400 stroke-[2.5]" />
             <span>SCIENTIFIC INTEGRITY & ANTI-OVERCLAIM MANDATE</span>
           </div>
-          <p className="leading-relaxed text-muted-foreground">
+          <p className="leading-relaxed text-muted-foreground text-sm">
             HumanEval does not make marketing claims that repetitive brain-game puzzles increase biological IQ. Modern
             preregistered double-blind RCTs (2025) systematically demonstrate that isolated N-Back gains fail to produce
             statistically significant far-transfer. HumanEval conditions core relational binding (Wang et al., 2025),

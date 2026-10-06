@@ -117,14 +117,14 @@ export default function NumberMemoryTest() {
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-emerald-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-emerald-400 text-slate-950 flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Hash className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
+        <h2 className="text-2xl sm:text-3xl font-black font-display uppercase tracking-tight text-foreground mb-3">
           Working Memory Digit Span
         </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto mb-8 font-sans">
           {isReverseMode
             ? "Executive Manipulation: Observe digits, then reverse them in your mind and enter them backwards (e.g. 741 → 147)."
             : "Passive Storage: Hold progressively longer sequences of numerical digits in memory and enter them in order."}
@@ -135,9 +135,9 @@ export default function NumberMemoryTest() {
           <button
             type="button"
             onClick={() => setIsReverseMode(false)}
-            className={`px-4 py-2 border-2 border-black dark:border-white font-mono text-xs font-black uppercase transition-all cursor-pointer ${
+            className={`px-4 py-2 border-2 border-black dark:border-slate-700 font-sans text-xs font-bold uppercase transition-all cursor-pointer ${
               !isReverseMode
-                ? "bg-amber-400 dark:bg-cyan-400 text-black shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]"
+                ? "bg-amber-400 dark:bg-sky-400 text-slate-950 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]"
                 : "bg-secondary text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -146,9 +146,9 @@ export default function NumberMemoryTest() {
           <button
             type="button"
             onClick={() => setIsReverseMode(true)}
-            className={`px-4 py-2 border-2 border-black dark:border-white font-mono text-xs font-black uppercase transition-all cursor-pointer ${
+            className={`px-4 py-2 border-2 border-black dark:border-slate-700 font-sans text-xs font-bold uppercase transition-all cursor-pointer ${
               isReverseMode
-                ? "bg-pink-500 text-white shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]"
+                ? "bg-pink-500 text-white shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]"
                 : "bg-secondary text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -168,17 +168,17 @@ export default function NumberMemoryTest() {
 
   if (gameState === "correct-step") {
     return (
-      <div className="max-w-md mx-auto brutal-card p-8 text-center space-y-6 font-mono">
-        <div className="w-14 h-14 border-2 border-black dark:border-white bg-emerald-400 text-black flex items-center justify-center mx-auto shadow-[2px_2px_0px_0px_#0A0A0A]">
+      <div className="max-w-md mx-auto brutal-card p-8 text-center space-y-6 font-sans">
+        <div className="w-14 h-14 border-2 border-black dark:border-slate-700 bg-emerald-400 text-slate-950 flex items-center justify-center mx-auto shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <CheckCircle2 className="w-7 h-7 stroke-[2.5]" />
         </div>
 
         <div className="space-y-1">
-          <h3 className="text-2xl font-black uppercase text-foreground">Level {level} Cleared!</h3>
-          <p className="text-xs text-muted-foreground uppercase font-bold">Digit sequence verified.</p>
+          <h3 className="text-2xl font-black font-display uppercase text-foreground">Level {level} Cleared!</h3>
+          <p className="text-xs text-muted-foreground uppercase font-bold font-mono">Digit sequence verified.</p>
         </div>
 
-        <div className="p-4 border-2 border-black dark:border-white bg-card text-xs space-y-2 shadow-[2px_2px_0px_0px_#0A0A0A]">
+        <div className="p-4 border-2 border-black dark:border-slate-700 bg-card text-xs space-y-2 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000] font-mono">
           <div className="flex justify-between">
             <span className="text-muted-foreground font-bold uppercase">Target Number:</span>
             <span className="text-emerald-500 font-black">{currentNumber}</span>
@@ -202,24 +202,24 @@ export default function NumberMemoryTest() {
 
   if (gameState === "result") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-emerald-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-emerald-400 text-slate-950 flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Hash className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">
+        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold font-mono">
           Final Digit Span
         </h2>
-        <div className="text-6xl font-black text-foreground mb-4 tabular">
+        <div className="text-6xl font-black text-foreground mb-4 tabular font-mono">
           {level - 1} <span className="text-2xl text-emerald-500">digits</span>
         </div>
 
         {/* Diff breakdown */}
-        <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto mb-6 text-xs">
-          <div className="p-3 border-2 border-black dark:border-white bg-card text-left shadow-[2px_2px_0px_0px_#0A0A0A]">
+        <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto mb-6 text-xs font-mono">
+          <div className="p-3 border-2 border-black dark:border-slate-700 bg-card text-left shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
             <span className="text-muted-foreground block text-[10px] font-bold uppercase">Actual</span>
             <span className="text-emerald-500 font-black break-all">{currentNumber}</span>
           </div>
-          <div className="p-3 border-2 border-black dark:border-white bg-card text-left shadow-[2px_2px_0px_0px_#0A0A0A]">
+          <div className="p-3 border-2 border-black dark:border-slate-700 bg-card text-left shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
             <span className="text-muted-foreground block text-[10px] font-bold uppercase">Your Input</span>
             <span className="text-rose-500 font-black break-all">{userInput || "(empty)"}</span>
           </div>
@@ -239,27 +239,27 @@ export default function NumberMemoryTest() {
   }
 
   return (
-    <div className="max-w-xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
-      <div className="flex items-center justify-between mb-8 text-xs font-bold uppercase text-muted-foreground">
+    <div className="max-w-xl mx-auto brutal-card p-8 sm:p-12 text-center font-sans">
+      <div className="flex items-center justify-between mb-8 text-xs font-bold uppercase text-muted-foreground font-mono">
         <span>Level {level}</span>
         <span>{level} Digits</span>
       </div>
 
       {gameState === "showing" && (
         <div className="space-y-8">
-          <div className="text-5xl sm:text-6xl font-black tracking-widest text-foreground tabular select-none">
+          <div className="text-5xl sm:text-6xl font-black tracking-widest text-foreground tabular select-none font-mono">
             {currentNumber}
           </div>
 
           {/* Countdown timer bar */}
-          <div className="w-full h-2 border-2 border-black dark:border-white bg-secondary max-w-xs mx-auto overflow-hidden">
+          <div className="w-full h-2 border-2 border-black dark:border-slate-700 bg-secondary max-w-xs mx-auto overflow-hidden">
             <div
               className="h-full bg-emerald-400 transition-all duration-75"
               style={{ width: `${progress}%` }}
             />
           </div>
 
-          <p className="text-xs uppercase font-bold text-muted-foreground">
+          <p className="text-xs uppercase font-mono font-bold text-muted-foreground">
             Memorize the digits before the timer expires...
           </p>
         </div>
@@ -268,10 +268,10 @@ export default function NumberMemoryTest() {
       {gameState === "input" && (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <h3 className="text-lg font-black uppercase text-foreground">
+            <h3 className="text-xl font-black uppercase text-foreground font-display">
               {isReverseMode ? "Type the digits in REVERSE order" : "What was the number?"}
             </h3>
-            <p className="text-xs uppercase text-muted-foreground font-bold">
+            <p className="text-xs uppercase text-muted-foreground font-bold font-mono">
               {isReverseMode
                 ? "First shown digit should be typed LAST (e.g. 5-9-2 → 295)"
                 : "Press Enter or Submit when ready"}
@@ -286,7 +286,7 @@ export default function NumberMemoryTest() {
             value={userInput}
             onChange={(e) => setUserInput(e.target.value.replace(/\D/g, ""))}
             placeholder="Type digits here"
-            className="text-center text-3xl font-black tracking-widest max-w-sm mx-auto h-14"
+            className="text-center text-3xl font-black tracking-widest max-w-sm mx-auto h-14 font-mono border-2 border-black dark:border-slate-700"
             autoFocus
           />
 

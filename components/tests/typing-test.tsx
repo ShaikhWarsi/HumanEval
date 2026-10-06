@@ -147,14 +147,14 @@ export default function TypingTest() {
 
   if (gameState === "instructions") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-indigo-400 text-black flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#FFFFFF]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 sm:p-12 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-indigo-500 text-white flex items-center justify-center mx-auto mb-6 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Keyboard className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-2xl font-black uppercase tracking-tight text-foreground mb-3">
+        <h2 className="text-2xl sm:text-3xl font-black font-display uppercase tracking-tight text-foreground mb-3">
           Neuromuscular Typing Speed
         </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto mb-6">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto mb-8 font-sans">
           Type the prompt as swiftly and accurately as possible. Timer starts on your first keystroke.
           Score is computed as Net Words Per Minute adjusted by accuracy.
         </p>
@@ -171,19 +171,19 @@ export default function TypingTest() {
 
   if (gameState === "results") {
     return (
-      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-mono">
-        <div className="w-16 h-16 border-2 border-black dark:border-white bg-indigo-400 text-black flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A]">
+      <div className="max-w-2xl mx-auto brutal-card p-8 text-center font-sans">
+        <div className="w-16 h-16 border-2 border-black dark:border-slate-700 bg-indigo-500 text-white flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_0px_#0A0A0A] dark:shadow-[2px_2px_0px_0px_#000000]">
           <Keyboard className="w-8 h-8 stroke-[2.5]" />
         </div>
-        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold">
+        <h2 className="text-xs uppercase text-muted-foreground tracking-wider mb-1 font-bold font-mono">
           Net Typing Cadence
         </h2>
-        <div className="text-6xl font-black text-foreground mb-2 tabular">
+        <div className="text-6xl font-black text-foreground mb-2 tabular font-mono">
           {finalWpm}
           <span className="text-2xl text-indigo-500 ml-1">WPM</span>
         </div>
 
-        <div className="flex items-center justify-center gap-6 my-4 text-xs font-bold uppercase">
+        <div className="flex items-center justify-center gap-6 my-4 text-xs font-mono font-bold uppercase">
           <span>
             Accuracy: <strong className="text-foreground">{finalAccuracy}%</strong>
           </span>
@@ -213,7 +213,7 @@ export default function TypingTest() {
   return (
     <div
       onClick={() => inputRef.current?.focus()}
-      className="max-w-3xl mx-auto brutal-card p-6 sm:p-10 font-mono relative cursor-text select-none"
+      className="max-w-3xl mx-auto brutal-card p-6 sm:p-10 font-sans relative cursor-text select-none"
     >
       <input
         ref={inputRef}
@@ -228,9 +228,9 @@ export default function TypingTest() {
       />
 
       {/* Top status bar */}
-      <div className="flex items-center justify-between text-xs font-bold uppercase text-muted-foreground mb-6 pb-4 border-b-2 border-black dark:border-white">
+      <div className="flex items-center justify-between text-xs font-mono font-bold uppercase text-muted-foreground mb-6 pb-4 border-b-2 border-black dark:border-slate-700">
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-amber-500 dark:text-cyan-400 stroke-[2.5]" />
+          <Clock className="w-4 h-4 text-amber-500 dark:text-sky-400 stroke-[2.5]" />
           <span>{elapsedSeconds}s elapsed</span>
         </div>
         <div>
@@ -244,22 +244,22 @@ export default function TypingTest() {
       </div>
 
       {/* Target text with character coloring */}
-      <div className="text-xl sm:text-2xl font-mono leading-relaxed tracking-wide min-h-[160px]">
+      <div className="text-xl sm:text-2xl font-mono leading-relaxed tracking-wide min-h-[160px] p-5 sm:p-6 bg-secondary/30 border-2 border-black dark:border-slate-700">
         {targetText.split("").map((char, index) => {
-          let charStyle = "text-muted-foreground/40"
+          let charStyle = "text-slate-500 dark:text-slate-400 font-medium"
           const isCurrent = index === userInput.length
 
           if (index < userInput.length) {
             charStyle =
               userInput[index] === char
-                ? "text-amber-500 dark:text-cyan-400 font-black"
-                : "text-rose-500 underline font-black bg-rose-500/20"
+                ? "text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-500/10"
+                : "text-rose-600 dark:text-rose-400 underline decoration-2 font-black bg-rose-500/20"
           }
 
           return (
             <span
               key={index}
-              className={`${charStyle} ${isCurrent ? "border-b-2 border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black" : ""}`}
+              className={`${charStyle} ${isCurrent ? "border-b-2 border-black dark:border-white bg-amber-400 dark:bg-sky-400 text-slate-950 font-black px-0.5" : ""}`}
             >
               {char}
             </span>
@@ -267,7 +267,7 @@ export default function TypingTest() {
         })}
       </div>
 
-      <div className="text-right text-[11px] font-bold uppercase text-muted-foreground mt-6 border-t border-black/20 dark:border-white/20 pt-3">
+      <div className="text-right text-xs font-mono font-bold uppercase text-muted-foreground mt-6 border-t border-black/10 dark:border-slate-800 pt-3">
         Click anywhere to focus keyboard
       </div>
     </div>
