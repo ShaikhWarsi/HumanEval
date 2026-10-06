@@ -20,8 +20,8 @@ export const BENCHMARKS: Record<string, BenchmarkMeta> = {
     category: "Speed",
     unit: "ms",
     lowerIsBetter: true,
-    median: 270,
-    stdDev: 42,
+    median: 273,
+    stdDev: 48,
     description: "Synaptic visual-to-motor latency.",
     icon: "Zap",
     color: "#00F0FF",
@@ -33,7 +33,7 @@ export const BENCHMARKS: Record<string, BenchmarkMeta> = {
     unit: "lvl",
     lowerIsBetter: false,
     median: 8,
-    stdDev: 2.8,
+    stdDev: 2.6,
     description: "Sequential pattern encoding & Simon span.",
     icon: "Grid3X3",
     color: "#8B5CF6",
@@ -44,8 +44,8 @@ export const BENCHMARKS: Record<string, BenchmarkMeta> = {
     category: "Motor",
     unit: "ms",
     lowerIsBetter: true,
-    median: 410,
-    stdDev: 70,
+    median: 440,
+    stdDev: 120,
     description: "Micro-spatial target acquisition under pressure.",
     icon: "Target",
     color: "#FF3366",
@@ -57,7 +57,7 @@ export const BENCHMARKS: Record<string, BenchmarkMeta> = {
     unit: "digits",
     lowerIsBetter: false,
     median: 7,
-    stdDev: 2.1,
+    stdDev: 2.0,
     description: "Phonological digit span working memory.",
     icon: "Hash",
     color: "#10B981",
@@ -80,8 +80,8 @@ export const BENCHMARKS: Record<string, BenchmarkMeta> = {
     category: "Vision",
     unit: "pts",
     lowerIsBetter: false,
-    median: 9,
-    stdDev: 2.5,
+    median: 8,
+    stdDev: 2.8,
     description: "Visuospatial working memory inspired by Ayumu.",
     icon: "Brain",
     color: "#EC4899",
@@ -92,8 +92,8 @@ export const BENCHMARKS: Record<string, BenchmarkMeta> = {
     category: "Vision",
     unit: "lvl",
     lowerIsBetter: false,
-    median: 10,
-    stdDev: 3.2,
+    median: 9,
+    stdDev: 2.9,
     description: "Matrix grid spatial retention.",
     icon: "Eye",
     color: "#06B6D4",
@@ -117,7 +117,7 @@ export const BENCHMARKS: Record<string, BenchmarkMeta> = {
     unit: "WPM",
     lowerIsBetter: false,
     median: 230,
-    stdDev: 48,
+    stdDev: 45,
     description: "Information processing rate with full comprehension.",
     icon: "BookOpen",
     color: "#14B8A6",
@@ -167,6 +167,61 @@ export function getPercentileSEM(percentile: number): { value: number; sem: numb
     sem,
     low: Math.max(1, val - sem),
     high: Math.min(99, val + sem),
+  }
+}
+
+export interface PercentileBadgeInfo {
+  label: string
+  sublabel: string
+  isTopTier: boolean
+  badgeClass: string
+}
+
+/**
+ * Standard psychometric badge formatter.
+ * Resolves the display bug where bottom 1% was nonsensically shown as "TOP 99%".
+ */
+export function formatPercentileBadge(percentile: number): PercentileBadgeInfo {
+  const p = Math.max(1, Math.min(99, Math.round(percentile)))
+  if (p >= 90) {
+    const topPct = Math.max(1, 100 - p)
+    return {
+      label: `TOP ${topPct}%`,
+      sublabel: "Elite Tier",
+      isTopTier: true,
+      badgeClass: "bg-emerald-400 text-black border-black dark:border-white shadow-[1px_1px_0px_0px_#0A0A0A]",
+    }
+  }
+  if (p >= 60) {
+    const topPct = 100 - p
+    return {
+      label: `TOP ${topPct}%`,
+      sublabel: "Above Average",
+      isTopTier: true,
+      badgeClass: "bg-amber-400 text-black border-black dark:border-white shadow-[1px_1px_0px_0px_#0A0A0A]",
+    }
+  }
+  if (p >= 40) {
+    return {
+      label: `${p}TH %ILE`,
+      sublabel: "Median Baseline",
+      isTopTier: false,
+      badgeClass: "bg-secondary text-foreground border-black dark:border-white shadow-[1px_1px_0px_0px_#0A0A0A]",
+    }
+  }
+  if (p >= 15) {
+    return {
+      label: `${p}TH %ILE`,
+      sublabel: "Below Average",
+      isTopTier: false,
+      badgeClass: "bg-muted text-muted-foreground border-black dark:border-white shadow-[1px_1px_0px_0px_#0A0A0A]",
+    }
+  }
+  return {
+    label: `BOTTOM ${p}%`,
+    sublabel: "Developing Sub-tier",
+    isTopTier: false,
+    badgeClass: "bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border-rose-500 shadow-[1px_1px_0px_0px_#0A0A0A]",
   }
 }
 

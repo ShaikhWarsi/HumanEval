@@ -18,7 +18,7 @@ interface Tile {
   cleared: boolean
 }
 
-const GRID_ROWS = 6
+const GRID_ROWS = 5
 const GRID_COLS = 8
 const INITIAL_COUNT = 4
 
@@ -26,6 +26,7 @@ export default function ChimpTest() {
   const [gameState, setGameState] = useState<GameState>("instructions")
   const [level, setLevel] = useState(1)
   const [strikes, setStrikes] = useState(0)
+  const [maxCleared, setMaxCleared] = useState(0)
   const [tiles, setTiles] = useState<Tile[]>([])
   const [nextExpected, setNextExpected] = useState(1)
   const [masked, setMasked] = useState(false)
@@ -36,15 +37,27 @@ export default function ChimpTest() {
 
   const generateLevelTiles = (lvl: number) => {
     const count = INITIAL_COUNT + lvl - 1
-    const totalCells = GRID_ROWS * GRID_COLS
-    const chosenIndices = new Set<number>()
 
-    while (chosenIndices.size < count) {
-      chosenIndices.add(Math.floor(Math.random() * totalCells))
+    // Scale candidate bounding columns: early levels (4-5 numbers) are kept within a 6-column window
+    // to prevent extreme corner-to-corner pinball lotteries, expanding to full 8 columns as span grows.
+    const activeCols = lvl <= 2 ? 6 : GRID_COLS
+    const startCol = lvl <= 2 ? Math.floor(Math.random() * (GRID_COLS - activeCols + 1)) : 0
+
+    const candidatePool: number[] = []
+    for (let r = 0; r < GRID_ROWS; r++) {
+      for (let c = startCol; c < startCol + activeCols; c++) {
+        candidatePool.push(r * GRID_COLS + c)
+      }
     }
 
-    const indicesArray = Array.from(chosenIndices)
-    const newTiles: Tile[] = indicesArray.map((idx, i) => {
+    // Shuffle pool with Fisher-Yates
+    for (let i = candidatePool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[candidatePool[i], candidatePool[j]] = [candidatePool[j], candidatePool[i]]
+    }
+
+    const chosen = candidatePool.slice(0, count)
+    const newTiles: Tile[] = chosen.map((idx, i) => {
       const row = Math.floor(idx / GRID_COLS)
       const col = idx % GRID_COLS
       return {
@@ -70,6 +83,7 @@ export default function ChimpTest() {
   const startGame = () => {
     setLevel(1)
     setStrikes(0)
+    setMaxCleared(0)
     setGameState("playing")
     startLevel(1)
   }
@@ -95,6 +109,8 @@ export default function ChimpTest() {
       if (nextNum > tiles.length) {
         sound.playSuccess()
         setIsLocked(true)
+        const clearedCount = tiles.length
+        setMaxCleared((prev) => Math.max(prev, clearedCount))
         const nextLevel = level + 1
         setLevel(nextLevel)
         setTimeout(() => startLevel(nextLevel), 600)
@@ -108,20 +124,19 @@ export default function ChimpTest() {
       setStrikes(newStrikes)
 
       if (newStrikes >= 3) {
-        // Game Over!
-        const finalScore = Math.max(0, INITIAL_COUNT + level - 2)
+        // Game Over! Exact score is highest count of numbers successfully cleared
+        const finalScore = maxCleared
         const saved = addScore({
           testId: "chimp-test",
           testName: "Chimp Test",
           score: finalScore,
           unit: "pts",
-          details: { strikes: newStrikes, levelReached: level },
+          details: { strikes: newStrikes, levelReached: level, maxCleared },
         })
         setPercentile(saved.percentile)
         setTimeout(() => setGameState("result"), 1000)
       } else {
         // Retry level after momentary pause
-        setTimeout(() => startLevel(level), 900)
       }
     }
   }

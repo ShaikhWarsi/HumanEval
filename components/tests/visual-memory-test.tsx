@@ -89,29 +89,33 @@ export default function VisualMemoryTest() {
       newWrong.add(index)
       setWrongSelections(newWrong)
 
-      const newLives = lives - 1
-      setLives(newLives)
+      // Psychometric alignment: Standard Human Benchmark allows 3 mistakes per board.
+      // Only exceeding 3 mistakes fails the board and consumes 1 of the 3 overall lives.
+      if (newWrong.size >= 3) {
+        const newLives = lives - 1
+        setLives(newLives)
 
-      // Reveal correct layout momentarily
-      setGameState("failed-reveal")
+        // Reveal correct layout momentarily
+        setGameState("failed-reveal")
 
-      if (newLives <= 0) {
-        // Game Over!
-        setTimeout(() => {
-          const finalScore = level - 1
-          const saved = addScore({
-            testId: "visual-memory",
-            testName: "Visual Memory",
-            score: finalScore,
-            unit: "lvl",
-            details: { finalLevel: level, gridDimension: gridDim },
-          })
-          setPercentile(saved.percentile)
-          setGameState("result")
-        }, 1100)
-      } else {
-        // Retry current level after momentary reveal
-        setTimeout(() => startLevel(level), 1100)
+        if (newLives <= 0) {
+          // Game Over!
+          setTimeout(() => {
+            const finalScore = level - 1
+            const saved = addScore({
+              testId: "visual-memory",
+              testName: "Visual Memory",
+              score: finalScore,
+              unit: "lvl",
+              details: { finalLevel: level, gridDimension: gridDim },
+            })
+            setPercentile(saved.percentile)
+            setGameState("result")
+          }, 1100)
+        } else {
+          // Retry current level after momentary reveal
+          setTimeout(() => startLevel(level), 1100)
+        }
       }
     }
   }
@@ -197,6 +201,19 @@ export default function VisualMemoryTest() {
         </div>
 
         <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground">Board Strikes:</span>
+            <div className="flex gap-1">
+              {[1, 2, 3].map((strike) => (
+                <div
+                  key={strike}
+                  className={`w-3 h-3 border border-black dark:border-white shadow-[1px_1px_0px_0px_#0A0A0A] ${
+                    strike <= wrongSelections.size ? "bg-rose-500" : "bg-card"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
           <span className="text-muted-foreground">
             Grid: <strong className="text-foreground">{gridDim}×{gridDim}</strong>
           </span>

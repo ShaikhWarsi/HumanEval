@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { BENCHMARKS } from "@/lib/benchmarks"
+import { BENCHMARKS, formatPercentileBadge } from "@/lib/benchmarks"
 
 interface BellCurveProps {
   testId: string
@@ -50,14 +50,16 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
   // Median position
   const medianX = paddingX + 0.5 * (width - 2 * paddingX)
 
+  const badge = formatPercentileBadge(percentile)
+
   return (
     <div className="w-full brutal-card p-5 my-5 font-mono text-left">
       <div className="flex items-center justify-between mb-3 border-b-2 border-black dark:border-white pb-2">
         <span className="text-xs uppercase font-black tracking-wider text-muted-foreground">
-          [ GAUSSIAN DISTRIBUTION ]
+          [ EMPIRICAL DISTRIBUTION ]
         </span>
-        <span className="text-xs font-black px-2 py-0.5 border border-black dark:border-white bg-amber-400 dark:bg-cyan-400 text-black shadow-[1.5px_1.5px_0px_0px_#0A0A0A]">
-          PERCENTILE: {Math.round(percentile)}% (±4% SEM)
+        <span className={`text-xs font-black px-2 py-0.5 border ${badge.badgeClass}`}>
+          {badge.label} • {Math.round(percentile)}TH %ILE (±4% SEM)
         </span>
       </div>
 
@@ -141,15 +143,19 @@ export default function BellCurve({ testId, score, unit, percentile }: BellCurve
       <div className="mt-3 pt-2 border-t-2 border-black dark:border-white text-center text-xs">
         {percentile >= 90 ? (
           <span className="text-emerald-600 dark:text-emerald-400 font-black uppercase">
-            ★ ELITE TIER — TOP {Math.max(1, Math.round(100 - percentile))}% OF GLOBAL SAMPLES
+            ★ ELITE TIER — TOP {Math.max(1, Math.round(100 - percentile))}% OF EMPIRICAL SAMPLES
           </span>
-        ) : percentile >= 50 ? (
+        ) : percentile >= 60 ? (
           <span className="text-amber-600 dark:text-cyan-400 font-bold uppercase">
             ABOVE POPULATION AVERAGE — TOP {Math.round(100 - percentile)}% BRACKET
           </span>
+        ) : percentile >= 40 ? (
+          <span className="text-foreground font-bold uppercase">
+            POPULATION MEDIAN RANGE — BALANCED EMPIRICAL PERFORMANCE
+          </span>
         ) : (
           <span className="text-muted-foreground font-bold uppercase">
-            STANDARD GAUSSIAN VARIANCE — ACCURACY AND SPEED ACCRETE WITH EXPOSURE
+            DEVELOPING BASELINE ({Math.round(percentile)}TH %ILE) — SPEED & ACCURACY ACCRETE WITH EXPOSURE
           </span>
         )}
       </div>

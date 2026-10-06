@@ -16,7 +16,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import { useScore } from "@/lib/score-context"
-import { BENCHMARKS } from "@/lib/benchmarks"
+import { BENCHMARKS, formatPercentileBadge } from "@/lib/benchmarks"
 
 const iconMap: Record<string, LucideIcon> = {
   Zap,
@@ -94,11 +94,14 @@ export default function TestCard({
                 {best.score}
                 <span className="text-xs text-muted-foreground ml-0.5">{best.unit}</span>
               </span>
-              {best.percentile && (
-                <span className="text-[10px] font-black px-1.5 py-0.5 border border-black dark:border-white bg-emerald-400 text-black shadow-[1px_1px_0px_0px_#0A0A0A]">
-                  Top {Math.max(1, Math.round(100 - best.percentile))}%
-                </span>
-              )}
+              {best.percentile !== undefined && (() => {
+                const badge = formatPercentileBadge(best.percentile)
+                return (
+                  <span className={`text-[10px] font-black px-1.5 py-0.5 border ${badge.badgeClass}`}>
+                    {badge.label}
+                  </span>
+                )
+              })()}
             </div>
           ) : (
             <span className="text-xs text-foreground group-hover:text-amber-500 dark:group-hover:text-cyan-400 transition-colors font-bold uppercase flex items-center gap-1">

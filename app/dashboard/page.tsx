@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useScore } from "@/lib/score-context"
-import { BENCHMARKS } from "@/lib/benchmarks"
+import { BENCHMARKS, formatPercentileBadge } from "@/lib/benchmarks"
 import CognitiveRadarChart from "@/components/radar-chart"
 import Footer from "@/components/footer"
 import {
@@ -142,11 +142,14 @@ export default function DashboardPage() {
                     <span className="text-xs uppercase px-2 py-0.5 border border-black dark:border-white bg-secondary text-foreground font-bold shadow-[1px_1px_0px_0px_#0A0A0A]">
                       {bench.category}
                     </span>
-                    {best ? (
-                      <span className="text-[11px] font-black text-black bg-emerald-400 px-2 py-0.5 border border-black dark:border-white shadow-[1px_1px_0px_0px_#0A0A0A]">
-                        TOP {Math.max(1, Math.round(100 - best.percentile))}%
-                      </span>
-                    ) : (
+                    {best ? (() => {
+                      const badge = formatPercentileBadge(best.percentile)
+                      return (
+                        <span className={`text-[11px] font-black px-2 py-0.5 border ${badge.badgeClass}`}>
+                          {badge.label}
+                        </span>
+                      )
+                    })() : (
                       <span className="text-[10px] uppercase text-muted-foreground font-bold">
                         UNCALIBRATED
                       </span>

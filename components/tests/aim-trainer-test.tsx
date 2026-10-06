@@ -16,7 +16,7 @@ interface TargetPosition {
 }
 
 const TOTAL_TARGETS = 30
-const TARGET_SIZE = 58
+const TARGET_SIZE = 80
 
 export default function AimTrainerTest() {
   const [gameState, setGameState] = useState<GameState>("instructions")
@@ -37,7 +37,7 @@ export default function AimTrainerTest() {
     if (!arenaRef.current) return { x: 100, y: 100 }
     const rect = arenaRef.current.getBoundingClientRect()
     const margin = TARGET_SIZE / 2 + 15
-    const minDistance = 120
+    const minDistance = 140
 
     let candidate = { x: 100, y: 100 }
     let attempts = 0
@@ -56,17 +56,25 @@ export default function AimTrainerTest() {
     return candidate
   }
 
+  const spawnTarget = (prevPos: TargetPosition | null = null) => {
+    const nextPos = spawnRandomTarget(prevPos)
+    setCurrentTarget(nextPos)
+    // Synchronize timing strictly with screen paint to eliminate render-queue latency artifacts
+    requestAnimationFrame(() => {
+      setLastTargetTime(performance.now())
+    })
+  }
+
   const startGame = () => {
     setGameState("playing")
     setTargetsHit(0)
     setTotalClicks(0)
     setMisses(0)
     setTargetTimes([])
-    const now = performance.now()
-    setLastTargetTime(now)
-    setTimeout(() => {
-      setCurrentTarget(spawnRandomTarget(null))
-    }, 50)
+    // Allow React state transition to mount arena, then spawn first target
+    requestAnimationFrame(() => {
+      spawnTarget(null)
+    })
   }
 
   const handleTargetClick = (e: React.MouseEvent) => {
@@ -75,10 +83,9 @@ export default function AimTrainerTest() {
 
     sound.playTargetHit()
     const now = performance.now()
-    const delta = Math.round(now - lastTargetTime)
+    const delta = Math.max(50, Math.round(now - lastTargetTime))
     const newTimes = [...targetTimes, delta]
     setTargetTimes(newTimes)
-    setLastTargetTime(now)
 
     const newHitCount = targetsHit + 1
     const newTotalClicks = totalClicks + 1
@@ -103,7 +110,7 @@ export default function AimTrainerTest() {
       setPercentile(saved.percentile)
       setGameState("result")
     } else {
-      setCurrentTarget(spawnRandomTarget(currentTarget))
+      spawnTarget(currentTarget)
     }
   }
 
